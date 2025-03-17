@@ -79,6 +79,7 @@ export interface genericResults<CandidateType extends candidate, SummaryType ext
     roundResults: roundResults<CandidateType>[],
     summaryData: SummaryType,
     tieBreakType: tieBreakType,
+    numUnprocessedWriteIns?: number,
 }
 
 /////////////// STAR TYPES //////////////////
@@ -114,12 +115,24 @@ export interface rankedRobinCandidate extends candidate {
     copelandScore: number,
 }
 
+<<<<<<< HEAD
 export type rankedRobinSummaryData = genericSummaryData<rankedRobinCandidate>;
 
 export type rankedRobinRoundResults = roundResults<rankedRobinCandidate>
 
 export interface rankedRobinResults extends genericResults<rankedRobinCandidate, rankedRobinSummaryData> {
     votingMethod: 'RankedRobin',
+=======
+export interface genericResults {
+    votingMethod: votingMethod,
+    elected: candidate[],
+    tied: candidate[],
+    other: candidate[],
+    roundResults: roundResults[],
+    summaryData: genericSummaryData,
+    tieBreakType: tieBreakType,
+    numUnprocessedWriteIns?: number,
+>>>>>>> 31650ad0... adding unprocessed write in count to results
 }
 
 /////////////// STAR PR TYPES //////////////////

@@ -63,6 +63,7 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
         const cvr: rawVote[] = []
         const num_winners = race.num_winners
         const voting_method = race.voting_method
+        let numUnprocessedWriteIns = 0
 
         ballots.forEach((ballot: Ballot) => {
             const vote = ballot.votes.find((vote) => vote.race_id === race_id)
@@ -75,10 +76,13 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
                         marks[score.candidate_id] = score.score
                     } else if (useWriteIns && score.write_in_name) {
                         // Write-in candidate - find which approved write-in it matches
+                        const write_in_name = score.write_in_name
                         const writeInIndex = writeInCandidates.findIndex(wc =>
-                            wc.aliases.includes(score.write_in_name!)
+                            wc.aliases.includes(write_in_name!)
                         )
-                        if (writeInIndex !== -1) {
+                        if (writeInIndex < 0) {
+                            numUnprocessedWriteIns += 1
+                        } else if (writeInCandidates[writeInIndex].approved) {
                             marks[`write-in-${writeInIndex}`] = score.score
                         }
                     }
@@ -97,7 +101,10 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
         }
         const msg = `Tabulating results for ${voting_method} election`
         Logger.info(req, msg);
-        results[race_index] = VotingMethods[voting_method](candidates, cvr, num_winners, election.settings)
+        results[race_index] = {
+            ...VotingMethods[voting_method](candidates, cvr, num_winners, election.settings),
+            numUnprocessedWriteIns: useWriteIns ? numUnprocessedWriteIns : undefined
+        }
     }
     
     res.json(
