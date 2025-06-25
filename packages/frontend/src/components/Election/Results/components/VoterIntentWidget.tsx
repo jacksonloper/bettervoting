@@ -20,7 +20,7 @@ const VoterIntentWidget = () => {
 
     const final_round_candidates = candidates.filter(c => c.hareScores.at(-1) != 0).length;
     if(final_round_candidates > 2){
-        runnerUp.name = 'a losing candidate'
+        runnerUp = {...runnerUp, name: 'a losing candidate'}
     }
 
     const condorcetCandidate = candidates.find(c => candidates.every(c2 => c.id == c2.id || c.winsAgainst[c2.id]))
