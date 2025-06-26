@@ -4,7 +4,6 @@ import { useSubstitutedTranslation } from '../util'
 
 const LandingPageFeaturedElections = ({ electionIds }: { electionIds: string[] }) => {
     const { t } = useSubstitutedTranslation();
-
     return <Box sx={{
         display: 'flex',
         flexDirection: 'column',

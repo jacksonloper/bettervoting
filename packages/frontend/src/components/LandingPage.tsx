@@ -29,7 +29,8 @@ const LandingPage = () => {
     const flags = useFeatureFlags();
 
     const boxRef = useRef(null);
-
+    const featuredElectionIds = process.env.REACT_APP_FEATURED_ELECTIONS.split('').filter(Boolean)
+    
     //It looks like atTop wasn't being used anywhere, so I'm just removing this chunk for now
 
     // const [atTop, setAtTop] = useState(true);
@@ -69,7 +70,7 @@ const LandingPage = () => {
             </Box>
             <LandingPageStats/>
             <QuickPoll/>
-            <LandingPageFeaturedElections electionIds={(process.env.REACT_APP_FEATURED_ELECTIONS ?? '').split(',')}/>
+            {featuredElectionIds.length > 0 && <LandingPageFeaturedElections electionIds={featuredElectionIds}/>}
             <LandingPageFeatures/>
             <LandingPageSignUpBar />
             {flags.isSet('ELECTION_TESTIMONIALS') && <LandingPageTestimonials/>}
