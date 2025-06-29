@@ -10,7 +10,7 @@ export function Star(candidates: candidate[], votes: rawVote[], nWinners = 1, el
     'score',
 		[
 			makeBoundsTest(0, 5),
-			makeAbstentionTest(null),
+			makeAbstentionTest(true),
 		]
 	);
 
@@ -38,7 +38,7 @@ export function Star(candidates: candidate[], votes: rawVote[], nWinners = 1, el
         candidate.score
       ]
     }
-  )
+  );
 }
 
 export function singleWinnerStar(remainingCandidates: starCandidate[], summaryData: starSummaryData): starRoundResults {
