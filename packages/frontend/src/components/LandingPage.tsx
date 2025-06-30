@@ -29,7 +29,7 @@ const LandingPage = () => {
     const flags = useFeatureFlags();
 
     const boxRef = useRef(null);
-    const featuredElectionIds = process.env.REACT_APP_FEATURED_ELECTIONS.split('').filter(Boolean)
+    const featuredElectionIds = process.env.REACT_APP_FEATURED_ELECTIONS.split(',')
     
     //It looks like atTop wasn't being used anywhere, so I'm just removing this chunk for now
 
