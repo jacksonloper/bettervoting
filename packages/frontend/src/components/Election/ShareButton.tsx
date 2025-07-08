@@ -39,31 +39,36 @@ export default function ShareButton({ url }: { url: string }) {
         const encodedAhref = encodeURIComponent(ahref)
         let link
 
+        const pageTitle = election?.title || "";
+        const votingMethods = Array.from(new Set((election?.races || []).map(r => r.voting_method)));
+        let votingDesc = "";
+        const termType = election?.settings?.term_type === 'poll' ? 'poll' : 'election';
+        if (votingMethods.length === 1) {
+            votingDesc = ` [with the ${votingMethods[0]} voting system]`;
+        } else if (votingMethods.length === 2) {
+            votingDesc = ` [including 2 different voting systems: ${votingMethods.join(" and ")}]`;
+        } else if (votingMethods.length > 2) {
+            votingDesc = ` [including ${votingMethods.length} different voting systems: ${votingMethods.join(", ")}]`;
+        }
+        const shareTitle = encodeURIComponent(`Vote in a new BetterVoting ${termType}: "${pageTitle}"${votingDesc}`);
+
         switch (e.currentTarget.id) {
             case "facebook":
-                link = `https://www.facebook.com/sharer/sharer.php?u=${ahref}`
-                open(link)
-                break
+                // Facebook automatically shows the page prettily, so URL is fine
+                // Passing "quote" param to prefill text is weirdly spotty anyway
+                link = `https://www.facebook.com/sharer/sharer.php?u=${encodedAhref}`;
+                open(link);
+                break;
 
             case "X":
-                link = `https://x.com/intent/tweet?url=${encodedAhref}`
-                open(link)
-                break
+                // Reddit uses the "url" and "title" params to prefill submission
+                link = `https://x.com/intent/tweet?url=${encodedAhref}&text=${shareTitle}`;
+                open(link);
+                break;
 
             case "reddit":
-                const pageTitle = election?.title || "";
-                const votingMethods = Array.from(new Set((election?.races || []).map(r => r.voting_method)));
-                let votingDesc = "";
-                const termType = election?.settings?.term_type === 'poll' ? 'poll' : 'election';
-                if (votingMethods.length === 1) {
-                    votingDesc = ` [with the ${votingMethods[0]} voting system]`;
-                } else if (votingMethods.length === 2) {
-                    votingDesc = ` [including two different voting systems: ${votingMethods.join(" and ")}]`;
-                } else if (votingMethods.length > 2) {
-                    votingDesc = ` [including ${votingMethods.length} different voting systems: ${votingMethods.join(", ")}]`;
-                }
-                const redditTitle = encodeURIComponent(`Vote in a new BetterVoting ${termType}: "${pageTitle}"${votingDesc}`);
-                link = `https://new.reddit.com/submit?url=${encodedAhref}&title=${redditTitle}`;
+                // Reddit uses the "url" and "title" params to prefill submission
+                link = `https://new.reddit.com/submit?url=${encodedAhref}&title=${shareTitle}`;
                 open(link)
                 break
 
