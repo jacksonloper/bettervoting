@@ -1,4 +1,4 @@
-import { candidate, starResults, roundResults, starSummaryData, starCandidate, rawVote, starRoundResults } from "@equal-vote/star-vote-shared/domain_model/ITabulators";
+import { candidate, starResults, roundResults, starSummaryData, starCandidate, rawVote, starRoundResults, tieBreakType } from "@equal-vote/star-vote-shared/domain_model/ITabulators";
 import { getSummaryData, makeAbstentionTest, makeBoundsTest, runBlocTabulator, shuffleCandidates, sortCandidates } from "./Util";
 import { ElectionSettings } from "@equal-vote/star-vote-shared/domain_model/ElectionSettings";
 
@@ -42,6 +42,13 @@ export function Star(candidates: candidate[], votes: rawVote[], nWinners = 1, el
 }
 
 type starCandidatePair = [starCandidate, starCandidate];
+
+const setTieBreak = (roundResults: starRoundResults, tieBreak: tieBreakType): void => {
+  // when there's multiple tiebreaks it should be set in favor of the more extreme protocol
+  const priority = ['none', 'score', 'head_to_head', 'five_star', 'random']
+  if(priority.indexOf(roundResults.tieBreakType) > priority.indexOf(tieBreak)) return;
+  roundResults.tieBreakType = tieBreak;
+}
 
 export function singleWinnerStar(remainingCandidates: starCandidate[], summaryData: starSummaryData): starRoundResults {
   const getScoringRoundFinalists = (candidates: starCandidate[]): starCandidatePair => {
@@ -109,6 +116,7 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
       })
     }else{
       const [tieWinner, tieRunnerUp] = left.winsAgainst[right.id] ? [left, right] : [right, left];
+      setTieBreak(roundResults, 'head_to_head');
       roundResults.logs.push({
         key: 'tabulation_logs.star.pairwise_advance_to_runoff',
         winner: tieWinner.name,
@@ -127,6 +135,7 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
         name: tiedCandidates[0].name,
         votes: tiedCandidates[0].fiveStarCount,
       })
+      setTieBreak(roundResults, 'five_star');
       finalists.push(tiedCandidates.shift() as starCandidate);
     }
     if(finalists.length == 2) return logFinalistsAfterTiebreak(finalists as starCandidatePair);
@@ -146,7 +155,7 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
       })
       finalists.push(tiedCandidates.shift() as starCandidate);
     }
-    roundResults.tieBreakType = 'random';
+    setTieBreak(roundResults, 'random');
     return logFinalistsAfterTiebreak(candidates.slice(0, 2) as starCandidatePair);
   }
 
@@ -201,6 +210,7 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
         winner_stars: winner.score,
         runner_up_stars: runnerUp.score,
       });
+      setTieBreak(roundResults, 'score');
       return logWinnerAfterTiebreak(winner, runnerUp);
     }
 
@@ -220,6 +230,7 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
         winner_votes: winner.fiveStarCount,
         runner_up_votes: runnerUp.fiveStarCount,
       });
+      setTieBreak(roundResults, 'five_star');
       return logWinnerAfterTiebreak(winner, runnerUp);
     }
 
@@ -230,7 +241,7 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
       winner: winner.name,
       runner_up: runnerUp.name,
     })
-    roundResults.tieBreakType = 'random';
+    setTieBreak(roundResults, 'random');
     return logWinnerAfterTiebreak(winner, runnerUp);
   }
 

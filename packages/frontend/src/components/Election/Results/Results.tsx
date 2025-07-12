@@ -413,7 +413,7 @@ function STVResultsViewer() {
 
 export default function Results({ race, results }: {race: Race, results: ElectionResults}) {
   const { election } = useElection();
-  const showTitleAsTie = ['random', 'five_star'].includes(results.tieBreakType);
+  const showTitleAsTie = ['random', 'five_star', 'head_to_head'].includes(results.tieBreakType);
   // added a null check for sandbox support
   const removeTieBreakFromTitle = (election?.settings.break_ties_randomly ?? false) && results.tieBreakType == 'random';
 
@@ -452,7 +452,7 @@ export default function Results({ race, results }: {race: Race, results: Electio
             <>
             <Typography variant="h5" sx={{fontWeight: 'bold'}}>{t('results.tie_title')}</Typography>
             {!removeTieBreakFromTitle && <Typography component="p" sx={{fontWeight: 'bold'}}>
-                {t('results.tiebreak_subtitle', {names: commaListFormatter.format(results.elected.map(c => c.name))})}
+                {t('results.tiebreak_subtitle', {names: results.elected.map(c => c.name)})}
             </Typography>}
             </>
           :

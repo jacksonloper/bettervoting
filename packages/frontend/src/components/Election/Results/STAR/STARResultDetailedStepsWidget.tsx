@@ -7,16 +7,6 @@ import Widget from '../components/Widget';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const STARResultDetailedStepsWidget = ({ results, rounds, t, filterRandomFromLogs}: {results: starResults, rounds: number, t: (key: string, v?: object) => any, filterRandomFromLogs: boolean }) => {
 
-    // Note: there are other keys I don't want to show, but at least one of
-    //       these will be used if the tiebreaker process is used
-    const warningKeys = [
-        'tabulation_logs.star.scoring_round_tiebreaker_start',
-        'tabulation_logs.star.runoff_round_tiebreaker_start',
-    ];
-    const showTieBreakerWarning = results.roundResults.some(round => (round.logs.some(log =>
-        typeof log !== 'string' && warningKeys.includes(log.key)
-    )))
-
     // make log groups
     const topLogs = [
         'tabulation_logs.star.advance_to_runoff_basic',
@@ -42,6 +32,8 @@ const STARResultDetailedStepsWidget = ({ results, rounds, t, filterRandomFromLog
         return logGroups;
     })
 
+    const showTieBreakerWarning = roundLogGroups.some(r => r.some(g => g.length > 1));
+
     return <Widget title={t('results.star.detailed_steps_title')} wide>
         <div className='detailedSteps'>
             { showTieBreakerWarning && <Paper elevation={2} sx={{backgroundColor: 'theme.gray4', width: '90%', margin: 'auto', textAlign: 'left', padding: 3}}>
@@ -58,16 +50,11 @@ const STARResultDetailedStepsWidget = ({ results, rounds, t, filterRandomFromLog
                             {group.length > 1 && <details key={i}>
                                 <summary>{group.at(-1)}</summary>
                                 <ol>
-                                    {group.map((item, j) => <li key={j}>{item}</li>)}
+                                    {group.slice(0, -1).map((item, j) => <li key={j}>{item}</li>)}
                                 </ol>
                             </details>}
                         </li>)}
                     </ol>
-                    {/* <ol style={{textAlign: 'left'}}>
-                        {round.logs.map((log, i) => (<li key={i}>
-                            {typeof log === 'string' ? log : t(log['key'], log)}
-                        </li>))}
-                    </ol> */}
                 </Box>
             ))}
         </div>

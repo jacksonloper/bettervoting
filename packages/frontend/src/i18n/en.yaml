@@ -618,7 +618,7 @@ tabulation_logs:
 
     # Pairwise tiebreak
     pairwise_too_many_candidates: >
-      Skipping the head-to-head tiebreaker since as there's more than 2 tied candidates.
+      Skipping the head-to-head tiebreaker since there's more than 2 tied candidates.
     pairwise_tied: >
       {names} are tied head-to-head with {{vote}} votes each.
     pairwise_advance_to_runoff: >

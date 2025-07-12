@@ -2991,6 +2991,7 @@
       "tieBreakType": {
         "enum": [
           "five_star",
+          "head_to_head",
           "none",
           "random",
           "score"
