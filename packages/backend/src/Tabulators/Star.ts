@@ -101,7 +101,7 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
       roundResults.logs.push({
         key: 'tabulation_logs.star.pairwise_too_many_candidates',
       })
-    }else if(left.winsAgainst[right.id] != right.winsAgainst[left.id]){
+    }else if(left.winsAgainst[right.id] == right.winsAgainst[left.id]){
       roundResults.logs.push({
         key: 'tabulation_logs.star.pairwise_tie',
         names: tiedCandidates.map(c => c.name),
@@ -146,6 +146,7 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
       })
       finalists.push(tiedCandidates.shift() as starCandidate);
     }
+    roundResults.tieBreakType = 'random';
     return logFinalistsAfterTiebreak(candidates.slice(0, 2) as starCandidatePair);
   }
 
@@ -229,6 +230,7 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
       winner: winner.name,
       runner_up: runnerUp.name,
     })
+    roundResults.tieBreakType = 'random';
     return logWinnerAfterTiebreak(winner, runnerUp);
   }
 
@@ -250,8 +252,6 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
   const finalists: starCandidatePair = getScoringRoundFinalists(remainingCandidates);
 
   const [winner, runnerUp]: starCandidatePair  = getRunoffResults(...finalists);
-
-  
 
   roundResults.winners = [winner];
   roundResults.runner_up = [runnerUp];
