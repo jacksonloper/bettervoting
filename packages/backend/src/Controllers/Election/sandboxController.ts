@@ -18,14 +18,23 @@ const getSandboxResults = async (req: Request, res: Response, next: NextFunction
         throw new Error('Invalid Voting Method')
     }
 
-    // Feels hacky to add overrank information as an additional column
-    // but the other alternatives required updating the voting method inputs 
-    // and that would need refactors to all methods
-    if(voting_method == 'IRV' || voting_method == 'STV'){
-        cvr = cvr.map((row:any) => ([...row, null]));
-    }
+    const candidates = candidateNames.map((name: string, i: number) => ({
+        id: name,
+        name: name,
+        // These will be set later
+        tieBreakOrder: i,
+        votesPreferredOver: {},
+        winsAgainst: {}
+    }))
 
-    let results: ElectionResults = VotingMethods[voting_method](candidateNames, cvr, num_winners);
+    cvr = cvr.map((row: number[]) => ({
+        marks: Object.fromEntries(row.map((score: number, i: number) => [candidateNames[i], score])),
+        // TODO: we could support this in the future
+        overvote_rank: null,
+        has_duplicate_rank: null,
+    }))
+
+    let results: ElectionResults = VotingMethods[voting_method](candidates, cvr, num_winners);
 
     res.json(
         {
