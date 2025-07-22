@@ -32,7 +32,8 @@ const STARResultDetailedStepsWidget = ({ results, rounds, t, filterRandomFromLog
         return logGroups;
     })
 
-    const showTieBreakerWarning = roundLogGroups.some(r => r.some(g => g.length > 1));
+    // disabling for now
+    const showTieBreakerWarning = false; // roundLogGroups.some(r => r.some(g => g.length > 1));
 
     return <Widget title={t('results.star.detailed_steps_title')} wide>
         <div className='detailedSteps'>
@@ -44,7 +45,7 @@ const STARResultDetailedStepsWidget = ({ results, rounds, t, filterRandomFromLog
             {results.roundResults.map((round, r) => (
                 <Box key={r}>
                     {rounds > 1 && <Typography variant="h4">{`Winner ${r + 1}`}</Typography>}
-                    <ol>
+                    <ul style={{listStyleType: 'none'}}>
                         {roundLogGroups[r].map((group, i) => <li style={{textAlign: 'left'}}>
                             {group.length == 1 && group[0]}
                             {group.length > 1 && <details key={i}>
@@ -54,7 +55,7 @@ const STARResultDetailedStepsWidget = ({ results, rounds, t, filterRandomFromLog
                                 </ol>
                             </details>}
                         </li>)}
-                    </ol>
+                    </ul>
                 </Box>
             ))}
         </div>

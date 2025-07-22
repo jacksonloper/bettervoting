@@ -190,7 +190,7 @@ export const useSubstitutedTranslation = (electionTermType = 'election', v = {})
       if (typeof txt !== 'string') return txt;
       return txt.split(rBold).map((str, i) => {
         if (i % 2 == 0) return str
-        return <b key={`b_${keyPrefix}_${i}`}>{str}</b>;
+        return <i key={`b_${keyPrefix}_${i}`}>{str}</i>;
       })
     }
 

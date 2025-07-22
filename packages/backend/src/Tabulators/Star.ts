@@ -110,9 +110,10 @@ export function singleWinnerStar(remainingCandidates: starCandidate[], summaryDa
       })
     }else if(left.winsAgainst[right.id] == right.winsAgainst[left.id]){
       roundResults.logs.push({
-        key: 'tabulation_logs.star.pairwise_tie',
+        key: 'tabulation_logs.star.pairwise_tied',
         names: tiedCandidates.map(c => c.name),
         votes: left.votesPreferredOver[right.id],
+        equal_votes: summaryData.nTallyVotes - 2*left.votesPreferredOver[right.id],
       })
     }else{
       const [tieWinner, tieRunnerUp] = left.winsAgainst[right.id] ? [left, right] : [right, left];

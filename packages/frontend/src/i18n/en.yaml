@@ -604,11 +604,11 @@ tabulation_logs:
   star:
     # Top level scoring advance
     advance_to_runoff_basic: >
-      {{names}} advance to runoff round with the higest scores of {{stars}} stars.
+      **Scoring Round**: {{names}} advance to runoff with {{stars}} stars.
     advance_to_runoff_same_score: >
-      {{names}} advance to runoff round with the higest scores of {{star}} stars each.
+      **Scoring Round**: {{names}} advance to runoff with {{star}} stars each.
     advance_to_runoff_tiebreak: >
-      {{names}} advance to runoff round after a tiebreaker.
+      **Scoring Round**: {{names}} advance to runoff round after a tiebreaker.
 
     # Scoring tiebreak
     score_advance_to_runoff: > 
@@ -618,43 +618,43 @@ tabulation_logs:
 
     # Pairwise tiebreak
     pairwise_too_many_candidates: >
-      Skipping the head-to-head tiebreaker since there's more than 2 tied candidates.
+      **Runoff Tiebreaker**: Skipping the runoff tiebreaker since there's more than 2 tied candidates.
     pairwise_tied: >
-      {names} are tied head-to-head with {{vote}} votes each.
+      **Runoff Tiebreaker**: {{names}} are tied with {{vote}} voters preferring each and {{equal_votes}} voters showing equal support.
     pairwise_advance_to_runoff: >
-      {winner} beats {runner_up} in head-to-head tiebreaker {winner_votes} votes to {runner_up_votes}, and becomes the second finalist.
+      **Runoff Tiebreaker**: {{winner}} beats {{runner_up}}, {{winner_votes}} votes to {{runner_up_votes}, and becomes the second finalist.
 
     # Five-star tiebreak
     five_star_first: >
-      {{names}} is the first finalists with most five-star votes at {{votes}} votes.
+      **Five-Star Tiebreaker**: {{names}} is the first finalists with most five-star scores at {{votes}} votes.
     five_star_second: >
-      {{names}} is the second finalists with most five-star votes at {{votes}} votes.
+      **Five-Star Tiebreaker**: {{names}} is the second finalists with most five-star scores at {{votes}} votes.
     five_star_tied: >
-      {{names}} remain tied with {{votes}} five-star votes each.
+      **Five-Star Tiebreaker**: {{names}} remain tied with {{votes}} five-star votes each.
 
     # Random tiebreak
     random_first: >
-      {{name}} is the first finalist after a random tiebreaker.
+      **Random Tiebreaker**: {{name}} is the first finalist after a random tiebreaker.
     random_second: >
-      {{name}} is the second finalist after a random tiebreaker.
+      **Random Tiebreaker**: {{name}} is the second finalist after a random tiebreaker.
 
     # Automatic runoff
     runoff_win: >
-      {{winner}} is preferred over {{runner_up}} by {{winner_votes}} votes to {{runner_up_votes}}, and {{equal_votes}} voters showing [equal support](https://www.starvoting.org/equal_preference).
+      **Automatic Runoff**: {{winner}} is preferred over {{runner_up}}, {{winner_votes}} to {{runner_up_votes}}, with {{equal_votes}} voters showing [equal support](https://www.starvoting.org/equal_preference) for both finalists.
     runoff_tiebreak: >
-      {{winner}} wins against {{runner_up}} after a tiebreaker.
+      **Automatic Runoff**: {{winner}} wins against {{runner_up}} after a tiebreaker.
     runoff_tied: >
-      {{names}} are tied in runoff with {{votes}} voters preferring each and {{equal_votes}} voters showing [equal support](https://www.starvoting.org/equal_preference).
+      **Automatic Runoff**: {{names}} are tied in runoff with {{votes}} voters preferring each and {{equal_votes}} voters showing [equal support](https://www.starvoting.org/equal_preference) for both finalists.
     runoff_score_tie: >
-      {{names}} remain tied with {{stars}} stars each.
+      **Scoring Tiebreaker**: {{names}} remain tied after looking at their total scores because both {{stars}} stars.
     runoff_score_tiebreak: >
-      {{winner}} wins against {{runner_up}} with {{winner_stars}} stars to {{runner_up_stars}}.
+      **Scoring Tiebreaker**: {{winner}} wins against {{runner_up}} with {{winner_stars}} stars to {{runner_up_stars}}.
     runoff_five_star_tie: >
-      {{names}} remain tied with {{votes}} five-star votes each.
+      **Five-Star Tiebreaker**: {{names}} remain tied with {{votes}} 5 star scores each.
     runoff_five_star_tiebreak: >
-      {{winner}} wins against {{runner_up}} with {{winner_votes}} five-star votes to {{runner_up_votes}}.
+      **Five-Star Tiebreaker**: {{winner}} wins against {{runner_up}} with {{winner_votes}} 5 star scores to {{runner_up_votes}}.
     runoff_random: >
-      {{winner}} wins against {{runner_up}} after a random tiebreaker.
+      **Random Tiebreaker**: {{winner}} wins against {{runner_up}} after a random tiebreaker.
 
 #######################################
 #### PRIORITY 4 : Info Bubbles ####
