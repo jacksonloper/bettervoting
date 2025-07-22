@@ -15,6 +15,7 @@ import structuredClone from '@ungap/structured-clone';
 import useAuthSession from '../../AuthSessionContextProvider';
 import useFeatureFlags from '../../FeatureFlagContextProvider';
 import ElectionAuthForm from '~/components/ElectionForm/Details/ElectionAuthForm';
+import useSnackbar from "~/components/SnackbarContext";
 
 type SectionProps = {
     text: {[key: string]: string}
@@ -28,6 +29,7 @@ const AdminHome = () => {
     const { election, refreshElection: fetchElection, permissions } = useElection()
     const {t} = useSubstitutedTranslation(election.settings.term_type, {time_zone: election.settings.time_zone});
     const { makeRequest } = useSetPublicResults(election.election_id)
+    const { setSnack } = useSnackbar()
     const togglePublicResults = async () => {
         const public_results = !election.settings.public_results
         await makeRequest({ public_results: public_results })
@@ -56,6 +58,13 @@ const AdminHome = () => {
             console.error(err)
         }
 
+        setSnack({
+            message: t('admin_home.finalize_snack'),
+            severity: 'success',
+            open: true,
+            autoHideDuration: 6000,
+        })
+        
         const currentTime = new Date();
         if (
             election.settings.voter_access === 'closed' &&
@@ -249,6 +258,7 @@ const AdminHome = () => {
         <Grid xs={12} sx={{ p: 1, pt: 3, pb: 0 }}>
             <Typography align='center' variant="body1" sx={{ pl: 2 }}>
                 {t('admin_home.finalize_description')}
+                {' '}
                 {t(election.start_time? 'admin_home.finalize_voting_begins_later' : 'admin_home.finalize_voting_begins_now')}
             </Typography>
             {/* I don't think this is true anymore */}

@@ -1030,6 +1030,8 @@ admin_home:
     message: You can send emails from the voters tab at anytime. Would you like to notify your voters? 
     cancel: 'No, not now'
     submit: 'Yes, take me to the voters tab'
+
+  finalize_snack: 'Election successfully finalized!'
   
   duplicate_confirm:
     title: Confirm Duplicate Election
@@ -1040,7 +1042,7 @@ admin_home:
 # Admin Home -> Edit Title
 election_details:
   title: '{{capital_election}} Title'
-  description: Description
+  description: '{{capital_election}} Description'
   enable_times: Enable Start/End Times?
   time_zone: Time Zone
   start_date: Start Date
