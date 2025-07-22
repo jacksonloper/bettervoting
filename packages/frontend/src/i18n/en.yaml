@@ -1020,6 +1020,8 @@ admin_home:
     message: You can send emails from the voters tab at anytime. Would you like to notify your voters? 
     cancel: 'No, not now'
     submit: 'Yes, take me to the voters tab'
+
+  finalize_snack: 'Election successfully finalized!'
   
   duplicate_confirm:
     title: Confirm Duplicate Election
