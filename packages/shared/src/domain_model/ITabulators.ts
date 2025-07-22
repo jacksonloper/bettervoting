@@ -26,7 +26,7 @@ interface tabulatorLogObject {
     [key: string]: string | number | string[]
 }
 
-type tieBreakType = 'none' | 'score' | 'five_star' | 'random';
+export type tieBreakType = 'none' | 'score' | 'head_to_head' | 'five_star' | 'random';
 
 export type ElectionResults =
     starResults |
