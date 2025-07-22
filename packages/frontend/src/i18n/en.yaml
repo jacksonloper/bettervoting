@@ -1032,7 +1032,7 @@ admin_home:
 # Admin Home -> Edit Title
 election_details:
   title: '{{capital_election}} Title'
-  description: Description
+  description: '{{capital_election}} Description'
   enable_times: Enable Start/End Times?
   time_zone: Time Zone
   start_date: Start Date
