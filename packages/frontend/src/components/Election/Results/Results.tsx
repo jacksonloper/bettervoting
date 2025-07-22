@@ -2,13 +2,13 @@ import { Box, Pagination } from "@mui/material";
 import React, { ReactNode } from "react";
 import { useState } from 'react';
 import Typography from '@mui/material/Typography';
-import { commaListFormatter, formatPercent, tabToCandidate, useSubstitutedTranslation } from '../../util';
+import { commaListFormatter, formatPercent, useSubstitutedTranslation } from '../../util';
 import STARResultSummaryWidget from "./STAR/STARResultSummaryWidget";
 import STARDetailedResults from "./STAR/STARDetailedResults";
 import STARResultDetailedStepsWidget from "./STAR/STARResultDetailedStepsWidget";
 import WinnerResultPages from "./WinnerResultPages";
 import { Race } from "@equal-vote/star-vote-shared/domain_model/Race";
-import { allocatedScoreResults, approvalCandidate, approvalResults, candidate, ElectionResults, irvResults, rankedRobinResults, starCandidate, starResults } from "@equal-vote/star-vote-shared/domain_model/ITabulators";
+import { allocatedScoreResults, approvalResults, ElectionResults, irvResults, rankedRobinResults, starCandidate, starResults } from "@equal-vote/star-vote-shared/domain_model/ITabulators";
 import useElection from "../../ElectionContextProvider";
 import DetailExpander from "./components/DetailExpander";
 import ResultsTable from "./components/ResultsTable";
@@ -18,7 +18,6 @@ import ResultsBarChart from "./components/ResultsBarChart";
 import HeadToHeadWidget from "./components/HeadToHeadWidget";
 import useRace, { RaceContextProvider } from "~/components/RaceContextProvider";
 import VoterProfileWidget from "./components/VoterProfileWidget";
-import { Candidate } from "@equal-vote/star-vote-shared/domain_model/Candidate";
 import VoterIntentWidget from "./components/VoterIntentWidget";
 import ColumnDistributionWidget from "./components/ColumnDistributionWidget";
 import NameRecognitionWidget from "./components/NameRecognitionWidget";
@@ -26,8 +25,7 @@ import ScoreRangeWidget from "./components/ScoreRangeWidget";
 import useFeatureFlags from "~/components/FeatureFlagContextProvider";
 import STAREqualPreferencesWidget from "./STAR/STAREqualPreferencesWidget";
 import VoterErrorStatsWidget from "./components/VoterErrorStatsWidget";
-import Pages from "./Pages";
-import { irvContext, irvWinnerSearch } from "./IRV/ifc";
+import { irvWinnerSearch } from "./IRV/ifc";
 import { IRVTopResultsView } from "./IRV/top";
 
 function STARResultsViewer({ filterRandomFromLogs }: {filterRandomFromLogs: boolean }) {
@@ -69,7 +67,7 @@ function STARResultsViewer({ filterRandomFromLogs }: {filterRandomFromLogs: bool
 
 function RankedRobinResultsViewer() {
   let {results} = useRace();
-  const {race, t} = useRace();
+  const {t} = useRace();
   results = results as rankedRobinResults;
 
   const candidates = results.summaryData.candidates;
@@ -107,7 +105,7 @@ function RankedRobinResultsViewer() {
 
 function IRVResultsViewer() {
   let {results} = useRace();
-  const { t, race} = useRace();
+  const {t} = useRace();
   results = results as irvResults;
 
   const {roundResults, exhaustedVoteCounts} = results;
@@ -120,7 +118,7 @@ function IRVResultsViewer() {
     console.error(Error("IRV round counts don't match."));
   const roundCount = roundResults.length;
   for (let idx = 0; idx < roundCount; idx++) {
-    let cur = roundResults[idx];
+    const cur = roundResults[idx];
     cur.exhaustedVoteCount = exhaustedVoteCounts[idx];
     cur.isStartOfSearch = 0 === idx || ! ! roundResults[idx - 1].winners.length;
   }
@@ -129,7 +127,7 @@ function IRVResultsViewer() {
 
   const wins: irvWinnerSearch[] = [];
   let rx = 0; /* round index */
-  let lim = roundResults.length;
+  const lim = roundResults.length;
   while (rx < lim) {
     const win: irvWinnerSearch = {
       firstRoundIndex: rx,
@@ -173,7 +171,7 @@ function IRVResultsViewer() {
 }
 
 function PluralityResultsViewer() {
-  let { results } = useRace();
+  const { results } = useRace();
   const { t } = useRace();
 
   return <ResultsViewer methodKey='choose_one'>
@@ -271,7 +269,7 @@ function ResultsViewer({ methodKey, children }:{methodKey: string, children:Reac
 function STARPRResultsViewer() {
   const flags = useFeatureFlags();
   let {results} = useRace();
-  const {t, race} = useRace();
+  const {t} = useRace();
   results = results as allocatedScoreResults;
 
   const [page, setPage] = useState(1);
@@ -366,7 +364,7 @@ function STARPRResultsViewer() {
 
 function STVResultsViewer() {
   let {results} = useRace();
-  const { t, race} = useRace();
+  const {t} = useRace();
   results = results as irvResults;
   const [page, setPage] = useState(1);
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -441,7 +439,7 @@ export default function Results({ race, results }: {race: Race, results: Electio
     <RaceContextProvider race={race} results={results} t={t}>
       <hr/>
       <Typography variant="h3" component="h3" sx={{marginBottom: 2}}>
-          {race.title}
+          {((election?.title != race.title) || (election?.races.length > 1)) && race.title}
       </Typography>
       <div className="flexContainer" style={{textAlign: 'center'}}>
         <Box sx={{pageBreakAfter:'avoid', pageBreakInside:'avoid', mx: 10}}>
