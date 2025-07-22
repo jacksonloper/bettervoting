@@ -58,195 +58,195 @@ interface EnhancedTableHeadProps {
 }
 
 const headCellPool = {
-    voter_id: {
-        id: 'voter_id',
-        numeric: false,
-        disablePadding: false,
-        label: 'Voter ID',
-        filterType: 'search',
-        formatter: a => a,
+  voter_id: {
+    id: 'voter_id',
+    numeric: false,
+    disablePadding: false,
+    label: 'Voter ID',
+    filterType: 'search',
+    formatter: a => a,
+  },
+  message: {
+    id: 'message',
+    numeric: false,
+    disablePadding: false,
+    label: 'Message',
+    filterType: 'search',
+    formatter: a => a,
+  },
+  email: {
+    id: 'email',
+    numeric: false,
+    disablePadding: false,
+    label: 'Email',
+    filterType: 'search',
+    formatter: a => a || '',
+  },
+  file_name: {
+    id: 'file_name',
+    numeric: false,
+    disablePadding: false,
+    label: 'File Name',
+    filterType: 'search',
+    formatter: a => a || '',
+  },
+  election_id: {
+    id: 'election_id',
+    numeric: false,
+    disablePadding: false,
+    label: 'Election ID',
+    filterType: 'search',
+    formatter: a => a ? <Link href={`${window.location.origin}/${a}/results`}>{a}</Link> : '(new election)',
+  },
+  invite_status: {
+    id: 'invite_status',
+    numeric: false,
+    disablePadding: false,
+    label: 'Email Invites',
+    filterType: 'groups',
+    filterGroups: {
+      'Not Sent': true,
+      'Sent': true,
+      'Failed': true,
     },
-    message: {
-        id: 'message',
-        numeric: false,
-        disablePadding: false,
-        label: 'Message',
-        filterType: 'search',
-        formatter: a => a,
+    formatter: (_, roll) => {
+      if (!roll?.email_data?.inviteResponse) return 'Not Sent';
+      if (roll.email_data.inviteResponse.length == 0 || roll.email_data.inviteResponse[0].statusCode >= 400) return 'Failed'
+      return 'Sent'
+    }
+  },
+  upload_status: {
+    id: 'upload_status',
+    numeric: false,
+    disablePadding: false,
+    label: 'Upload Status',
+    filterType: 'groups',
+    filterGroups: {
+      'Pending': true,
+      'In Progress': true,
+      'Error': true,
+      'Done': true,
     },
-    email: {
-        id: 'email',
-        numeric: false,
-        disablePadding: false,
-        label: 'Email',
-        filterType: 'search',
-        formatter: a => a || '',
+    formatter: a => a
+  },
+  has_voted: {
+    id: 'has_voted',
+    numeric: false,
+    disablePadding: false,
+    label: 'Has Voted',
+    filterType: 'groups',
+    filterGroups: {
+      'Not Voted': true,
+      'Voted': true,
     },
-    file_name: {
-        id: 'file_name',
-        numeric: false,
-        disablePadding: false,
-        label: 'File Name',
-        filterType: 'search',
-        formatter: a => a || '',
+    formatter: (_, roll) => roll.submitted ? 'Voted' : 'Not Voted',
+  },
+  voter_state: {
+    id: 'voter_state',
+    numeric: false,
+    disablePadding: false,
+    label: 'State',
+    filterType: 'groups',
+    filterGroups: {
+      approved: true,
+      registered: true,
     },
-    election_id: {
-        id: 'election_id',
-        numeric: false,
-        disablePadding: false,
-        label: 'Election ID',
-        filterType: 'search',
-        formatter: a => a ? <Link href={`${window.location.origin}/${a}/results`}>{a}</Link> : '(new election)',
+    formatter: (_, roll) => roll.state.toString(),
+  },
+  precinct: {
+    id: 'precinct',
+    numeric: false,
+    disablePadding: false,
+    label: 'Precinct',
+    filterType: 'search',
+    formatter: a => a || '',
+  },
+  ip: {
+    id: 'ip',
+    numeric: false,
+    disablePadding: false,
+    label: 'IP',
+    filterType: 'search',
+    formatter: (_, roll) => roll.ip_hash || '',
+  },
+  title: {
+    id: 'title',
+    numeric: false,
+    disablePadding: false,
+    label: 'Election Title',
+    filterType: 'search',
+    formatter: a => a
+  },
+  roles: {
+    id: 'roles',
+    numeric: false,
+    disablePadding: false,
+    label: 'Role',
+    filterType: 'search',
+    formatter: a => a
+  },
+  election_state: {
+    id: 'election_state',
+    numeric: false,
+    disablePadding: false,
+    label: 'State',
+    filterType: 'groups',
+    filterGroups: {
+      draft: true,
+      finalized: true,
+      open: true,
+      closed: true,
+      archived: false
     },
-    invite_status: {
-        id: 'invite_status',
-        numeric: false,
-        disablePadding: false,
-        label: 'Email Invites',
-        filterType: 'groups',
-        filterGroups: {
-            'Not Sent': true,
-            'Sent': true,
-            'Failed': true,
-        },
-        formatter: (_, roll) => {
-          if (!roll?.email_data?.inviteResponse) return 'Not Sent';
-          if (roll.email_data.inviteResponse.length == 0 || roll.email_data.inviteResponse[0].statusCode >= 400) return 'Failed'
-          return 'Sent'
-        }
-    },
-    upload_status: {
-        id: 'upload_status',
-        numeric: false,
-        disablePadding: false,
-        label: 'Upload Status',
-        filterType: 'groups',
-        filterGroups: {
-            'Pending': true,
-            'In Progress': true,
-            'Error': true,
-            'Done': true,
-        },
-        formatter: a => a
-    },
-    has_voted: {
-        id: 'has_voted',
-        numeric: false,
-        disablePadding: false,
-        label: 'Has Voted',
-        filterType: 'groups',
-        filterGroups: {
-            'Not Voted': true,
-            'Voted': true,
-        },
-        formatter: (_, roll) => roll.submitted ? 'Voted' : 'Not Voted',
-    },
-    voter_state: {
-        id: 'voter_state',
-        numeric: false,
-        disablePadding: false,
-        label: 'State',
-        filterType: 'groups',
-        filterGroups: {
-            approved: true,
-            registered: true,
-        },
-        formatter: (_, roll) => roll.state.toString(),
-    },
-    precinct: {
-        id: 'precinct',
-        numeric: false,
-        disablePadding: false,
-        label: 'Precinct',
-        filterType: 'search',
-        formatter: a => a || '',
-    },
-    ip: {
-        id: 'ip',
-        numeric: false,
-        disablePadding: false,
-        label: 'IP',
-        filterType: 'search',
-        formatter: (_, roll) => roll.ip_hash || '',
-    },
-    title: {
-        id: 'title',
-        numeric: false,
-        disablePadding: false,
-        label: 'Election Title',
-        filterType: 'search',
-        formatter: a => a
-    },
-    roles: {
-        id: 'roles',
-        numeric: false,
-        disablePadding: false,
-        label: 'Role',
-        filterType: 'search',
-        formatter: a => a
-    },
-    election_state: {
-        id: 'election_state',
-        numeric: false,
-        disablePadding: false,
-        label: 'State',
-        filterType: 'groups',
-        filterGroups: {
-            draft: true,
-            finalized: true,
-            open: true,
-            closed: true,
-            archived: false
-        },
-        formatter: (_, election) => {
-          return election.state || ''
-        }
-    },
-    create_date: {
-        id: 'create_date',
-        numeric: false,
-        disablePadding: false,
-        label: `Create Date (${getLocalTimeZoneShort()})`,
-        filterType: 'search',
-        isDate: true,
-        formatter: (time, election, t) => t('listed_datetime', {datetime: time})
-    },
-    update_date: {
-      id: 'update_date',
-      numeric: false,
-      disablePadding: false,
-      label: `Last Updated (${getLocalTimeZoneShort()})`,
-      filterType: 'search',
-      isDate: true,
-      // NOTE: not sure why update time is an epoch while everything else is tring 🤷
-      formatter: (time, election, t) => t('listed_datetime', {listed_datetime: epochToDateString(time)})
-    },
-    start_time: {
-        id: 'start_time',
-        numeric: false,
-        disablePadding: false,
-        label: `Start Time (${getLocalTimeZoneShort()})`,
-        filterType: 'search',
-        isDate: true,
-        formatter: (time, election, t) => time ? t('listed_datetime', {listed_datetime: time}) : ''
-    },
-    end_time: {
-        id: 'end_time',
-        numeric: false,
-        disablePadding: false,
-        label: `End Time (${getLocalTimeZoneShort()})`,
-        filterType: 'search',
-        isDate: true,
-        formatter: (time, election, t) => time ? t('listed_datetime', {listed_datetime: time}) : ''
-    },
-    description: {
-        id: 'description',
-        numeric: false,
-        disablePadding: false,
-        label: 'Election Desription',
-        filterType: 'search',
-        formatter: descr => limit(descr, 30)
-    },
+    formatter: (_, election) => {
+      return election.state || ''
+    }
+  },
+  create_date: {
+    id: 'create_date',
+    numeric: false,
+    disablePadding: false,
+    label: `Create Date (${getLocalTimeZoneShort()})`,
+    filterType: 'search',
+    isDate: true,
+    formatter: (time, election, t) => t('listed_datetime', { datetime: time })
+  },
+  update_date: {
+    id: 'update_date',
+    numeric: false,
+    disablePadding: false,
+    label: `Last Updated (${getLocalTimeZoneShort()})`,
+    filterType: 'search',
+    isDate: true,
+    // NOTE: not sure why update time is an epoch while everything else is tring 🤷
+    formatter: (time, election, t) => t('listed_datetime', { listed_datetime: epochToDateString(time) })
+  },
+  start_time: {
+    id: 'start_time',
+    numeric: false,
+    disablePadding: false,
+    label: `Start Time (${getLocalTimeZoneShort()})`,
+    filterType: 'search',
+    isDate: true,
+    formatter: (time, election, t) => time ? t('listed_datetime', { listed_datetime: time }) : ''
+  },
+  end_time: {
+    id: 'end_time',
+    numeric: false,
+    disablePadding: false,
+    label: `End Time (${getLocalTimeZoneShort()})`,
+    filterType: 'search',
+    isDate: true,
+    formatter: (time, election, t) => time ? t('listed_datetime', { listed_datetime: time }) : ''
+  },
+  description: {
+    id: 'description',
+    numeric: false,
+    disablePadding: false,
+    label: 'Election Description',
+    filterType: 'search',
+    formatter: descr => limit(descr, 30)
+  },
 }
 
 
@@ -262,8 +262,8 @@ interface EnhancedTableProps {
 }
 
 const limit = (string = '', limit = 0) => {
-    if (!string) return ''
-    return string.substring(0, limit)
+  if (!string) return ''
+  return string.substring(0, limit)
 }
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T, isDate: boolean) {
@@ -331,7 +331,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 
 function filterData<T>(array: readonly T[], headCells: HeadCell[], filters: any[]) {
   // when tweaking the headKeys the filters and headCells can sometimes be temporarily mismatched
-  if(headCells.length != filters.length) return array; 
+  if (headCells.length != filters.length) return array;
   return array.filter(row => {
     return headCells.every((col, colInd) => {
       if (!col.filterType) return true
@@ -430,12 +430,12 @@ function EnhancedTableHead(props: EnhancedTableHeadProps) {
               <FormControl sx={{ my: 1, width: 130 }} size="small">
                 <Select
                   multiple
-                  value={Object.keys(props.filters[cellInd]).filter(group => props.filters[cellInd][group]) as ( | ElectionState)[]}
+                  value={Object.keys(props.filters[cellInd]).filter(group => props.filters[cellInd][group]) as (| ElectionState)[]}
                   onChange={(e) => handleGroupFilterChange(cellInd, e.target.value as ("" | ElectionState)[])}
                   renderValue={(selected: ("" | ElectionState)[]) => (
-                    <Box sx={{ display: 'flex',  gap: 0.5 }}>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
                       {selected.map((value: "" | ElectionState) => (
-                        <Chip key={value} label={''} sx={makeChipStyle(value)}/>
+                        <Chip key={value} label={''} sx={makeChipStyle(value)} />
                       ))}
                     </Box>
                   )}
@@ -495,10 +495,10 @@ export default function EnhancedTable(props: EnhancedTableProps) {
   const [dense] = useState(true);
   const [rowsPerPage, setRowsPerPage] = useState(25);
   const headCells: HeadCell[] = props.headKeys.map(key => headCellPool[key] as HeadCell);
-  const {t} = useSubstitutedTranslation();
+  const { t } = useSubstitutedTranslation();
   const [filters, setFilters] = useState([])
 
-  if(filters.length != headCells.length){
+  if (filters.length != headCells.length) {
     setFilters(headCells.map(col => {
       if (!col.filterType) {
         return null
@@ -536,13 +536,13 @@ export default function EnhancedTable(props: EnhancedTableProps) {
 
   const formatTableData = (headKeys, data) => {
     const fData = data.map(item => {
-        const fItem = {};
-        // include voter_id as a hack so that it will be available in the callback
-        ['voter_id', ...headKeys].forEach( key => {
-          fItem[key] = key in headCellPool ? headCellPool[key].formatter(item[key], item, t) : item[key];
-        });
-        fItem['raw'] = item;
-        return fItem;
+      const fItem = {};
+      // include voter_id as a hack so that it will be available in the callback
+      ['voter_id', ...headKeys].forEach(key => {
+        fItem[key] = key in headCellPool ? headCellPool[key].formatter(item[key], item, t) : item[key];
+      });
+      fItem['raw'] = item;
+      return fItem;
     });
     return fData;
   }
@@ -562,97 +562,97 @@ export default function EnhancedTable(props: EnhancedTableProps) {
 
   const visibleRows = useMemo(
     () =>
-      stableSort(filteredRows, getComparator(order, orderBy, headCellPool[orderBy].isDate === true )).slice(
+      stableSort(filteredRows, getComparator(order, orderBy, headCellPool[orderBy].isDate === true)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
       ),
     [order, orderBy, page, rowsPerPage, filteredRows],
   );
 
-  
+
   return (
     <Container>
-    <Box 
+      <Box
         display='flex'
         justifyContent="center"
         alignItems="center"
         flexDirection="column"
         sx={{ pt: 2, width: '100%' }}>
-      {props.isPending && <Typography align='center' variant="h3" component="h2"> {props.pendingMessage} </Typography> }
-      {!props.isPending && <Paper elevation={8} sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} tableTitle={props.title} />
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750 }}
-            aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
-          >
-            <EnhancedTableHead
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}
-              headCells={headCells}
-              filters={filters}
-              setFilters={setFilters}
-            />
-            <TableBody>
-              {visibleRows.map((row, index) => {
-                const labelId = `enhanced-table-checkbox-${index}`;
-                return (
-                  <TableRow
-                    hover
-                    onClick={() => props.handleOnClick(row)}
-                    tabIndex={-1}
-                    key={labelId}
-                    sx={{ cursor: 'pointer' }}
-                  >
-                    {headCells.map((col, colInd) => {
-                      //const isElectionState = col.id === 'election_state';
-                      const groupFilter = col.filterType == 'groups';
-                      if (colInd == 0) {
-                        return <TableCell
-                          component="th"
-                          id={labelId}
-                          key={`${labelId}-${colInd}`}
-                          scope="row">
-                          {row[col.id]}
-                        </TableCell>
-                      } else {
-                        return <TableCell
-                          align={col.numeric ? 'right' : 'left'}
-                          key={`${labelId}-${colInd}`}
-                        >
-                          {groupFilter ? <Chip label={row[col.id]} sx={makeChipStyle(row[col.id])} /> : row[col.id]}
-                        </TableCell>
+        {props.isPending && <Typography align='center' variant="h3" component="h2"> {props.pendingMessage} </Typography>}
+        {!props.isPending && <Paper elevation={8} sx={{ width: '100%', mb: 2 }}>
+          <EnhancedTableToolbar numSelected={selected.length} tableTitle={props.title} />
+          <TableContainer>
+            <Table
+              sx={{ minWidth: 750 }}
+              aria-labelledby="tableTitle"
+              size={dense ? 'small' : 'medium'}
+            >
+              <EnhancedTableHead
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+                headCells={headCells}
+                filters={filters}
+                setFilters={setFilters}
+              />
+              <TableBody>
+                {visibleRows.map((row, index) => {
+                  const labelId = `enhanced-table-checkbox-${index}`;
+                  return (
+                    <TableRow
+                      hover
+                      onClick={() => props.handleOnClick(row)}
+                      tabIndex={-1}
+                      key={labelId}
+                      sx={{ cursor: 'pointer' }}
+                    >
+                      {headCells.map((col, colInd) => {
+                        //const isElectionState = col.id === 'election_state';
+                        const groupFilter = col.filterType == 'groups';
+                        if (colInd == 0) {
+                          return <TableCell
+                            component="th"
+                            id={labelId}
+                            key={`${labelId}-${colInd}`}
+                            scope="row">
+                            {row[col.id]}
+                          </TableCell>
+                        } else {
+                          return <TableCell
+                            align={col.numeric ? 'right' : 'left'}
+                            key={`${labelId}-${colInd}`}
+                          >
+                            {groupFilter ? <Chip label={row[col.id]} sx={makeChipStyle(row[col.id])} /> : row[col.id]}
+                          </TableCell>
+                        }
                       }
-                    }
-                    )}
+                      )}
+                    </TableRow>
+                  );
+                })}
+                {emptyRows > 0 && (
+                  <TableRow
+                    style={{
+                      height: (dense ? 33 : 53) * emptyRows,
+                    }}
+                  >
+                    <TableCell colSpan={6} />
                   </TableRow>
-                );
-              })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (dense ? 33 : 53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={filteredRows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper> }
-    </Box>
-  </Container>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredRows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>}
+      </Box>
+    </Container>
   );
 }
