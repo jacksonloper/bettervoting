@@ -320,6 +320,7 @@ const CreateElectionDialog = () => {
                                         })
                                     }
                                     variant='standard'
+                                    fullWidth
                                     sx={{ mt: -1, display: 'block' }}
                                 />}
                                 label={t(`election_settings.contact_email`)}
