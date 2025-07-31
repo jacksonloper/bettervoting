@@ -24,6 +24,7 @@ interface ResultsBarChartProps {
   majorityOffset?: boolean;
   height?: number;
   maxBarSize?: number;
+  maxCandidates?: number;
 }
 
 export default function ResultsBarChart({
@@ -38,6 +39,7 @@ export default function ResultsBarChart({
   majorityLegend = undefined,
   majorityOffset = false,
   maxBarSize = undefined,
+  maxCandidates = 10,
 }: ResultsBarChartProps) {
 const [rawNumbers, setRawNumbers] = useState(false);   
   const rawData = data;
@@ -70,8 +72,6 @@ const [rawNumbers, setRawNumbers] = useState(false);
 
     return s;
   });
-
-  
 
   // compute colors
   let colors = [...CHART_COLORS];
@@ -107,7 +107,6 @@ const [rawNumbers, setRawNumbers] = useState(false);
   }
 
   // Truncate entries
-  const maxCandidates = 10;
   if (rawData.length > maxCandidates) {
     data = data.slice(0, maxCandidates - 1);
     const item = {

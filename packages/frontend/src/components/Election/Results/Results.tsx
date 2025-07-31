@@ -1,4 +1,4 @@
-import { Box, Pagination } from "@mui/material";
+import { Box, Button, Pagination } from "@mui/material";
 import React, { ReactNode } from "react";
 import { useState } from 'react';
 import Typography from '@mui/material/Typography';
@@ -270,6 +270,8 @@ function STARPRResultsViewer() {
   const flags = useFeatureFlags();
   let {results} = useRace();
   const {t} = useRace();
+  const [sortRound, setSortRound] = useState(undefined);
+  const [maxCandidates, setMaxCandidates] = useState(10);
   results = results as allocatedScoreResults;
 
   const [page, setPage] = useState(1);
@@ -293,13 +295,24 @@ function STARPRResultsViewer() {
     return i;
   }
 
-  const sortedCandidates = results.summaryData.candidates
+  let sortedCandidates = results.summaryData.candidates
     .map((c,i) => ({...c, index: i}))
     .sort((a, b) => {
       const finalScore = (aa) => results.summaryData.weightedScoresByRound.slice(-1)[0][aa.index]
       if(winIndex(a) != winIndex(b)) return winIndex(a) - winIndex(b);
       return -(finalScore(a) - finalScore(b));
     })
+
+  if(sortRound != undefined){
+    sortedCandidates = results.summaryData.candidates
+      .map((c,i) => ({...c, index: i}))
+      .sort((a, b) => {
+        const roundScore = (aa) => results.summaryData.weightedScoresByRound[sortRound-1][aa.index];
+        const w = (aa) => winIndex(aa) < sortRound-1 ? winIndex(aa) : 99;
+        if(w(a) != w(b)) return w(a) - w(b);
+        return -(roundScore(a) - roundScore(b));
+      })
+  }
 
   let remainingVoters = (results.summaryData.nTallyVotes*(1 - ((page-1)/results.summaryData.weightedScoresByRound.length)))
   remainingVoters = Math.round(remainingVoters*10)/10;
@@ -310,6 +323,14 @@ function STARPRResultsViewer() {
         <Typography>
             Chart shows total scores for the {remainingVoters} remaining unrepresented voters
         </Typography>
+        {flags.isSet('PR_CONTROLS') && <>
+          <Typography sx={{mt: 2}}>Round Selector</Typography>
+          <Pagination count={results.summaryData.weightedScoresByRound.length} page={page} onChange={handleChange} />
+          <Box display='flex' flexDirection='row' sx={{mb: 7, gap: 2}} >
+              <Button variant='outlined' onClick={() => setSortRound(page)}>Sort Candidates</Button>
+              <Button variant='outlined' onClick={() => setMaxCandidates(c => c == 10 ? 1000 : 10)}>Toggle Candidate Limit</Button>
+          </Box>
+        </>}
         <ResultsBarChart
           data={
             results.summaryData.weightedScoresByRound[page-1]
@@ -329,6 +350,7 @@ function STARPRResultsViewer() {
           maxBarSize = {results.summaryData.weightedScoresByRound[0].reduce(
             (prev, totalScore) => Math.max(prev, totalScore), 0
           )}
+          maxCandidates = {maxCandidates}
         />
         <Typography>Round Selector</Typography>
         <Pagination count={results.summaryData.weightedScoresByRound.length} page={page} onChange={handleChange} />
