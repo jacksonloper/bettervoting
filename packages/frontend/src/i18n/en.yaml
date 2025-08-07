@@ -438,8 +438,8 @@ landing_page:
           - 1
       more_methods:
         title: and more
-        full_editor_description: Use full editor for Choose One, Ranked Choice, and multi-winner methods
-        sign_in_description: Sign in for Choose One, Ranked Choice, and multi-winner methods
+        full_editor_description: Use full editor for multi-winner methods
+        sign_in_description: Sign in for multi-winner methods
         sign_in: Sign In
 
   # Quick Poll Section
