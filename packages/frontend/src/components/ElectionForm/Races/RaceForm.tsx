@@ -384,9 +384,9 @@ export default function RaceForm({
                                         alignItems="center"
                                         sx={{ width: '100%', pl: 4, mt: -1 }}>
 
-                                        <FormHelperText >
+                                        {/*<FormHelperText >
                                             These voting methods do not guarantee every voter an equally powerful vote if there are more than two candidates.
-                                        </FormHelperText>
+                                        </FormHelperText>*/}
                                     </Box>
 
 

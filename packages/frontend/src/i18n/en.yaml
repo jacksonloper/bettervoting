@@ -1101,7 +1101,7 @@ edit_race:
     rcv:
       # !tip(rcv) we don't have a tip written yet
       title: $t(methods.rcv.full_name)
-      description: Rank candidates in order of preference, only recommended for educational purposes
+      description: Rank candidates in order of preference.
     stv:
       # !tip(stv) we don't have a tip written yet
       title: $t(methods.stv.full_name)
