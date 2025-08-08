@@ -4,7 +4,7 @@ import { Typography } from "@mui/material";
 import { PrimaryButton } from "../../styles";
 import { Link, useNavigate } from 'react-router-dom';
 import ShareButton from "../ShareButton";
-import { useArchiveEleciton, useFinalizeElection, usePostElection, useSetPublicResults } from "../../../hooks/useAPI";
+import { useArchiveEleciton, useSetOpenState, useFinalizeElection, usePostElection, useSetPublicResults } from "../../../hooks/useAPI";
 import { useSubstitutedTranslation } from '../../util';
 import useConfirm from '../../ConfirmationDialogProvider';
 import useElection from '../../ElectionContextProvider';
@@ -37,6 +37,7 @@ const AdminHome = () => {
     }
     const { makeRequest: finalize } = useFinalizeElection(election.election_id)
     const { makeRequest: archive } = useArchiveEleciton(election.election_id)
+    const { makeRequest: setOpenState } = useSetOpenState(election.election_id)
 
     const navigate = useNavigate()
     const { makeRequest: postElection } = usePostElection()
@@ -49,22 +50,20 @@ const AdminHome = () => {
     }
 
     const finalizeElection = async () => {
-        const confirmed = await confirm(t('admin_home.finalize_confirm'))
-        if (!confirmed) return
+        const confirmed = await confirm(t('admin_home.finalize_confirm'));
+        if (!confirmed) return;
         try {
-            await finalize()
-            await fetchElection()
+            await finalize() && setSnack({
+                message: t('admin_home.finalize_snack'),
+                severity: 'success',
+                open: true,
+                autoHideDuration: 6000,
+            });
+            await fetchElection();
         } catch (err) {
-            console.error(err)
+            console.error(err);
         }
 
-        setSnack({
-            message: t('admin_home.finalize_snack'),
-            severity: 'success',
-            open: true,
-            autoHideDuration: 6000,
-        })
-        
         const currentTime = new Date();
         if (
             election.settings.voter_access === 'closed' &&
@@ -107,6 +106,20 @@ const AdminHome = () => {
             throw Error("Error submitting election");
         }
         navigate(`/${newElection.election.election_id}/admin`)
+    }
+
+    const changeOpenState = async (open: boolean) => {
+        try {
+            await setOpenState({open}) && setSnack({
+                message: t(`admin_home.${open ? 'open': 'close'}_snack`),
+                severity: 'success',
+                open: true,
+                autoHideDuration: 6000,
+            });
+            await fetchElection();
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     const Section = ({ text, button, permission, includeDivider=true }: SectionProps) => 
@@ -207,8 +220,8 @@ const AdminHome = () => {
 
     const ArchiveElectionSection = () => <Section
         text={t('admin_home.archive')}
-        permission='canEditElectionState'
         includeDivider={false}
+        permission='canEditElectionState'
         button={(<>
             <PrimaryButton
                 disabled={!hasPermission('canEditElectionState')}
@@ -216,6 +229,34 @@ const AdminHome = () => {
                 onClick={() => archiveElection()}
             >
                 {t('admin_home.archive.button')}
+            </PrimaryButton>
+        </>)}
+    />
+
+    const CloseElectionSection = () => <Section
+        text={t('admin_home.close')}
+        permission='canEditElectionState'
+        button={(<>
+            <PrimaryButton
+                disabled={!hasPermission('canEditElectionState')}
+                fullWidth
+                onClick={() => changeOpenState(false)}
+            >
+                {t('admin_home.close.button')}
+            </PrimaryButton>
+        </>)}
+    />
+
+    const OpenElectionSection = () => <Section
+        text={t('admin_home.open')}
+        permission='canEditElectionState'
+        button={(<>
+            <PrimaryButton
+                disabled={!hasPermission('canEditElectionState')}
+                fullWidth
+                onClick={() => changeOpenState(true)}
+            >
+                {t('admin_home.open.button')}
             </PrimaryButton>
         </>)}
     />
@@ -323,6 +364,8 @@ const AdminHome = () => {
             {(election.state !== 'draft' && election.state !== 'finalized') && <TogglePublicResultsSection/>}
             {flags.isSet('ELECTION_ROLES') && <EditRolesSection />}
             <DuplicateElectionSection/>
+            {(election.state === 'open') && !election.start_time && !election.end_time && <CloseElectionSection />}
+            {(election.state === 'closed') && !election.start_time && !election.end_time && <OpenElectionSection />}
             <ArchiveElectionSection />
         </Box>
 
