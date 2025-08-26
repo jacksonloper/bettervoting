@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import LandingPageFeatures from './LandingPage/LandingPageFeatures';
 import LandingPageSignUpBar from './LandingPage/LandingPageSignUpBar';
 import LandingPageTestimonials from './LandingPage/LandingPageTestimonials';
-import { Typography } from '@mui/material';
+import { Paper, Typography } from '@mui/material';
 import LandingPagePricing from './LandingPage/LandingPagePricing';
 import useFeatureFlags from './FeatureFlagContextProvider';
 import LandingPageStats from './LandingPage/LandingPageStats';
@@ -13,6 +13,7 @@ import QuickPoll from './ElectionForm/QuickPoll';
 import LandingPageSupport from './LandingPage/LandingPageSupport';
 import LandingPageCarousel from './LandingPage/LandingPageCarousel';
 import LandingPageFeaturedElections from './LandingPage/LandingPageFeaturedElections';
+import LandingPageOtherTools from './LandingPage/LandingPageOtherTools';
 
 const LandingPage = () => {
 
@@ -76,6 +77,7 @@ const LandingPage = () => {
             {flags.isSet('ELECTION_TESTIMONIALS') && <LandingPageTestimonials/>}
             <LandingPagePricing />
             <LandingPageSupport />
+            <LandingPageOtherTools />
         </Box>
         </div>
     )
