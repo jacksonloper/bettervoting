@@ -15,7 +15,7 @@ With this in mind the STAR Elections team has developed [a google sheet that can
 STAR Voting Action, STAR Elections, and the STAR Voting Google Forms add-on team take your privacy and security seriously. Read our [terms of service](https://www.starvoting.us/terms_of_service) and [privacy policy](https://www.starvoting.us/privacy_policy) here.
  
 {: .note }
-Note: Google regularly publishes updates and occasionally those updates have caused our sheet to raise an error. Errors in data formatting will also raise errors. If you have any problems at all running your election please email us at elections@equal.vote
+Note: Google regularly publishes updates and occasionally those updates have caused our sheet to raise an error. Errors in data formatting will also raise errors. If you have any problems at all running your election please email us at [elections@equal.vote](mailto:elections@equal.vote)
 
  
 
