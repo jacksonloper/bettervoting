@@ -7,9 +7,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 a:not([class]){
-    text-decoration-color: rgb(134,198,106);
+    text-decoration: none;
 }
 
 a:not([class]):hover{
-    text-decoration-color: black;
+    text-decoration-color: rgb(134,198,106);
 }
