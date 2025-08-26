@@ -17,8 +17,6 @@ STAR Voting Action, STAR Elections, and the STAR Voting Google Forms add-on team
 {: .note }
 Note: Google regularly publishes updates and occasionally those updates have caused our sheet to raise an error. Errors in data formatting will also raise errors. If you have any problems at all running your election please email us at [elections@equal.vote](mailto:elections@equal.vote)
 
- 
-
 ## Run your STAR Voting election on Google Sheets
  
 
@@ -42,35 +40,23 @@ With any of these options you will need your cast vote record in a spreadsheet i
 1. The Election Calculator sheet is already filled out with a sample election, so you can take a look at things, change a vote or two on the second tab, hit the run election button on the first tab, and get familiar with the sheet before you reset it and import your own ballot data.
 1. In your new spreadsheet, click on the "BallotData" tab at the bottom of the screen.
 1. Copy and paste in your candidate names starting in column C, D, and F. If you have more than 3 candidates continue adding them to the right of Candidate C. 
-1. Delete the ballot data under the candidate names. Delete any extra candidates or voters.
-
-![](../images/sheets_screenshot2.png)
-*This example has 6 voters. We've input the candidates' names and deleted the vote data*
+1. Delete the ballot data under the candidate names. Delete any extra candidates or voters. ![](../images/sheets_screenshot2.png) *This example has 6 voters. We've input the candidates' names and deleted the vote data*
 
 ### STEP 3: Paste in your election and ballot data.
 
 1. Copy the list of email addresses and paste them into the Election Calculator Sheet under "Voter/Group ID."
 1. Copy the votes from your Google Forms Spreadsheet and paste them into the Election Calculator Sheet next to each voter ID.
 1. Make sure the voter count is set to 1 for each voter unless you have a block of voters who all cast identical votes. If you have a voter block make sure to set the voter count to reflect the correct number of voters in that group.
-1. Double check that the info is all correct.
-
-![](../images/sheets_screenshot3.png)
-*Here is the spreadsheet with the vote data and Voter IDs from our Google Forms election input.*
+1. Double check that the info is all correct. ![](../images/sheets_screenshot3.png) *Here is the spreadsheet with the vote data and Voter IDs from our Google Forms election input.*
 
 
 ### STEP 4: Run Election
 1. Click back to the "Results and Settings" tab.
 1. Change the number of candidates and number of voters if needed.
-1. Click "Run Election."
+1. Click "Run Election." ![](../images/sheets_screenshot4.png) *This sheet is set to run an election with 3 candidates and 6 voters.*
 
-![](../images/sheets_screenshot4.png)
-*This sheet is set to run an election with 3 candidates and 6 voters.*
-
-3\. You will be prompted to authorize the election and then to grant necessary permissions to "Score Runoff Voting calculator." Click "Continue" then "Allow."
-4\. The sheet will run your election and display the winners!
-
-![](../images/sheets_screenshot5.png)
-*Here are the election results:  Diego wins!*
+1. You will be prompted to authorize the election and then to grant necessary permissions to "Score Runoff Voting calculator." Click "Continue" then "Allow."
+1. The sheet will run your election and display the winners! ![](../images/sheets_screenshot5.png) *Here are the election results:  Diego wins!*
 
 {: .note-title}
 > NOTE ON TIES

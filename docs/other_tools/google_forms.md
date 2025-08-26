@@ -21,17 +21,13 @@ Images and instructions below are for users on a PC. If you are using a phone or
 
 ## STEP 1: Create a new Google Form for your election:
 
-* Go to Google Forms and click the plus sign at bottom right side of your page to create a new blank form.
-![](../images/forms_screenshot1.png)
+* Go to Google Forms and click the plus sign at bottom right side of your page to create a new blank form. ![](../images/forms_screenshot1.png)
 
 ## STEP 2: Install the "STAR Voting Elections" Add-On and add it to your form:
 
-* Go to the ... "more" menu at the top left corner of your screen and select "Add-Ons." 
+* Go to the ... "more" menu at the top left corner of your screen and select "Add-Ons." <img src="../images/forms_screenshot2.png" width="600px"/>
 
-<img src="../images/forms_screenshot2.png" width="600px"/>
-
-* The Google Workspace Marketplace screen will open. Search for "STAR Voting Elections" and select. 
-![](../images/forms_screenshot3.png)
+* The Google Workspace Marketplace screen will open. Search for "STAR Voting Elections" and select. ![](../images/forms_screenshot3.png)
 
 * Click the install button, click continue to grant the STAR Voting Elections add-on permission to run your election and create a spreadsheet for your election results, select the email account you want to use for the election, and then click "allow." The permissions granted allow STAR to create a spreadsheet for your results and put that in the correct folder. The add-on does not read or write to any other files on your drive. 
 
@@ -44,9 +40,7 @@ Images and instructions below are for users on a PC. If you are using a phone or
 
 ## STEP 3: Customize your form:
 
-* Name your form with the name of your election and add your election description. This is a good place to share details like when the election closes and when winners will be announced. If your election is multi-winner make sure to tell your voters how many winners there will be. 
-
-![](../images/forms_screenshot4.png)
+* Name your form with the name of your election and add your election description. This is a good place to share details like when the election closes and when winners will be announced. If your election is multi-winner make sure to tell your voters how many winners there will be. ![](../images/forms_screenshot4.png)
 
 * Click "settings" at the top right. We recommend the settings below, but it's up to you. 
 
@@ -54,9 +48,7 @@ Images and instructions below are for users on a PC. If you are using a phone or
 
 * Click over to the "Presentation" tab for other options like "shuffle question order."
 * Click "save" when you're done with settings. 
-* Your form comes with an "untitled question" section already at the top of your form. If you have other questions for your voters, besides the ballot itself add those here. Where it says "multiple choice" you can select other options such as "short answer." Many people use this section to ask for a name, phone number, or any info you may need for credentialing, such as a Verified Voter ID you may have given out to your voters in advance.
-
-![](../images/forms_screenshot6.png)
+* Your form comes with an "untitled question" section already at the top of your form. If you have other questions for your voters, besides the ballot itself add those here. Where it says "multiple choice" you can select other options such as "short answer." Many people use this section to ask for a name, phone number, or any info you may need for credentialing, such as a Verified Voter ID you may have given out to your voters in advance. ![](../images/forms_screenshot6.png)
 
 ## STEP 4: Add Elections and Candidates:
 
@@ -108,17 +100,13 @@ We always recommend sending yourself a ballot, casting a test vote, and taking a
 ## STEP 7: (Optional) Cast a test vote:
 Go back to your election. Once you've voted, your vote will be listed in the preliminary election results. If you aren't eligible to vote in the election you'll want to delete your test ballot before the election goes live:
 
-* At the top of the page select "Responses."
-
-![](../images/forms_screenshot13.png)
+* At the top of the page select "Responses." ![](../images/forms_screenshot13.png)
 
 * This section will allow you to look at some election analytics on the summary page, look at responses by question, or look at the full ballot cast for each individual.
 * Go to the ... "more" menu on this page, and click delete all responses. 
 * To verify that your vote is gone, or to check on other votes cast, click on the green Google Sheets icon near the top right of the page.
 * Name the spreadsheet where your responses will appear. By default it will have your election name, and then (Responses.) Click "create new spreadsheet," and then click "Create." Note that this is not the same as the spreadsheet where your election results will be tabulated, though it will contain the same votes as your final election. 
-* Your Responses spreadsheet will automatically open in a new tab and can be found in your google drive under spreadsheets as well.
-
-![](../images/forms_screenshot14.png)
+* Your Responses spreadsheet will automatically open in a new tab and can be found in your google drive under spreadsheets as well. ![](../images/forms_screenshot14.png)
 
 
 ## STEP 8: Send out the real ballots!
@@ -135,16 +123,12 @@ Go back to your election. Once you've voted, your vote will be listed in the pre
 * STAR Voting Elections creates a Google Sheet spreadsheet with the results of the election which can be found in your Google Forms drive folder. Unless you set up a custom name or location for your results, it will be named "Your Election's Name (Results)"
 * Open the spreadsheet and see the results! If your election had multiple races, the first tab in your sheet will show the results of your full election. 
 * For single-winner races your winner will be listed in 1st place!
-* If a race is a multi-winner Bloc STAR election your winners will be the top candidates needed to fill the available seats. For a three winner race take the 1st, 2nd, and 3rd place winners. 
-
-![](../images/forms_screenshot15.png)
+* If a race is a multi-winner Bloc STAR election your winners will be the top candidates needed to fill the available seats. For a three winner race take the 1st, 2nd, and 3rd place winners. ![](../images/forms_screenshot15.png)
 
 * The other tabs in your sheet will show results for each individual race. 
 * Detailed results will show a preference matrix at the top, and then your election's results below. In the image below the matrix (cell 3E) shows that 5 voters preferred Dominos over Cribbage and only 2 voters preferred Cribbage over Dominoes (cell 4D.)
 * For more information on reading a preference matrix or breaking ties in STAR Voting see our page on ties [here](https://www.starvoting.us/ties). 
-* Ties in STAR Voting are much less common than in Choose-One Plurality or RCV elections, but they can happen, especially in small elections. If your election has a tie it will appear as a tie on your sheet and will not be broken for you. 
-
-![](../images/forms_screenshot16.png)
+* Ties in STAR Voting are much less common than in Choose-One Plurality or RCV elections, but they can happen, especially in small elections. If your election has a tie it will appear as a tie on your sheet and will not be broken for you. ![](../images/forms_screenshot16.png)
 
 * If you would like your election tallied for proportional representation please send a copy of your responses and results spreadsheets to [elections@equal.vote](mailto:elections@equal.vote) and we can run the results for you. 
 
