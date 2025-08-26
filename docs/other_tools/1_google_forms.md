@@ -27,7 +27,8 @@ Images and instructions below are for users on a PC. If you are using a phone or
 ## STEP 2: Install the "STAR Voting Elections" Add-On and add it to your form:
 
 * Go to the ... "more" menu at the top left corner of your screen and select "Add-Ons." 
-![](../images/forms_screenshot2.png)
+
+<img src="../images/forms_screenshot2.png" width="600px"/>
 
 * The Google Workspace Marketplace screen will open. Search for "STAR Voting Elections" and select. 
 ![](../images/forms_screenshot3.png)
@@ -49,7 +50,7 @@ Images and instructions below are for users on a PC. If you are using a phone or
 
 * Click "settings" at the top right. We recommend the settings below, but it's up to you. 
 
-<img src="../images/forms_screenshot5.png" width="200px"/>
+<img src="../images/forms_screenshot5.png" width="400px"/>
 
 * Click over to the "Presentation" tab for other options like "shuffle question order."
 * Click "save" when you're done with settings. 
@@ -62,8 +63,8 @@ Images and instructions below are for users on a PC. If you are using a phone or
 * Click the "add-on" puzzle piece at the top of your screen again. Select "STAR Voting Elections," then "Add Election." 
 
 <div style="width: 70%; max-width: 800px; display: flex; flex-direction: row; justify-content: space-between">
-    <img src="../images/forms_screenshot7.png">
-    <img src="../images/forms_screenshot8.png">
+    <img src="../images/forms_screenshot7.png" style="width: 300px">
+    <img src="../images/forms_screenshot8.png" style="width: 300px">
 </div>
 	
 * Each election you add will appear as an additional section on your ballot and it will come with one candidate automatically. You can use the add-on puzzle piece to add elections or candidates as needed, or this can be done by copying the first election and candidate you created using the duplicate option at the bottom of the section. 
