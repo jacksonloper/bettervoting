@@ -1,8 +1,8 @@
 ---
 layout: default
-title: Other Tools
-nav_order: 2
-has_children: true
+title: STAR Voting on Google Forms
+parent: Other Tools
+nav_order: 1
 ---
 
 BetterVoting.com is designed to handle vast majority of election scenarios, but we also recommend a handful of other tools in case those are better for your specific use case.
