@@ -32,10 +32,7 @@ Note: Google regularly publishes updates and occasionally those updates have cau
 
 * Use software like Remark to create ballots that can then be scanned and read, automatically creating a csv file from your paper ballots. Remark is compatible with any digital scanner and they even offer a free trial membership which should allow you to run your first election at no cost.
 
-* Use Google Forms to send out e-ballots to your voters. Under "Responses" click the green google sheets icon near the top right corner. This will open a google sheet with your ballot responses.
-
-![](../images/sheets_screenshot.png)
-*A sample Google Forms election output*
+* Use Google Forms to send out e-ballots to your voters. Under "Responses" click the green google sheets icon near the top right corner. This will open a google sheet with your ballot responses. ![](../images/sheets_screenshot.png) *A sample Google Forms election output*
 
 With any of these options you will need your cast vote record in a spreadsheet in order to upload it to the STAR Election Calculator google sheet.
 
