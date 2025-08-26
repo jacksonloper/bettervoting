@@ -2,7 +2,7 @@
 layout: default
 title: STAR Voting on Google Sheets
 parent: Other Tools
-child_nav_order: 3
+nav_order: 3
 ---
 
 # STAR Voting on Google Sheets

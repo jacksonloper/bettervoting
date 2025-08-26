@@ -2,7 +2,7 @@
 layout: default
 title: STAR Fit
 parent: Other Tools
-child_nav_order: 1
+nav_order: 1
 ---
 
 With STAR Fit you find the best time for your meetings using STAR Voting! Try it out at [starbestfit.com](https://starbestfit.com).

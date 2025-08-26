@@ -2,7 +2,7 @@
 layout: default
 title: STAR Voting on Google Forms
 parent: Other Tools
-child_nav_order: 2
+nav_order: 2
 ---
 
 You can run simple and functional STAR Voting polls quickly and easily on [BetterVoting.com](http://www.bettervoting.com/). More features are being added all the time.
