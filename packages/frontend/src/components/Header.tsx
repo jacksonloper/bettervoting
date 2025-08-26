@@ -16,6 +16,7 @@ import { makeID, ID_PREFIXES, ID_LENGTHS } from '@equal-vote/star-vote-shared/ut
 
 import { ReturnToClassicContext } from './ReturnToClassicDialog';
 import { useCookie } from '~/hooks/useCookie';
+import NavMenu from './NavMenu';
 
 const headerTextColor = 'primary.contrastText'
 const Header = () => {
@@ -24,40 +25,63 @@ const Header = () => {
     const authSession = useAuthSession()
     // this is important for setting the default value
     useCookie('temp_id', makeID(ID_PREFIXES.VOTER, ID_LENGTHS.VOTER))
-    const [anchorElNav, setAnchorElNav] = useState(null)
-    const [anchorElUser, setAnchorElUser] = useState(null)
+    const [openedMenu, setOpenedMenu] = useState(null);
     const {t} = useSubstitutedTranslation();
 
     const createElectionContext = useContext(CreateElectionContext);
-
-    const handleOpenNavMenu = (event) => {
-        setAnchorElNav(event.currentTarget);
-    };
-
-    const handleCloseNavMenu = () => {
-        setAnchorElNav(null);
-    };
-
-    const handleOpenUserMenu = (event) => {
-        setAnchorElUser(event.currentTarget);
-    };
-
-    const handleCloseUserMenu = () => {
-        setAnchorElUser(null);
-    };
 
     const navTextSx = {fontWeight: 'bold', fontSize: '1rem'};
 
     const navItems = [
         {
             text: t('nav.about'),
-            href: '/About',
-            target: '_self',
+            items: [
+                {
+                    text: 'About BetterVoting',
+                    href: '/About',
+                    target: '_self',
+                },
+                {
+                    text: 'About The Equal Vote Coalition',
+                    href: '/About',
+                    target: '_self',
+                },
+                {
+                    text: 'About The Equal Vote Coalition',
+                    href: '/About',
+                    target: '_self',
+                },
+            ]
         },
         {
-            text: t('nav.better_voting'),
-            href: 'https://equal.vote',
-            target: '_blank',
+            text: 'Voting Methods',
+            items: [
+                {
+                    text: 'STAR Voting',
+                    href: '/About',
+                    target: '_self',
+                },
+                {
+                    text: 'Ranked Robin',
+                    href: '/About',
+                    target: '_self',
+                },
+                {
+                    text: 'Approval',
+                    href: '/About',
+                    target: '_self',
+                },
+                {
+                    text: 'STAR PR',
+                    href: '/About',
+                    target: '_self',
+                },
+                {
+                    text: 'Ranked Choice Voting',
+                    href: '/About',
+                    target: '_self',
+                },
+            ]
         },
         {
             text: t('nav.public_elections'),
@@ -73,33 +97,7 @@ const Header = () => {
             <Toolbar>
                 {/**** MOBILE HAMBURGER MENU ****/}
                 <Box sx={{ flexGrow: 0, display: { xs: 'flex', md: 'none' } }}>
-                    <IconButton
-                        size="large"
-                        aria-label="Navigation Menu"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        onClick={handleOpenNavMenu}
-                        color="inherit">
-                        <MenuIcon />
-                    </IconButton>
-                    <Menu
-                        id="menu-appbar"
-                        anchorEl={anchorElNav}
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                        }}
-                        keepMounted
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                        open={Boolean(anchorElNav)}
-                        onClose={handleCloseNavMenu}
-                        sx={{
-                            display: { xs: 'block', md: 'none' },
-                        }}
-                    >
+                    <NavMenu name='mobile-hamburger' mobileIcon={<MenuIcon/>}>
                         {navItems.map((item, i) => 
                             <MenuItem
                                 key={`mobile-nav-${i}`}
@@ -116,10 +114,10 @@ const Header = () => {
                         <MenuItem onClick={returnToClassicContext.openDialog}>
                             {t('return_to_classic.button')}
                         </MenuItem>
-                    </Menu>
+                    </NavMenu>
                 </Box>
 
-                {/**** Title ****/}
+                {/**** BetterVoting Logo ****/}
                 <IconButton
                     size="large"
                     href="/"
@@ -135,20 +133,28 @@ const Header = () => {
 
                 {/**** DESKTOP OPTIONS ****/}
                 <Box
-                    sx={{ flexGrow: 100, flexWrap: 'wrap', display: { xs: 'none', md: 'flex' }, gap: 4, rowGap: 0 }}>
+                    sx={{ flexGrow: 100, flexWrap: 'wrap', display: { xs: 'none', md: 'flex' }, gap: 4, rowGap: 0, position: 'relative' }}>
                     {navItems.map((item, i) => 
-                        <Button key={`desktop-nav-${i}`} href={item.href} target={item.target}>
-                            <Typography variant="h6" sx={navTextSx} color={headerTextColor} textTransform={'none'}>
-                                {item.text}
-                            </Typography>
-                        </Button>
+                        <NavMenu name={`desktop-nav-${i}`} desktopText={item.text} href={item.href} target={item.target}>
+                            {!item.items && <></>}
+                            {item.items && item.items.map((subitem, j) => 
+                                <MenuItem
+                                    key={`desktop-subnav-${i}-${j}`}
+                                    component={Link}
+                                    href={subitem.href}
+                                    target={subitem.target}
+                                >
+                                    {subitem.text}
+                                </MenuItem>
+                            )}
+                            {/* Saving this for when we have a search bar
+                            <Paper sx={{display: 'flex', alignItems: 'center', background: 'white', align: 'center', marginTop: 'auto', marginBottom: 'auto', padding: 1}}>
+                                <Search />
+                                <InputBase placeholder="Search Public Elections"/>
+                            </Paper>
+                            */}
+                        </NavMenu>
                     )}
-                    {/* Saving this for when we have a search bar
-                    <Paper sx={{display: 'flex', alignItems: 'center', background: 'white', align: 'center', marginTop: 'auto', marginBottom: 'auto', padding: 1}}>
-                        <Search />
-                        <InputBase placeholder="Search Public Elections"/>
-                    </Paper>
-                    */}
                 </Box>
 
                 {/**** ACCOUNT OPTIONS ****/}
@@ -159,39 +165,7 @@ const Header = () => {
                                 {t('nav.new_election')}
                             </Typography>
                         </Button>
-                        <IconButton
-                            size="large"
-                            aria-label="account of current user"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenUserMenu}
-                            color="inherit"
-                            sx={{display: { xs: 'inline', md: 'none' }}}
-                            >
-                            <AccountCircleIcon />
-                        </IconButton>
-                        <Button color='inherit' onClick={handleOpenUserMenu} sx={{display: { xs: 'none', md: 'flex' }}}>
-                            <Typography variant="h6" sx={navTextSx} color={headerTextColor} textTransform={'none'}>
-                                {t('nav.greeting', {name: authSession.getIdField('given_name')})}
-                            </Typography>
-                            <KeyboardArrowDownRoundedIcon sx={{transition: 'transform .2s', '&:hover': {transform: 'translateY(3px)'}}}/>
-                        </Button>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElUser}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElUser)}
-                            onClose={handleCloseUserMenu}
-                            sx={{ display: 'block'}}
-                        >
+                        <NavMenu name='user' mobileIcon={<AccountCircleIcon/>} desktopText={t('nav.greeting', {name: authSession.getIdField('given_name')})}>
                             <MenuItem component={Link} href={authSession.accountUrl} target='_blank'>
                                 {t('nav.your_account')}
                             </MenuItem>
@@ -200,7 +174,7 @@ const Header = () => {
                             </MenuItem>
                             {/*<MenuItem component={Link} href='/ElectionInvitations'>
                                 Election Invitations
-                        </MenuItem>*/}
+                            </MenuItem>*/}
                             <MenuItem component={Link} href='/ElectionsYouManage'>
                                 {t('nav.my_elections')}
                             </MenuItem>
@@ -240,8 +214,8 @@ const Header = () => {
                                     </MenuItem>
                                 ))}
                             </>}
-                        </Menu>
-                    </>}
+                        </NavMenu></>
+                    }
                     {!authSession.isLoggedIn() &&
                         <Button color='inherit' onClick={() => authSession.openLogin()} >
                             <Typography sx={navTextSx} color={headerTextColor}>

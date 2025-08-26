@@ -1,0 +1,92 @@
+import { Button, IconButton, Menu, Typography } from "@mui/material";
+import { popoverClasses } from "@mui/material/Popover";
+import { useState } from "react";
+import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
+
+const navTextSx = {fontWeight: 'bold', fontSize: '1rem'};
+
+const headerTextColor = 'primary.contrastText'
+
+
+// https://stackoverflow.com/questions/55318477/how-to-make-material-ui-menu-based-on-hover-not-click
+export default function({name, desktopText=undefined, mobileIcon=undefined, href=undefined, target=undefined, children}){
+    const [anchorEl, setAnchorEl] = useState(null)
+
+    let currentlyHovering = false;
+
+    const handleClick = (ev) => {
+        if(href) return;
+        if(anchorEl == ev.currentTarget) return;
+        handleHover();
+        setAnchorEl(ev.currentTarget);
+    }
+
+    const handleClose = () => {
+        currentlyHovering = false;
+        setAnchorEl(null);
+    }
+
+    const handleHover = () => currentlyHovering = true;
+
+    const handleCloseHover = () => {
+        currentlyHovering = false;
+        setTimeout(() => {
+            if (!currentlyHovering) {
+                handleClose();
+            }
+        }, 50);
+    }
+
+    return <>
+        {mobileIcon && <IconButton
+            size="large"
+            aria-controls={`menu-${name}`}
+            aria-haspopup="true"
+            onClick={handleClick}
+            color="inherit"
+            sx={{display: { xs: 'flex', md: 'none' }}}
+        >
+            {mobileIcon}
+        </IconButton>}
+        {desktopText && <Button
+            color='inherit'
+            onClick={handleClick}
+            onMouseOver={handleClick}
+            onMouseLeave={handleCloseHover}
+            href={href}
+            target={target}
+            sx={{
+                display: { xs: 'none', md: 'flex' },
+                textDecoration: 'none',
+                '&:hover': {textDecoration: 'underline'}
+            }} 
+        >
+            <Typography variant="h6" sx={navTextSx} color={headerTextColor} textTransform='none'>
+                {desktopText} 
+            </Typography>
+        </Button>}
+        <Menu
+            id={`menu-${name}`}
+            anchorEl={anchorEl}
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            keepMounted
+            MenuListProps={{
+                onMouseEnter: handleHover,
+                onMouseLeave: handleCloseHover,
+                style: { pointerEvents: "auto" }
+            }}
+            transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+            }}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            sx={{ [`&.${popoverClasses.root}`]: {xs: {}, md: { pointerEvents: "none" }}, }}
+        >
+            {children}
+        </Menu>
+    </>
+}

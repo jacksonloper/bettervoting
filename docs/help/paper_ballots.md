@@ -37,6 +37,7 @@ The type of ballots you'll use will depend on if you plan to conduct a hand coun
 * The two highest scoring candidates are finalists. The finalist preferred by the majority wins. 
 
 **Bloc STAR Voting: Score - Then - Automatic - Runoffs.**
+
 Bloc STAR Voting elects majority preferred winners for multi-winner elections.
 
 * This election will elect X candidates. Give your favorite(s) five stars. Give your last choice(s) zero stars. Show preference order and level of support. Equal scores indicate no preference. Those left blank receive zero stars.
