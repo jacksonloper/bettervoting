@@ -5,15 +5,15 @@ parent: Other Tools
 nav_order: 1
 ---
 
-You can run simple and functional STAR Voting polls quickly and easily on ![BetterVoting.com](http://www.bettervoting.com/). More features are being added all the time.
+You can run simple and functional STAR Voting polls quickly and easily on [BetterVoting.com](http://www.bettervoting.com/). More features are being added all the time.
 
 If you are interested in running a more secure, credentialed, or professional election, Google Forms is the way to go. Both options are completely free.
 
-To try out STAR Voting in Google Forms from a users perspective before you begin, you can cast a vote in the demo election from the tutorial below ![here](https://forms.gle/xG91oePuZzV973uU6). 
+To try out STAR Voting in Google Forms from a users perspective before you begin, you can cast a vote in the demo election from the tutorial below [here](https://forms.gle/xG91oePuZzV973uU6). 
 
 # How to create a STAR Voting election on Google Forms
 
-Google Forms can now run ![single-winner STAR](http://starvoting.us/voting_guide) and multi-winner ![Bloc STAR Voting](http://starvoting.us/multi_winner) elections off the shelf with the STAR Voting Elections add-on. If you are looking to tally a ![Proportional STAR Voting](http://starvoting.us/pr) election you can use Google Forms for the balloting and email us for help with the tabulation at [elections@equal.vote](mailto:elections@equal.vote).
+Google Forms can now run [single-winner STAR](http://starvoting.us/voting_guide) and multi-winner [Bloc STAR Voting](http://starvoting.us/multi_winner) elections off the shelf with the STAR Voting Elections add-on. If you are looking to tally a [Proportional STAR Voting](http://starvoting.us/pr) election you can use Google Forms for the balloting and email us for help with the tabulation at [elections@equal.vote](mailto:elections@equal.vote).
 
 Images and instructions below are for users on a PC. If you are using a phone or tablet some things may appear differently. 
 
@@ -22,33 +22,49 @@ Images and instructions below are for users on a PC. If you are using a phone or
 ## STEP 1: Create a new Google Form for your election:
 
 * Go to Google Forms and click the plus sign at bottom right side of your page to create a new blank form.
+![](../images/forms_screenshot1.png)
 
 ## STEP 2: Install the "STAR Voting Elections" Add-On and add it to your form:
+
 * Go to the ... "more" menu at the top left corner of your screen and select "Add-Ons." 
+![](../images/forms_screenshot2.png)
 
-The Google Workspace Marketplace screen will open. Search for "STAR Voting Elections" and select. 
+* The Google Workspace Marketplace screen will open. Search for "STAR Voting Elections" and select. 
+![](../images/forms_screenshot3.png)
 
-Click the install button, click continue to grant the STAR Voting Elections add-on permission to run your election and create a spreadsheet for your election results, select the email account you want to use for the election, and then click "allow." The permissions granted allow STAR to create a spreadsheet for your results and put that in the correct folder. The add-on does not read or write to any other files on your drive. 
-
-
-STAR Elections and the full team at STAR Voting Action respect your privacy and we are committed to ensuring the security of the information you provide as well as the integrity of our elections in general. Read our terms of service and privacy policy here. All of our tools, including the STAR Elections Add-On, are open sourced to facilitate third party security verification and testing. 
+* Click the install button, click continue to grant the STAR Voting Elections add-on permission to run your election and create a spreadsheet for your election results, select the email account you want to use for the election, and then click "allow." The permissions granted allow STAR to create a spreadsheet for your results and put that in the correct folder. The add-on does not read or write to any other files on your drive. 
 
 
-Close Google Workspace Marketplace window by clicking the top left x in the corner to return to your form when your install is complete.  
+> STAR Elections and the full team at STAR Voting Action respect your privacy and we are committed to ensuring the security of the information you provide as well as the integrity of our elections in general. Read our [terms of service](https://www.starvoting.us/terms_of_service) and [privacy policy](https://www.starvoting.us/privacy_policy) here. All of our tools, including the STAR Elections Add-On, are [open sourced](https://www.starvoting.us/open_source) to facilitate third party security verification and testing. 
+
+
+* Close Google Workspace Marketplace window by clicking the top left x in the corner to return to your form when your install is complete.  
  
 
-STEP 3: Customize your form:
-Name your form with the name of your election and add your election description. This is a good place to share details like when the election closes and when winners will be announced. If your election is multi-winner make sure to tell your voters how many winners there will be. 
+## STEP 3: Customize your form:
 
-Click "settings" at the top right. We recommend the settings below, but it's up to you. 
+* Name your form with the name of your election and add your election description. This is a good place to share details like when the election closes and when winners will be announced. If your election is multi-winner make sure to tell your voters how many winners there will be. 
 
-Click over to the "Presentation" tab for other options like "shuffle question order."
-Click "save" when you're done with settings. 
-Your form comes with an "untitled question" section already at the top of your form. If you have other questions for your voters, besides the ballot itself add those here. Where it says "multiple choice" you can select other options such as "short answer." Many people use this section to ask for a name, phone number, or any info you may need for credentialing, such as a Verified Voter ID you may have given out to your voters in advance.
+![](../images/forms_screenshot4.png)
 
+* Click "settings" at the top right. We recommend the settings below, but it's up to you. 
 
-STEP 4: Add Elections and Candidates:
-Click the "add-on" puzzle piece at the top of your screen again. Select "STAR Voting Elections," then "Add Election." 
+![](../images/forms_screenshot5.png)
+
+* Click over to the "Presentation" tab for other options like "shuffle question order."
+* Click "save" when you're done with settings. 
+* Your form comes with an "untitled question" section already at the top of your form. If you have other questions for your voters, besides the ballot itself add those here. Where it says "multiple choice" you can select other options such as "short answer." Many people use this section to ask for a name, phone number, or any info you may need for credentialing, such as a Verified Voter ID you may have given out to your voters in advance.
+
+![](../images/forms_screenshot6.png)
+
+## STEP 4: Add Elections and Candidates:
+
+* Click the "add-on" puzzle piece at the top of your screen again. Select "STAR Voting Elections," then "Add Election." 
+
+<div style="display: flex; flex-direction: row; justify-content: space-between">
+    <img src="../images/forms_screenshot6.png">
+    <img src="../images/forms_screenshot7.png">
+</div>
 	
 Each election you add will appear as an additional section on your ballot and it will come with one candidate automatically. You can use the add-on puzzle piece to add elections or candidates as needed, or this can be done by copying the first election and candidate you created using the duplicate option at the bottom of the section. 
 Voter instructions should appear in the election description automatically. If they do not appear automatically, reload the page.
