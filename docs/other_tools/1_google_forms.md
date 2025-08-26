@@ -49,7 +49,7 @@ Images and instructions below are for users on a PC. If you are using a phone or
 
 * Click "settings" at the top right. We recommend the settings below, but it's up to you. 
 
-![](../images/forms_screenshot5.png)
+<img src="../images/forms_screenshot5.png" width="200px"/>
 
 * Click over to the "Presentation" tab for other options like "shuffle question order."
 * Click "save" when you're done with settings. 
@@ -61,31 +61,42 @@ Images and instructions below are for users on a PC. If you are using a phone or
 
 * Click the "add-on" puzzle piece at the top of your screen again. Select "STAR Voting Elections," then "Add Election." 
 
-<div style="display: flex; flex-direction: row; justify-content: space-between">
-    <img src="../images/forms_screenshot6.png">
+<div style="width: 70%; max-width: 800px; display: flex; flex-direction: row; justify-content: space-between">
     <img src="../images/forms_screenshot7.png">
+    <img src="../images/forms_screenshot8.png">
 </div>
 	
-Each election you add will appear as an additional section on your ballot and it will come with one candidate automatically. You can use the add-on puzzle piece to add elections or candidates as needed, or this can be done by copying the first election and candidate you created using the duplicate option at the bottom of the section. 
-Voter instructions should appear in the election description automatically. If they do not appear automatically, reload the page.
+* Each election you add will appear as an additional section on your ballot and it will come with one candidate automatically. You can use the add-on puzzle piece to add elections or candidates as needed, or this can be done by copying the first election and candidate you created using the duplicate option at the bottom of the section. 
 
-Each election you create works for one race. If your form is tallying multiple races (ie. President, Secretary, Treasurer,) then you will want to add an election for each. 
+* Voter instructions should appear in the election description automatically. If they do not appear automatically, reload the page.
+
+![](../images/forms_screenshot9.png)
+
+* Each election you create works for one race. If your form is tallying multiple races (ie. President, Secretary, Treasurer,) then you will want to add an election for each. 
  
 
-STEP 5: Add names, bios, and details:
-Name your races, add additional candidates if needed, and add candidate's names.
-Optional: The "Description" line below the name is a great place to add candidate bios or info like political party affiliation, relevant titles, or to link additional information like a candidate's website. You can also add an image for each candidate. If you don't see a space to add a candidate description when you click on the name line, the "show description" option may be under the ... "more" menu for the race. 
+## STEP 5: Add names, bios, and details:
 
+* Name your races, add additional candidates if needed, and add candidate's names.
 
+* Optional: The "Description" line below the name is a great place to add candidate bios or info like political party affiliation, relevant titles, or to link additional information like a candidate's website. You can also add an image for each candidate. If you don't see a space to add a candidate description when you click on the name line, the "show description" option may be under the ... "more" menu for the race. 
 
-STEP 6: Do a test run before sending out your ballots:
+![](../images/forms_screenshot10.png)
+
+## STEP 6: Do a test run before sending out your ballots:
 We always recommend sending yourself a ballot, casting a test vote, and taking a look at the election responses spreadsheet before you send out real ballots:
 
-When your ballot is all filled out as you want it, and your settings are dialed in, you're ready to send out a test ballot. 
-If you'd like to use your election description from section one as a message to your voters highlight it and copy it now.
-Click the "Send" button in the top right corner.
-Select "Send via email" and put in your own email address.
-Add in your message to voters if desired. Voters will receive an email with the message at the top followed by the election name and description that you put at the top of your form. (See below.)
+* When your ballot is all filled out as you want it, and your settings are dialed in, you're ready to send out a test ballot. 
+
+* If you'd like to use your election description from section one as a message to your voters highlight it and copy it now.
+
+* Click the "Send" button in the top right corner.
+
+* Select "Send via email" and put in your own email address.
+
+* Add in your message to voters if desired. Voters will receive an email with the message at the top followed by the election name and description that you put at the top of your form. (See below.)
+
+![](../images/forms_screenshot11.png)
 
 If you wrote a custom message, copy and save the message text somewhere convenient so you won't have to retype it when you send out the ballots for real.
 Hit send.
