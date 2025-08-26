@@ -11,5 +11,6 @@ a:not([class]){
 }
 
 a:not([class]):hover{
+    text-decoration: underline;
     text-decoration-color: rgb(134,198,106);
 }
