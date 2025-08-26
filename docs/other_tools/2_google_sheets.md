@@ -68,8 +68,8 @@ With any of these options you will need your cast vote record in a spreadsheet i
 ![](../images/sheets_screenshot4.png)
 *This sheet is set to run an election with 3 candidates and 6 voters.*
 
-1. You will be prompted to authorize the election and then to grant necessary permissions to "Score Runoff Voting calculator." Click "Continue" then "Allow."
-1. The sheet will run your election and display the winners!
+3\. You will be prompted to authorize the election and then to grant necessary permissions to "Score Runoff Voting calculator." Click "Continue" then "Allow."
+4\. The sheet will run your election and display the winners!
 
 ![](../images/sheets_screenshot5.png)
 *Here are the election results:  Diego wins!*
