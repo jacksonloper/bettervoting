@@ -2,7 +2,7 @@
 layout: default
 title: STAR Voting on Google Sheets
 parent: Other Tools
-nav_order: 3
+child_nav_order: 3
 ---
 
 # STAR Voting on Google Sheets
@@ -11,10 +11,11 @@ There are a number of ways to host a STAR Voting election, either with [paper ba
 
 With this in mind the STAR Elections team has developed [a google sheet that can be used to run a STAR Election](https://docs.google.com/spreadsheets/d/12Mh6nscdahbT2lkjWxKDQRTbJGMVeKpLyXFG-eon_ss/edit?usp=sharing). The sheet is open sourced for 3rd party verification of your election results if needed.
 
-> STAR Voting Action, STAR Elections, and the STAR Voting Google Forms add-on team take your privacy and security seriously. Read our [terms of service](https://www.starvoting.us/terms_of_service) and [privacy policy](https://www.starvoting.us/privacy_policy) here.
+{: .highlight }
+STAR Voting Action, STAR Elections, and the STAR Voting Google Forms add-on team take your privacy and security seriously. Read our [terms of service](https://www.starvoting.us/terms_of_service) and [privacy policy](https://www.starvoting.us/privacy_policy) here.
  
-
-> Note: Google regularly publishes updates and occasionally those updates have caused our sheet to raise an error. Errors in data formatting will also raise errors. If you have any problems at all running your election please email us at elections@equal.vote
+{: .note }
+Note: Google regularly publishes updates and occasionally those updates have caused our sheet to raise an error. Errors in data formatting will also raise errors. If you have any problems at all running your election please email us at elections@equal.vote
 
  
 
@@ -74,8 +75,10 @@ With any of these options you will need your cast vote record in a spreadsheet i
 ![](../images/sheets_screenshot5.png)
 *Here are the election results:  Diego wins!*
 
-> NOTE ON TIES: In the event that there is a tie in either the scoring round or the automatic runoff. This sheet will advance the first candidate, not the best candidate. It is not set up to break the tie fairly for you.
-
+{: .note-title}
+> NOTE ON TIES
+> 
+> In the event that there is a tie in either the scoring round or the automatic runoff. This sheet will advance the first candidate, not the best candidate. It is not set up to break the tie fairly for you.
 > **Ties should manually be broken in favor of the candidate who was either higher scoring overall or who was preferred by more voters.** For ties where both candidates received the same total scores and where neither was preferred over the other the election is truly tied.
-
+> 
 > Most organizations have a protocol for ties agreed upon and in writing before the election begins. We recommend going with a random tie breaker such as a public coin toss.
