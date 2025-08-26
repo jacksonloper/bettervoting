@@ -42,9 +42,7 @@ Images and instructions below are for users on a PC. If you are using a phone or
 
 * Name your form with the name of your election and add your election description. This is a good place to share details like when the election closes and when winners will be announced. If your election is multi-winner make sure to tell your voters how many winners there will be. ![](../images/forms_screenshot4.png)
 
-* Click "settings" at the top right. We recommend the settings below, but it's up to you. 
-
-<img src="../images/forms_screenshot5.png" width="400px"/>
+* Click "settings" at the top right. We recommend the settings below, but it's up to you. <img src="../images/forms_screenshot5.png" width="400px"/>
 
 * Click over to the "Presentation" tab for other options like "shuffle question order."
 * Click "save" when you're done with settings. 
@@ -52,9 +50,7 @@ Images and instructions below are for users on a PC. If you are using a phone or
 
 ## STEP 4: Add Elections and Candidates:
 
-* Click the "add-on" puzzle piece at the top of your screen again. Select "STAR Voting Elections," then "Add Election." 
-
-<div style="width: 70%; max-width: 800px; display: flex; flex-direction: row; gap: 40px">
+* Click the "add-on" puzzle piece at the top of your screen again. Select "STAR Voting Elections," then "Add Election." <div style="width: 70%; max-width: 800px; display: flex; flex-direction: row; gap: 40px">
     <img src="../images/forms_screenshot7.png" style="height: 200px">
     <img src="../images/forms_screenshot8.png" style="height: 200px">
 </div>
