@@ -9,12 +9,13 @@ const headerTextColor = 'primary.contrastText'
 
 
 // https://stackoverflow.com/questions/55318477/how-to-make-material-ui-menu-based-on-hover-not-click
-export default function({name, desktopText=undefined, mobileIcon=undefined, href=undefined, target=undefined, children}){
+export default function({name, onClick=undefined, desktopText=undefined, mobileIcon=undefined, href=undefined, target=undefined, children}){
     const [anchorEl, setAnchorEl] = useState(null)
 
     let currentlyHovering = false;
 
-    const handleClick = (ev) => {
+    const tryDropdown = (ev) => {
+        if(onClick) return;
         if(href) return;
         if(anchorEl == ev.currentTarget) return;
         handleHover();
@@ -42,7 +43,7 @@ export default function({name, desktopText=undefined, mobileIcon=undefined, href
             size="large"
             aria-controls={`menu-${name}`}
             aria-haspopup="true"
-            onClick={handleClick}
+            onClick={onClick? onClick : tryDropdown}
             color="inherit"
             sx={{display: { xs: 'flex', md: 'none' }}}
         >
@@ -50,8 +51,8 @@ export default function({name, desktopText=undefined, mobileIcon=undefined, href
         </IconButton>}
         {desktopText && <Button
             color='inherit'
-            onClick={handleClick}
-            onMouseOver={handleClick}
+            onClick={onClick? onClick : tryDropdown}
+            onMouseOver={onClick? () => {} : tryDropdown}
             onMouseLeave={handleCloseHover}
             href={href}
             target={target}
@@ -85,6 +86,9 @@ export default function({name, desktopText=undefined, mobileIcon=undefined, href
             open={Boolean(anchorEl)}
             onClose={handleClose}
             sx={{ [`&.${popoverClasses.root}`]: {xs: {}, md: { pointerEvents: "none" }}, }}
+            disableScrollLock
+            // https://github.com/mui/material-ui/issues/10072
+            disableRestoreFocus
         >
             {children}
         </Menu>

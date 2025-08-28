@@ -160,11 +160,9 @@ const Header = () => {
                 {/**** ACCOUNT OPTIONS ****/}
                 <Box sx={{ flexGrow: 0, display: 'flex', gap: 4 }}>
                     {authSession.isLoggedIn() && <>
-                        <Button color='inherit' onClick={() => createElectionContext.openDialog()} sx={{display: { xs: 'none', md: 'flex' }}}>
-                            <Typography variant="h6" sx={navTextSx} color={headerTextColor} textTransform={'none'}>
-                                {t('nav.new_election')}
-                            </Typography>
-                        </Button>
+                        <NavMenu name='new_election' desktopText={t('nav.new_election')} onClick={() => createElectionContext.openDialog()}>
+                            <></>
+                        </NavMenu>
                         <NavMenu name='user' mobileIcon={<AccountCircleIcon/>} desktopText={t('nav.greeting', {name: authSession.getIdField('given_name')})}>
                             <MenuItem component={Link} href={authSession.accountUrl} target='_blank'>
                                 {t('nav.your_account')}
@@ -224,7 +222,6 @@ const Header = () => {
                         </Button>
                     }
                 </Box>
-
             </Toolbar>
         </AppBar >
     )

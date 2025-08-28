@@ -50,7 +50,9 @@ Images and instructions below are for users on a PC. If you are using a phone or
 
 ## STEP 4: Add Elections and Candidates:
 
-* Click the "add-on" puzzle piece at the top of your screen again. Select "STAR Voting Elections," then "Add Election." <div style="width: 70%; max-width: 800px; display: flex; flex-direction: row; gap: 40px">
+* Click the "add-on" puzzle piece at the top of your screen again. Select "STAR Voting Elections," then "Add Election."
+
+<div style="width: 70%; max-width: 800px; display: flex; flex-direction: row; gap: 40px">
     <img src="../images/forms_screenshot7.png" style="height: 200px">
     <img src="../images/forms_screenshot8.png" style="height: 200px">
 </div>
