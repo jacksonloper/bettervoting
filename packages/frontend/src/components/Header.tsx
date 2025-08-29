@@ -94,7 +94,7 @@ const Header = () => {
                 },
                 {
                     text: 'Hand Counting',
-                    href: 'https://www.starvoting.org/hand_count',
+                    href: '/HandCount',
                     target: '_self',
                 },
             ]
