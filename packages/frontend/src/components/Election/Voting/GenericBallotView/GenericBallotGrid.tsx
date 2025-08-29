@@ -40,10 +40,12 @@ export default function GenericBallotGrid({
         const colors = [
             'var(--ballot-border-teal)',
             'var(--ballot-even-row-teal)',
+            'var(--ballot-even-row-teal)',
             'var(--ballot-border-teal)',
             'var(--brand-white)',
+            'var(--brand-white)',
         ]
-        return colors[(rowIndex - numHeaderRows) % 4];
+        return colors[(rowIndex - numHeaderRows) % 6];
     }
 
     const fontSX = { fontSize: { xs: '.7rem', md: '.8rem' } }
@@ -61,7 +63,7 @@ export default function GenericBallotGrid({
         rows += `${dividerHeight} `;
         //Each candidate has 2 rows, one for the candidate name and one for the divider
         ballotContext.candidates.forEach(() => {
-          rows += `auto auto ${dividerHeight} `;
+          rows += `auto 50px ${dividerHeight} `;
         });
         return rows.trim();
       }, [leftTitle, columns.length, dividerHeight, ballotContext.candidates.length]);
@@ -95,7 +97,10 @@ export default function GenericBallotGrid({
     }}>
         <Box sx={{
             display: 'grid',
-            gridTemplateColumns: `fit-content(200px) repeat(${columns.length}, minmax(30px, 40px))`,
+            gridTemplateColumns: {
+                xs: `0px repeat(${columns.length}, minmax(30px, ${columns.length == 1 ? '100%' : '40px'}))`,
+                sm: `fit-content(200px) repeat(${columns.length}, minmax(30px, 40px))`,
+            },
             gridTemplateRows: gridTemplateRows,
             filter: ballotContext.instructionsRead ? '' : 'blur(.4rem)',
             margin: 'auto',
@@ -117,7 +122,7 @@ export default function GenericBallotGrid({
             {ballotContext.warningColumns && ballotContext.warningColumns.map((columnValue, columnIndex) =>
                 <Box key={columnIndex} aria-label={`Warning: Skipped Column ${columnValue}`}
                     sx={{
-                        gridArea: makeArea(1, 1 + columnValue, 1, numHeaderRows + 1 + ballotContext.candidates.length * 2),
+                        gridArea: makeArea(1, 1 + columnValue, 1, numHeaderRows + 1 + ballotContext.candidates.length * 3),
                         height: '100%',
                         backgroundColor: "brand.warningColumn"
                     }}
@@ -156,8 +161,8 @@ export default function GenericBallotGrid({
                     //and 1 to numHeaderRows to account for the divider between the header and the candidates
                     //and multiply by 2 to account for each candidate having a name and a divider
                     candidate={candidate} gridArea={{
-                        md: makeArea(numHeaderRows + 1 + 3 * candidateIndex + 1, columns.length),
-                        //md: makeArea(numHeaderRows + 1 + 3 * candidateIndex + 2, 1),
+                        xs: makeArea(numHeaderRows + 1 + 3 * candidateIndex + 1, 1, 2 + columns.length),
+                        sm: makeArea(numHeaderRows + 1 + 3 * candidateIndex + 2, 1),
                     }}/>
             )}
             <BubbleGrid

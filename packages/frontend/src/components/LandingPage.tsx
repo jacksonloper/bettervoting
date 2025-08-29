@@ -74,7 +74,7 @@ const LandingPage = () => {
             }}>
                 <Typography variant="h4" color={'lightShade.contrastText'}> {t('landing_page.hero.title')} </Typography>
                 <LandingPageCarousel />
-                <Typography component="p" sx={{margin: 'auto', width: '80%', textAlign: 'center'}}>
+                <Typography component="p" sx={{margin: 'auto', width: '80%', textAlign: 'center', mt: 4}}>
                     <i>"BetterVoting is your one-stop, open-source tool for handling all your election needs. Whether it's informal polls or highly secure elections, electronic or paper, single-seat or multi-seat, we've got you covered!" <span className="nobr">- The BetterVoting Team</span></i>
                 </Typography>
             </Box>
