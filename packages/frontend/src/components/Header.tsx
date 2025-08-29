@@ -3,7 +3,7 @@ import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { Box, IconButton, Link, Menu, MenuItem } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, Link, Menu, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import useAuthSession from './AuthSessionContextProvider';
@@ -126,7 +126,25 @@ const Header = () => {
                                 href={item.href}
                                 target={item.target}
                             >
-                                {item.text}
+                                {!item.items && item.text }
+                                {item.items && <Accordion
+                                        elevation={0}
+                                        disableGutters
+                                        sx={{
+                                            backgroundColor: "transparent",
+                                            width: '100%'
+                                        }}
+                                    >
+                                        <AccordionSummary sx={{p: 0, m: 0, minHeight: 0}}>
+                                            <span>{item.text}</span>
+                                        </AccordionSummary>
+                                        <AccordionDetails sx={{p: 0, m: 0, mt: '.5rem', background: '#eeeeee', width: '100%' }}>
+                                            {item.items.map((subitem, i) => 
+                                                <MenuItem key={i} component={Link} href={subitem.href} target={subitem.target}>{subitem.text}</MenuItem>
+                                            )}
+                                        </AccordionDetails>
+                                    </Accordion>
+                                }
                             </MenuItem>
                         )}
                         <MenuItem onClick={openFeedback}>

@@ -137,7 +137,7 @@ const LandingPageCarousel = () => {
                 margin: 'auto',
                 flexDirection: {xs: 'column', md: 'row'},
                 // height must be hard coded so that there isn't resizing when cycling between slides
-                height: {xs: '500px', md: '300px'}
+                height: {xs: '500px', sm: '300px'}
             }}
         >
             <Box sx={{textAlign: {xs: 'center', md: 'left'}}}>

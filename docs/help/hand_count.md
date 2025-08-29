@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Paper Ballots
+title: Hand Count
 nav_order: 6
 parent: BetterVoting Documentation
 ---
