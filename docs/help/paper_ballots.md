@@ -33,22 +33,22 @@ The type of ballots you'll use will depend on if you plan to conduct a hand coun
 
 **Single-winner STAR Voting: Score - Then - Automatic - Runoff**
 
-* Give your favorite(s) five stars. Give your last choice(s) zero stars. Show preference order and level of support. Equal scores indicate no preference. Those left blank receive zero stars.
-* The two highest scoring candidates are finalists. The finalist preferred by the majority wins. 
+* Give your favorite candidate(s) five stars. Give your last choice(s) zero or leave blank. Score other candidates as desired. Equal scores indicate equal support.
+* The two highest scoring candidates are finalists. Your full vote goes to the finalist you prefer. The finalist with the most votes wins.
 
 **Bloc STAR Voting: Score - Then - Automatic - Runoffs.**
 
 Bloc STAR Voting elects majority preferred winners for multi-winner elections.
 
-* This election will elect X candidates. Give your favorite(s) five stars. Give your last choice(s) zero stars. Show preference order and level of support. Equal scores indicate no preference. Those left blank receive zero stars.
-* The two highest scoring candidates are finalists and your vote goes to the the finalist you prefer. The finalist preferred by the most voters wins. This process continues until all seats are filled.
+* This election will elect X winners. Give your favorite five stars. Give your last choice zero or leave blank. Equal scores are allowed. Score other candidates as desired.
+* The two highest scoring candidates are finalists. Your full vote goes to the finalist you prefer. The candidate with the most votes is elected. This process repeats with remaining candidates until all seats are filled.
 
 **Proportional STAR Voting: Score - Then - Automatic - Runoffs.**
 
 Propositional STAR ensures that 1/x of voters can win 1 out of the X seats available.
 
-* This election will elect X candidates. Give your favorite(s) five stars. Give your last choice(s) zero stars. Show preference order and level of support. Equal scores indicate no preference. Those left blank receive zero stars.
-* Winners in Proportional STAR Voting are selected in rounds. Each round elects the candidate with the highest total score and then designates that candidate's strongest supporters as represented. Subsequent rounds include all voters who are not yet represented.
+* This election will elect 3 winners. Give your favorite five stars. Give your last choice zero or leave blank. Score other candidates as desired. Equal scores indicate equal support.
+* Winners in Proportional STAR are elected in rounds. Each round elects the candidate with the highest total score, then designates that candidate’s strongest supporters as represented. Subsequent rounds include all voters who are not yet fully represented.
 
 Make sure that your ballots cannot be forged and that you have a system in place (such as including a voter ID, QR code, or barcode on each ballot) to confirm that each ballot corresponds to a specific voter.
 
