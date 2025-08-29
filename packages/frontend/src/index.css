@@ -412,6 +412,8 @@ code {
   opacity: 1;
 }
 
+.nobr  {  white-space: nowrap;  hyphens: none;  }
+
 .heroFadeOut {
   transition: opacity 0.3s;
   opacity: 0;
@@ -420,7 +422,6 @@ code {
 
 .gradBackground {
   background: white;
-  background: linear-gradient(white, rgba(224,240,243,0.8));
   /*background-attachment: fixed;*/
 }
 

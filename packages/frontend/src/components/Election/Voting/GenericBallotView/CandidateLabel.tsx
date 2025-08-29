@@ -3,7 +3,7 @@ import { Candidate } from '@equal-vote/star-vote-shared/domain_model/Candidate';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 interface CandidateLabelProps {
   candidate: Candidate;
-  gridArea: string;
+  gridArea: any;
 }
 export default function CandidateLabel({ candidate, gridArea }: CandidateLabelProps) {
   return (

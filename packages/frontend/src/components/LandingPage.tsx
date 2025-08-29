@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useContext, useEffect, useRef } from 'react'
 import Box from '@mui/material/Box';
 import LandingPageFeatures from './LandingPage/LandingPageFeatures';
 import LandingPageSignUpBar from './LandingPage/LandingPageSignUpBar';
@@ -14,16 +14,22 @@ import LandingPageSupport from './LandingPage/LandingPageSupport';
 import LandingPageCarousel from './LandingPage/LandingPageCarousel';
 import LandingPageFeaturedElections from './LandingPage/LandingPageFeaturedElections';
 import LandingPageOtherTools from './LandingPage/LandingPageOtherTools';
+import { CreateElectionContext } from './ElectionForm/CreateElectionDialog';
 
 const LandingPage = () => {
 
     const checkUrl = useLocation();
+    const createElectionContext = useContext(CreateElectionContext);
     useEffect(() =>{
         if(checkUrl.pathname === "/Feedback")
         {
             openFeedback();
         }
-           
+
+        if(checkUrl.pathname === "/NewElection")
+        {
+            createElectionContext.openDialog()
+        }
     }, [checkUrl]);
 
     
@@ -68,6 +74,9 @@ const LandingPage = () => {
             }}>
                 <Typography variant="h4" color={'lightShade.contrastText'}> {t('landing_page.hero.title')} </Typography>
                 <LandingPageCarousel />
+                <Typography component="p" sx={{margin: 'auto', width: '80%', textAlign: 'center'}}>
+                    <i>"BetterVoting is your one-stop, open-source tool for handling all your election needs. Whether it's informal polls or highly secure elections, electronic or paper, single-seat or multi-seat, we've got you covered!" <span className="nobr">- The BetterVoting Team</span></i>
+                </Typography>
             </Box>
             <LandingPageStats/>
             <QuickPoll/>

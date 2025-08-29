@@ -17,6 +17,7 @@ import { makeID, ID_PREFIXES, ID_LENGTHS } from '@equal-vote/star-vote-shared/ut
 import { ReturnToClassicContext } from './ReturnToClassicDialog';
 import { useCookie } from '~/hooks/useCookie';
 import NavMenu from './NavMenu';
+import { PrimaryButton } from './styles';
 
 const headerTextColor = 'primary.contrastText'
 const Header = () => {
@@ -35,50 +36,35 @@ const Header = () => {
     const navItems = [
         {
             text: t('nav.about'),
-            items: [
-                {
-                    text: 'About BetterVoting',
-                    href: '/About',
-                    target: '_self',
-                },
-                {
-                    text: 'About The Equal Vote Coalition',
-                    href: '/About',
-                    target: '_self',
-                },
-                {
-                    text: 'About The Equal Vote Coalition',
-                    href: '/About',
-                    target: '_self',
-                },
-            ]
+            href: '/About',
+            target: '_self',
         },
         {
             text: 'Voting Methods',
             items: [
                 {
                     text: 'STAR Voting',
-                    href: '/About',
+                    href: 'https://www.equal.vote/star',
                     target: '_self',
                 },
                 {
                     text: 'Ranked Robin',
-                    href: '/About',
+                    href: 'https://www.equal.vote/ranked_robin',
                     target: '_self',
                 },
                 {
                     text: 'Approval',
-                    href: '/About',
+                    href: 'https://www.equal.vote/approval',
                     target: '_self',
                 },
                 {
                     text: 'STAR PR',
-                    href: '/About',
+                    href: 'https://www.equal.vote/pr',
                     target: '_self',
                 },
                 {
                     text: 'Ranked Choice Voting',
-                    href: '/About',
+                    href: 'https://www.equal.vote/beyond_rcv',
                     target: '_self',
                 },
             ]
@@ -87,7 +73,42 @@ const Header = () => {
             text: t('nav.public_elections'),
             href: '/OpenElections',
             target: '_self',
-        }
+        },
+        {
+            text: 'Paper Ballots',
+            items: [
+                {
+                    text: 'E-Voting w/ Paper Receipts',
+                    href: '/NewElection',
+                    target: '_self',
+                },
+                {
+                    text: 'Print Ballots',
+                    href: 'https://docs.google.com/presentation/d/1va-XEsUy0VI0jCTAHrQ_f9HNKex3VK9cm7WfF6jhUYM/edit',
+                    target: '_self',
+                },
+                {
+                    text: 'Paper Ballots',
+                    href: 'https://docs.bettervoting.com/help/paper_ballots.html',
+                    target: '_self',
+                },
+                {
+                    text: 'Hand Counting',
+                    href: 'https://www.starvoting.org/hand_count',
+                    target: '_self',
+                },
+            ]
+        },
+        {
+            text: 'Stories' ,
+            href: 'https://starvoting.org/case_studies',
+            target: '_self',
+        },
+        {
+            text: 'Create Election' ,
+            href: '/NewElection',
+            target: '_self',
+        },
     ];
 
     const returnToClassicContext = useContext(ReturnToClassicContext);
@@ -121,7 +142,7 @@ const Header = () => {
                 <IconButton
                     size="large"
                     href="/"
-                    sx={{display: 'flex', gap: 1, flexGrow: {xs: '1', md: '0'}, mr: {xs: 0, md: 5}}}>
+                    sx={{display: 'flex', gap: 1, flexGrow: {xs: '1', md: '0'}, mr: {xs: 0, md: 5}, py: '12px', px: '8px'}}>
                         {/* I don't remember what the margin right 5 was for, but I added xs since it was breaking mobile*/}
                         {
                             /* I thought the favicon looked a bit too busy */
@@ -133,7 +154,7 @@ const Header = () => {
 
                 {/**** DESKTOP OPTIONS ****/}
                 <Box
-                    sx={{ flexGrow: 100, flexWrap: 'wrap', display: { xs: 'none', md: 'flex' }, gap: 4, rowGap: 0, position: 'relative' }}>
+                    sx={{ flexGrow: 100, flexWrap: 'wrap', display: { xs: 'none', md: 'flex' }, gap: 4, rowGap: 0, position: 'relative', justifyContent: 'center' }}>
                     {navItems.map((item, i) => 
                         <NavMenu name={`desktop-nav-${i}`} desktopText={item.text} href={item.href} target={item.target}>
                             {!item.items && <></>}
@@ -158,11 +179,11 @@ const Header = () => {
                 </Box>
 
                 {/**** ACCOUNT OPTIONS ****/}
-                <Box sx={{ flexGrow: 0, display: 'flex', gap: 4 }}>
+                <Box sx={{ flexGrow: 0, ml: 5}}>
                     {authSession.isLoggedIn() && <>
-                        <NavMenu name='new_election' desktopText={t('nav.new_election')} onClick={() => createElectionContext.openDialog()}>
+                        {/*<NavMenu name='new_election' desktopText={t('nav.new_election')} onClick={() => createElectionContext.openDialog()}>
                             <></>
-                        </NavMenu>
+                        </NavMenu>*/}
                         <NavMenu name='user' mobileIcon={<AccountCircleIcon/>} desktopText={t('nav.greeting', {name: authSession.getIdField('given_name')})}>
                             <MenuItem component={Link} href={authSession.accountUrl} target='_blank'>
                                 {t('nav.your_account')}
@@ -215,11 +236,9 @@ const Header = () => {
                         </NavMenu></>
                     }
                     {!authSession.isLoggedIn() &&
-                        <Button color='inherit' onClick={() => authSession.openLogin()} >
-                            <Typography sx={navTextSx} color={headerTextColor}>
-                                {t('nav.sign_in')}
-                            </Typography>
-                        </Button>
+                        <PrimaryButton onClick={() => authSession.openLogin()} >
+                            {t('nav.sign_in')}
+                        </PrimaryButton>
                     }
                 </Box>
             </Toolbar>

@@ -3,7 +3,7 @@ import { popoverClasses } from "@mui/material/Popover";
 import { useState } from "react";
 import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
 
-const navTextSx = {fontWeight: 'bold', fontSize: '1rem'};
+const navTextSx = {fontWeight: 'bold', fontSize: '1.2rem'};
 
 const headerTextColor = 'primary.contrastText'
 
@@ -62,7 +62,7 @@ export default function({name, onClick=undefined, desktopText=undefined, mobileI
                 '&:hover': {textDecoration: 'underline'}
             }} 
         >
-            <Typography variant="h6" sx={navTextSx} color={headerTextColor} textTransform='none'>
+            <Typography component="p" sx={navTextSx} color={headerTextColor} textTransform='none'>
                 {desktopText} 
             </Typography>
         </Button>}

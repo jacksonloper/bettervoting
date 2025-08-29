@@ -353,10 +353,10 @@ keyword:
 
 # Nav Bar
 nav:
-  about: About 
+  about: About Us
   help: Help 
-  public_elections: Browse Elections
-  new_election: New Election
+  public_elections: Vote in a Poll
+  new_election: Create Election
   greeting: Hello, {{name}}
   feedback: Feedback?
   your_account: Your Account

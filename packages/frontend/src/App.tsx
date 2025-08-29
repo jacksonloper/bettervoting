@@ -1,5 +1,5 @@
-import { useContext } from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { useContext, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
 import { ThemeContextProvider } from './theme'
 import Header from './components/Header'
 import Election from './components/Election/Election'
@@ -71,6 +71,7 @@ const App = () => {
             <Routes>
               <Route path='/' element={<LandingPage />} />
               <Route path='/Feedback' element={<LandingPage />} />   {/*creating a new route for feedback page while still loading the landing page*/}
+              <Route path='/NewElection' element={<LandingPage />} />   {/*creating a new route for feedback page while still loading the landing page*/}
               <Route path='/About' element={<About />} />
               <Route path='/ElectionInvitations' element={<ElectionInvitations />} />
               <Route path='/ElectionsYouManage' element={<ElectionsYouManage />} />
