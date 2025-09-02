@@ -188,6 +188,17 @@ electionsRouter.delete('/Election/:id', asyncHandler(deleteElection))
  *   get:
  *     summary: Query Elections based on time range (sys-admin only)
  *     tags: [Elections]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               start_time:
+ *                 type: date
+ *               end_time:
+ *                 type: date
  *     responses:
  *       200:
  *         description: List of elections
@@ -222,7 +233,7 @@ electionsRouter.delete('/Election/:id', asyncHandler(deleteElection))
  *                         type: object
  *                     - type: null
   */
- electionsRouter.get('/QueryElections', asyncHandler(queryElections))
+ electionsRouter.post('/QueryElections', asyncHandler(queryElections))
  
  /** 
  * 

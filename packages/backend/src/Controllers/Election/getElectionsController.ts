@@ -75,7 +75,7 @@ const queryElections = async (req: IElectionRequest, res: Response, next: NextFu
 
     /////////// ELECTIONS WE OWN ////////////////
     res.json({
-        open_elections: await ElectionsModel.getElectionsCreatedInRange(req),
+        open_elections: await ElectionsModel.getElectionsCreatedInRange(req, req.body.start_time, req.body.end_time),
         closed_elections: [],
         popular_elections: [],
         vote_counts: await ElectionsModel.getBallotCountsForAllElections(req),

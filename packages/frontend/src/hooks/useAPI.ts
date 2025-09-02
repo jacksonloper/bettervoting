@@ -31,12 +31,12 @@ export const useGetElections = () => {
 }
 
 export const useQueryElections = () => {
-    return useFetch<undefined, {
+    return useFetch<{start_time: Date, end_time: Date}, {
         open_elections: Election[] | null,
         closed_elections: Election[] | null,
         popular_elections: Election[] | null,
         vote_counts: {v: number, election_id: string}[] | null,
-    }>('/API/QueryElections', 'get')
+    }>('/API/QueryElections', 'post')
 }
 
 export const usePostElection = () => {
