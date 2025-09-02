@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useGetElections, useQueryElections } from "../../hooks/useAPI";
 import { useNavigate } from 'react-router';
 import EnhancedTable from '../EnhancedTable';
-import {  Box, Container, Input, Link, Typography } from '@mui/material';
+import {  Box, Button, Container, Input, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { dateToLocalLuxonDate } from '../ElectionForm/Details/useEditElectionDetails';
 
@@ -32,6 +32,7 @@ export default () => {
     );
 
 
+
     return <Container>
         <Typography variant="h4">
             Search elections created within the time range.
@@ -46,7 +47,6 @@ export default () => {
                 onChange={(e) => {
                     const dt = DateTime.fromISO(e.target.value).setZone(timeZone, { keepLocalTime: true }).toJSDate();
                     setStartTime(dt)
-                    fetchElections({start_time: dt, end_time: endTime})
                 }}
             />
             <Typography> and </Typography>
@@ -57,10 +57,12 @@ export default () => {
                 onChange={(e) => {
                     const dt = DateTime.fromISO(e.target.value).setZone(timeZone, { keepLocalTime: true }).toJSDate();
                     setEndTime(dt)
-                    fetchElections({start_time: startTime, end_time: dt})
                 }}
             />
+
+            <Button variant='outlined' onClick={() => fetchElections({start_time: startTime, end_time: endTime})}>Search</Button>
         </Box>
+
 
         <EnhancedTable
             title='Elections'
