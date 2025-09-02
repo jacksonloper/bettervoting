@@ -109,8 +109,22 @@ export default class ElectionsDB implements IElectionStore {
             .execute()
     }
 
+    async getElectionsCreatedInRange(ctx: ILoggingContext): Promise<Election[] | null> {
+        Logger.debug(ctx, `${tableName}.getElectionsCreatedInRange`);
+
+        return  await this._postgresClient
+            .selectFrom(tableName)
+            .where('head', '=', true)
+            .where('public_archive_id', 'is', null)
+            // 30 days prior to today
+            .where('create_date', '>=', new Date(new Date().setDate(new Date().getDate() - 30)))
+            //.where('create_date', '>=', new Date('2025-08-25T00:00:00Z'))
+            //.where('create_date', '<=', new Date('2025-09-02T00:00:00Z'))
+            .selectAll()
+            .execute()
+    }
+
     getElections(id: string, email: string, ctx: ILoggingContext): Promise<Election[] | null> {
-        // When I filter in trello it adds "filter=member:arendpetercastelein,overdue:true" to the URL, I'm following the same pattern here
         Logger.debug(ctx, `${tableName}.getAll ${id}`);
 
         let query = this._postgresClient
@@ -131,7 +145,6 @@ export default class ElectionsDB implements IElectionStore {
     }
 
     getElectionsSourcedFromPrior(ctx: ILoggingContext): Promise<Election[] | null> {
-        // When I filter in trello it adds "filter=member:arendpetercastelein,overdue:true" to the URL, I'm following the same pattern here
         Logger.debug(ctx, `${tableName}.getSourcedFromPrior`);
 
         return this._postgresClient

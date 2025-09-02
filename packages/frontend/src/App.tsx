@@ -28,6 +28,7 @@ import NameMatchingTester from './components/NameMatchingTester'
 import StyleGuide from './components/StyleGuide'
 import { PrimaryButton } from './components/styles'
 import ScrollToTop from './hooks/scrollToTop'
+import QueryTool from './components/Elections/QueryTool'
 
 const App = () => {
   const {t} = useSubstitutedTranslation();
@@ -106,6 +107,9 @@ const App = () => {
               <Route path='/style_guide' element={<StyleGuide/>} />
                 <Route path='/style-guide' element={<Redirect href='/style_guide'/>} /> 
                 <Route path='/styleguide' element={<Redirect href='/style_guide'/>} /> 
+              <Route path='/query_tool' element={<QueryTool />} />
+                <Route path='/query-tool' element={<Redirect href='/query_tool'/>} /> 
+                <Route path='/querytool' element={<Redirect href='/query_tool'/>} /> 
             </Routes>
           </Box>
           <Footer />
