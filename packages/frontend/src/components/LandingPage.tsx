@@ -21,12 +21,12 @@ const LandingPage = () => {
     const checkUrl = useLocation();
     const createElectionContext = useContext(CreateElectionContext);
     useEffect(() =>{
-        if(checkUrl.pathname === "/Feedback")
+        if(checkUrl.pathname === "/feedback")
         {
             openFeedback();
         }
 
-        if(checkUrl.pathname === "/NewElection")
+        if(checkUrl.pathname === "/new_election")
         {
             createElectionContext.openDialog()
         }
