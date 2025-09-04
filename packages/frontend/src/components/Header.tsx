@@ -212,10 +212,10 @@ const Header = () => {
                             {/*<MenuItem component={Link} href='/ElectionInvitations'>
                                 Election Invitations
                             </MenuItem>*/}
-                            <MenuItem component={Link} href='/ElectionsYouManage'>
+                            <MenuItem component={Link} href='/manage'>
                                 {t('nav.my_elections')}
                             </MenuItem>
-                            <MenuItem component={Link} href='/ElectionsYouVotedIn'>
+                            <MenuItem component={Link} href='/vote_history'>
                                 {t('nav.past_elections')}
                             </MenuItem>
                             <MenuItem
