@@ -36,7 +36,7 @@ const Header = () => {
     const navItems = [
         {
             text: t('nav.about'),
-            href: '/About',
+            href: '/about',
             target: '_self',
         },
         {
@@ -71,7 +71,7 @@ const Header = () => {
         },
         {
             text: t('nav.public_elections'),
-            href: '/OpenElections',
+            href: '/browse',
             target: '_self',
         },
         {
@@ -79,7 +79,7 @@ const Header = () => {
             items: [
                 {
                     text: 'E-Voting w/ Paper Receipts',
-                    href: '/NewElection',
+                    href: '/new_election',
                     target: '_self',
                 },
                 {
@@ -94,7 +94,7 @@ const Header = () => {
                 },
                 {
                     text: 'Hand Counting',
-                    href: '/HandCount',
+                    href: '/hand_count',
                     target: '_self',
                 },
             ]
@@ -106,7 +106,7 @@ const Header = () => {
         },
         {
             text: 'Create Election' ,
-            href: '/NewElection',
+            href: '/new_election',
             target: '_self',
         },
     ];
