@@ -32,6 +32,7 @@ ballot:
   drop_here: Drop candidates here to rank them
   no_available: No available candidates
   instructions: Drag candidates from the left to the right list. Candidates on the right are your ranked order; left means unranked.
+  instructions_rcv_draggable: Drag candidates left → right. Rank 1 is your top choice. Unranked means no preference.
 
   dialog_submit_title: Submit {{capital_ballot}}?
   dialog_send_receipt: Send Ballot Receipt Email?

@@ -1,8 +1,9 @@
 import React, { useContext, useMemo, useRef, useState, useEffect } from 'react';
-import { Box, Paper, Typography, Tooltip } from '@mui/material';
+import { Box, Paper, Typography, Tooltip, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { BallotContext } from './VotePage';
 import { useSubstitutedTranslation } from '~/components/util';
+import useElection from '../../ElectionContextProvider';
 import { BallotCandidate } from './VotePage';
 
 type Score = number | null;
@@ -47,6 +48,7 @@ function CandidateCard({ name }: { name: string }) {
 export default function DraggableIRVBallotView() {
   const ballotContext = useContext(BallotContext);
   const { t } = useSubstitutedTranslation();
+  const { election } = useElection();
 
   // Split ranked vs unranked from current context scores
   const { unrankedCandidates, rankedCandidates } = useMemo(() => {
@@ -123,11 +125,49 @@ export default function DraggableIRVBallotView() {
           </Typography>
         )}
 
-        <Typography align="center" sx={{ mb: 3, typography: { sm: 'body1', xs: 'body2' } }}>
-          Drag candidates from the left to the right list. Candidates on the right are your ranked order; left means unranked.
-        </Typography>
+        {(() => {
+          const numWinners = ballotContext.race.num_winners;
+          const spelled = numWinners <= 10 ? t(`spelled_numbers.${numWinners}`) : numWinners;
+          const methodName = t('methods.rcv.full_name');
+          return (
+            <Box sx={{ mb: 3 }}>
+              <Typography align="center" sx={{ typography: { sm: 'body1', xs: 'body2' } }}>
+                {t('ballot.this_election_uses_draggable', {
+                  voting_method: methodName,
+                  count: numWinners,
+                  spelled_count: spelled,
+                })}
+              </Typography>
+              <Typography align="center" sx={{ mt: 1, typography: { sm: 'body1', xs: 'body2' } }}>
+                {t('ballot.instructions_rcv_draggable', 'Drag candidates left → right. Rank 1 is your top choice. Unranked means no preference.')}
+              </Typography>
+              {election?.settings?.require_instruction_confirmation && (
+                <FormGroup>
+                  <FormControlLabel
+                    sx={{ pt: 1, justifyContent: 'center' }}
+                    control={
+                      <Checkbox
+                        disabled={ballotContext.instructionsRead}
+                        checked={ballotContext.instructionsRead}
+                        onChange={() => ballotContext.setInstructionsRead()}
+                      />
+                    }
+                    label={t('ballot.instructions_checkbox')}
+                  />
+                </FormGroup>
+              )}
+            </Box>
+          );
+        })()}
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 3, alignItems: 'start' }}>
+        <Box sx={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          columnGap: 3,
+          alignItems: 'start',
+          filter: ballotContext.instructionsRead ? '' : 'blur(.4rem)',
+          pointerEvents: ballotContext.instructionsRead ? 'auto' : 'none'
+        }}>
           {/* Left Column - Unranked */}
           <Box sx={{ minWidth: 0 }}>
             <Typography variant="h6" gutterBottom align="right">
