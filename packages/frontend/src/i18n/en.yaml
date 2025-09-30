@@ -1163,7 +1163,10 @@ emails:
       This link is unique to you, be careful not to share this email with others
   blank:
     subject: An update from {{title}}
-    body: __ELECTION_HOME_BUTTON__
+    body: >
+      __ELECTION_HOME_BUTTON__ ⬅️ Use this to share the election
+
+      __VOTE_BUTTON__ ⬅️ Use this to provide voters their unique link to vote
 
 # Upload Election Tool
 upload_elections:
