@@ -32,7 +32,12 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
     const election = req.election
     let results: ElectionResults[] = []
     for (let race_index = 0; race_index < election.races.length; race_index++) {
-        const candidates: candidate[] = election.races[race_index].candidates.map((c: Candidate, i) => ({
+        const race = election.races[race_index]
+        const useWriteIns = race.enable_write_in && race.write_in_candidates && race.write_in_candidates.length > 0
+        const writeInCandidates = useWriteIns ? race.write_in_candidates : []
+
+        // Build candidates list including write-ins
+        const candidates: candidate[] = race.candidates.map((c: Candidate, i) => ({
             id: c.candidate_id,
             name: c.candidate_name,
             // These will be set later
@@ -40,15 +45,47 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
             votesPreferredOver: {},
             winsAgainst: {}
         }))
-        const race_id = election.races[race_index].race_id
+
+        // Add write-in candidates to the candidates list
+        if (useWriteIns) {
+            writeInCandidates.forEach((wc, i) => {
+                candidates.push({
+                    id: `write-in-${i}`,
+                    name: wc.candidate_name,
+                    tieBreakOrder: race.candidates.length + i,
+                    votesPreferredOver: {},
+                    winsAgainst: {}
+                })
+            })
+        }
+
+        const race_id = race.race_id
         const cvr: rawVote[] = []
-        const num_winners = election.races[race_index].num_winners
-        const voting_method = election.races[race_index].voting_method
+        const num_winners = race.num_winners
+        const voting_method = race.voting_method
+
         ballots.forEach((ballot: Ballot) => {
             const vote = ballot.votes.find((vote) => vote.race_id === race_id)
             if (vote) {
+                const marks: { [key: string]: number | null } = {}
+
+                vote.scores.forEach(score => {
+                    if (score.candidate_id) {
+                        // Regular candidate
+                        marks[score.candidate_id] = score.score
+                    } else if (useWriteIns && score.write_in_name) {
+                        // Write-in candidate - find which approved write-in it matches
+                        const writeInIndex = writeInCandidates.findIndex(wc =>
+                            wc.aliases.includes(score.write_in_name!)
+                        )
+                        if (writeInIndex !== -1) {
+                            marks[`write-in-${writeInIndex}`] = score.score
+                        }
+                    }
+                })
+
                 cvr.push({
-                    marks: Object.fromEntries(vote.scores.map(score => [score.candidate_id, score.score])),
+                    marks: marks,
                     overvote_rank: vote?.overvote_rank,
                     has_duplicate_rank: vote?.has_duplicate_rank,
                 })
