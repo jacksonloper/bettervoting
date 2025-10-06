@@ -7,6 +7,8 @@ import { IBallotContext } from '../VotePage';
 import CandidateLabel from './CandidateLabel';
 import { useMemo } from 'react';
 import ColumnHeadings from './ColumnHeadings';
+import { Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 interface GenericBallotGridProps {
     ballotContext: IBallotContext;
@@ -16,6 +18,7 @@ interface GenericBallotGridProps {
     columnValues: number[];
     leftTitle: string;
     rightTitle: string;
+    methodKey?: string;
 }
 
 export default function GenericBallotGrid({
@@ -26,7 +29,8 @@ export default function GenericBallotGrid({
     columnValues,
     leftTitle,
     rightTitle,
-    
+    methodKey,
+
 
 }: GenericBallotGridProps) {
     const numHeaderRows = Number(leftTitle != '') + Number(columns.length > 1);
@@ -157,10 +161,12 @@ export default function GenericBallotGrid({
             {ballotContext.candidates.map((candidate, candidateIndex) =>
                 <CandidateLabel
                     key={candidateIndex}
-                    //make area is 1 indexed, so we add 1 to candidateIndex, 
+                    //make area is 1 indexed, so we add 1 to candidateIndex,
                     //and 1 to numHeaderRows to account for the divider between the header and the candidates
                     //and multiply by 2 to account for each candidate having a name and a divider
-                    candidate={candidate} gridArea={{
+                    candidate={candidate}
+                    candidateIndex={candidateIndex}
+                    gridArea={{
                         xs: makeArea(numHeaderRows + 1 + 3 * candidateIndex + 1, 1, 2 + columns.length),
                         sm: makeArea(numHeaderRows + 1 + 3 * candidateIndex + 2, 1),
                     }}/>
@@ -174,6 +180,24 @@ export default function GenericBallotGrid({
                 makeArea={makeArea}
                 fontSX={fontSX}
             />
+
+            {/* Write-in candidate button for STAR voting */}
+            {ballotContext.addWriteInCandidate && methodKey === 'star' && ballotContext.race.enable_write_in && (
+                <Box sx={{
+                    gridArea: makeArea(numHeaderRows + 1 + 3 * ballotContext.candidates.length + 1, 1, 2 + columns.length),
+                    display: 'flex',
+                    justifyContent: 'center',
+                    py: 2
+                }}>
+                    <Button
+                        variant="outlined"
+                        startIcon={<AddIcon />}
+                        onClick={ballotContext.addWriteInCandidate}
+                    >
+                        Add Write-in Candidate
+                    </Button>
+                </Box>
+            )}
         </Box>
     </Box>
 }

@@ -116,6 +116,7 @@ export default function GenericBallotView({
             rightTitle={rightTitle}
             onClick={onClick}
             columnValues={columnValues}
+            methodKey={methodKey}
           />
 
           <Grid item xs={10} sx={{ p:5, px:4 }} className="footer">

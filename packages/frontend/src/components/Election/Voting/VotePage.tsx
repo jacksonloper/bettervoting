@@ -49,6 +49,9 @@ export interface IBallotContext {
   setAlertBubbles?: (alertBubbles: [number, number][]) => void,
   warnings?: {severity: 'warning' | 'error', message: string}[],
   setWarnings?: (warnings: {severity: 'warning' | 'error', message: string}[]) => void,
+  addWriteInCandidate?: () => void,
+  removeWriteInCandidate?: (candidateIndex: number) => void,
+  updateWriteInName?: (candidateIndex: number, newName: string) => void,
 }
 
 export interface IPage {
@@ -140,6 +143,38 @@ const VotePage = () => {
     setPages([...pages])
   }, [pages, currentPage])
 
+  const addWriteInCandidate = useCallback(() => {
+    const writeInCount = pages[currentPage].candidates.filter(c => c.is_write_in).length;
+    const newCandidate: BallotCandidate = {
+      candidate_id: '', // Empty string for write-ins per mikefranze format
+      candidate_name: '',
+      is_write_in: true,
+      score: null
+    };
+    pages[currentPage].candidates.push(newCandidate);
+    setPages([...pages]);
+  }, [pages, currentPage]);
+
+  const removeWriteInCandidate = useCallback((candidateIndex: number) => {
+    if (candidateIndex !== -1 && pages[currentPage].candidates[candidateIndex].is_write_in) {
+      pages[currentPage].candidates.splice(candidateIndex, 1);
+      setPages([...pages]);
+    }
+  }, [pages, currentPage]);
+
+  const updateWriteInName = useCallback((candidateIndex: number, newName: string) => {
+    setPages(prevPages => {
+      const nextPages = [...prevPages];
+      if (candidateIndex !== -1 && nextPages[currentPage].candidates[candidateIndex].is_write_in) {
+        nextPages[currentPage].candidates[candidateIndex] = {
+          ...nextPages[currentPage].candidates[candidateIndex],
+          candidate_name: newName
+        };
+      }
+      return nextPages;
+    });
+  }, [currentPage]);
+
   const { isPending, makeRequest: postBallot } = usePostBallot(election.election_id)
   const onUpdate = (pageIndex, newRaceScores) => {
     setPages(prevPages => {
@@ -166,8 +201,21 @@ const VotePage = () => {
       election.races.map((race, race_index) => (
         {
           race_id: race.race_id,
-          scores: candidateScores[race_index].map(c => ({ candidate_id: c.candidate_id, score: c.score } as Score)).sort((a: Score, b: Score) => {
-            return candidateIDs[race_index].indexOf(a.candidate_id) - candidateIDs[race_index].indexOf(b.candidate_id)
+          scores: candidateScores[race_index].map(c => {
+            const score: Score = {
+              candidate_id: c.candidate_id,
+              score: c.score
+            };
+            // Add write_in_name for write-in candidates (those with empty candidate_id)
+            if (c.is_write_in) {
+              score.write_in_name = c.candidate_name || '';
+            }
+            return score;
+          }).sort((a: Score, b: Score) => {
+            // Write-ins have empty candidate_id, so put them at the end
+            const indexA = a.candidate_id ? candidateIDs[race_index].indexOf(a.candidate_id) : candidateIDs[race_index].length;
+            const indexB = b.candidate_id ? candidateIDs[race_index].indexOf(b.candidate_id) : candidateIDs[race_index].length;
+            return indexA - indexB;
           })
         }))
     const ballot: NewBallot = {
@@ -219,6 +267,9 @@ const VotePage = () => {
         setWarnings: setWarnings,
         alertBubbles: pages[currentPage].alertBubbles,
         setAlertBubbles: setAlertBubbles,
+        addWriteInCandidate: addWriteInCandidate,
+        removeWriteInCandidate: removeWriteInCandidate,
+        updateWriteInName: updateWriteInName,
 
       }}>
         <BallotPageSelector votingMethod={pages[currentPage].voting_method} />

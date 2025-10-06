@@ -10,6 +10,7 @@ export interface Candidate {
     candidate_url?: string; // link to info about candidate
     partyUrl?:      string; // link to info about party
     photo_filename?:string; // link to info about party
+    is_write_in?:   boolean; // indicates if this is a write-in candidate
   }
 export function candidateValidation(obj:Candidate):string | null {
   if (!obj.candidate_id || typeof obj.candidate_id !== 'string') {

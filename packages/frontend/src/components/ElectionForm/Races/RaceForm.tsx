@@ -6,7 +6,7 @@ import TextField from "@mui/material/TextField";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Typography from '@mui/material/Typography';
-import { Box, FormHelperText, Radio, RadioGroup, Stack, Step, StepButton, StepContent, Stepper } from "@mui/material"
+import { Box, Checkbox, FormHelperText, Radio, RadioGroup, Stack, Step, StepButton, StepContent, Stepper } from "@mui/material"
 import IconButton from '@mui/material/IconButton'
 import ExpandLess from '@mui/icons-material/ExpandLess'
 import ExpandMore from '@mui/icons-material/ExpandMore'
@@ -411,6 +411,26 @@ export default function RaceForm({
                     </Typography>
                     <FormHelperText error sx={{ pl: 1, mt: -1 }}>
                         {errors.candidates}
+                    </FormHelperText>
+                </Grid>
+                <Grid item xs={12} sx={{ m: 0, p: 1 }}>
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={editedRace.enable_write_in ?? false}
+                                onChange={(e) => {
+                                    applyRaceUpdate(race => { race.enable_write_in = e.target.checked })
+                                }}
+                                disabled={isDisabled || editedRace.voting_method !== 'STAR'}
+                            />
+                        }
+                        label="Allow write-in candidates"
+                    />
+                    <FormHelperText sx={{ pl: 4, mt: -1 }}>
+                        {editedRace.voting_method === 'STAR'
+                            ? 'Voters can add their own candidates when voting'
+                            : 'Write-in candidates are only available for STAR voting'
+                        }
                     </FormHelperText>
                 </Grid>
             </Grid>
