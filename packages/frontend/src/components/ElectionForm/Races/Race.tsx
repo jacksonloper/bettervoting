@@ -1,16 +1,18 @@
 import { useState } from "react"
 import Typography from '@mui/material/Typography';
-import { Box, Paper, Tooltip } from "@mui/material"
+import { Box, Paper, Tooltip, Badge } from "@mui/material"
 import IconButton from '@mui/material/IconButton'
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import WarningIcon from '@mui/icons-material/Warning';
 import RaceDialog from './RaceDialog';
 import { useEditRace } from './useEditRace';
 import RaceForm from './RaceForm';
 import useElection from '../../ElectionContextProvider';
 import { ContentCopy } from '@mui/icons-material';
 import { Race as IRace } from "@equal-vote/star-vote-shared/domain_model/Race";
+import { Link } from 'react-router-dom';
 
 export interface NewRace extends Omit<IRace, 'voting_method'> {
     voting_method: "STAR" | "STAR_PR" | "Approval" | "RankedRobin" | "IRV" | "Plurality" | "STV" | ""
@@ -22,7 +24,7 @@ interface RaceProps {
 
 export default function Race({ race, race_index }: RaceProps) {
 
-    const { election } = useElection()
+    const { election, results, permissions } = useElection()
     const { editedRace, errors, setErrors, applyRaceUpdate, onSaveRace, onDeleteRace, onDuplicateRace } = useEditRace(race, race_index)
 
     const [open, setOpen] = useState(false);
@@ -31,6 +33,13 @@ export default function Race({ race, race_index }: RaceProps) {
 
     const [activeStep, setActiveStep] = useState(0);
     const resetStep = () => setActiveStep(0);
+
+    const numUnprocessedWriteIns = race.enable_write_in && results && results[race_index]?.numUnprocessedWriteIns
+        ? results[race_index].numUnprocessedWriteIns
+        : 0;
+
+    const canProcessWriteIns = permissions && permissions.includes('canProcessWriteIns');
+    const showWriteInBadge = race.enable_write_in && election.state !== 'draft';
 
     const onSave = async () => {
         const success = await onSaveRace()
@@ -52,6 +61,32 @@ export default function Race({ race, race_index }: RaceProps) {
                 <Box sx={{ width: '100%', pl: 2 }}>
                     <Typography variant="h5" component="h5">{race.title}</Typography>
                 </Box>
+                {showWriteInBadge && (
+                    <Box sx={{ flexShrink: 1, p: 1 }}>
+                        <Tooltip title={
+                            !canProcessWriteIns
+                                ? 'Write-ins enabled (no permission to process)'
+                                : numUnprocessedWriteIns > 0
+                                    ? `${numUnprocessedWriteIns} unprocessed write-in${numUnprocessedWriteIns > 1 ? 's' : ''}`
+                                    : 'All write-ins processed'
+                        }>
+                            <IconButton
+                                aria-label='Process write-ins'
+                                component={canProcessWriteIns ? Link : 'button'}
+                                to={canProcessWriteIns ? `/${election.election_id}/admin/writeins/${race.race_id}` : undefined}
+                                disabled={!canProcessWriteIns}
+                                sx={{ color: !canProcessWriteIns ? 'text.disabled' : numUnprocessedWriteIns > 0 ? 'error.main' : 'success.main' }}
+                            >
+                                <Badge
+                                    badgeContent={numUnprocessedWriteIns > 0 ? numUnprocessedWriteIns : '✓'}
+                                    color={!canProcessWriteIns ? 'default' : numUnprocessedWriteIns > 0 ? 'error' : 'success'}
+                                >
+                                    <WarningIcon />
+                                </Badge>
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                )}
                 <Box sx={{ flexShrink: 1, p: 1 }}>
                     <Tooltip title='Duplicate'>
                         <IconButton

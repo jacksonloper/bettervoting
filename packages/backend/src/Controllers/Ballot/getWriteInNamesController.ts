@@ -50,11 +50,12 @@ const getWriteInNamesController = async (req: IElectionRequest, res: Response, n
             //For each ballot, find vote for current race
             const vote = ballot.votes.find((vote) => vote.race_id === race_id)
             if (vote) {
-                // Loop through scores and look for 
+                // Loop through scores and look for write-ins
                 vote.scores.forEach(score => {
                     if (score.write_in_name) {
                         // If name is already a property, increment value by one. Otherwise set to 1
-                        write_in_result.names[score.write_in_name] = write_in_result.names[score.write_in_name] ? write_in_result.names[score.write_in_name] + 1 : 1
+                        const name = score.write_in_name
+                        write_in_result.names[name] = write_in_result.names[name] ? write_in_result.names[name] + 1 : 1
                     }
                 })
             }

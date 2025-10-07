@@ -11,4 +11,4 @@ export * from './sandboxController';
 export * from './sendInvitesController';
 export * from './setPublicResultsController';
 export * from './sendEmailController';
-export * from './setWriteInResultsController'
+export * from './setWriteInCandidatesController'

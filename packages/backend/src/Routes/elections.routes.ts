@@ -22,7 +22,7 @@ import {
     setPublicResults,
     sendEmailsController,
     queryElections,
-    setWriteInResults,
+    setWriteInCandidates,
 } from '../Controllers/Election';
 import {upload, uploadImageController} from '../Controllers/uploadImageController';
 import asyncHandler from 'express-async-handler';
@@ -656,7 +656,7 @@ electionsRouter.post('/images',upload.single("file"), asyncHandler(uploadImageCo
 
 
 // TODO: write swagger
-electionsRouter.post('/Election/:id/setWriteInResults',asyncHandler(setWriteInResults))
+electionsRouter.post('/Election/:id/setWriteInCandidates',asyncHandler(setWriteInCandidates))
 
 
 

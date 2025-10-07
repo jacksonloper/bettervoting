@@ -9,24 +9,24 @@ import { Response, NextFunction } from 'express';
 
 var ElectionsModel = ServiceLocator.electionsDb();
 
-const setWriteInResults = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    Logger.info(req, `setWriteInResults ${req.election.election_id}`);
+const setWriteInCandidates = async (req: IElectionRequest, res: Response, next: NextFunction) => {
+    Logger.info(req, `setWriteInCandidates ${req.election.election_id}`);
     expectPermission(req.user_auth.roles, permissions.canProcessWriteIns)
     const election = req.election
-    const write_in_results = req.body.write_in_results
+    const write_in_candidates = req.body.write_in_candidates
 
-    if (typeof write_in_results !== 'object') {
-        throw new BadRequest('write_in_results setting not provided or incorrect type')
+    if (typeof write_in_candidates !== 'object') {
+        throw new BadRequest('write_in_candidates not provided or incorrect type')
     }
 
-    const race_index = election.races.map(race => race.race_id).indexOf(write_in_results.race_d);
-    if (race_index != -1) {
+    const race_index = election.races.map(race => race.race_id).indexOf(write_in_candidates.race_id);
+    if (race_index === -1) {
         throw new BadRequest('Invalid Race ID')
     }
     if (!election.races[race_index].enable_write_in) {
         throw new BadRequest('Write-In not enabled for this race')
     }
-    election.races[race_index].write_in_candidates = write_in_results.write_in_candidates
+    election.races[race_index].write_in_candidates = write_in_candidates.write_in_candidates
 
     const updatedElection = await ElectionsModel.updateElection(election, req, `Update Write-In Candidates`);
     if (!updatedElection) {
@@ -39,5 +39,5 @@ const setWriteInResults = async (req: IElectionRequest, res: Response, next: Nex
 }
 
 export {
-    setWriteInResults,
+    setWriteInCandidates,
 }

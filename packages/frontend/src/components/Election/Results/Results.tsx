@@ -25,6 +25,7 @@ import ScoreRangeWidget from "./components/ScoreRangeWidget";
 import useFeatureFlags from "~/components/FeatureFlagContextProvider";
 import STAREqualPreferencesWidget from "./STAR/STAREqualPreferencesWidget";
 import VoterErrorStatsWidget from "./components/VoterErrorStatsWidget";
+import WriteInInfoWidget from "./components/WriteInInfoWidget";
 import { irvWinnerSearch } from "./IRV/ifc";
 import { IRVTopResultsView } from "./IRV/top";
 
@@ -46,6 +47,9 @@ function STARResultsViewer({ filterRandomFromLogs }: {filterRandomFromLogs: bool
     {rounds == 1 &&
       <DetailExpander>
         <STARDetailedResults/>
+        <WidgetContainer>
+          <WriteInInfoWidget/>
+        </WidgetContainer>
         <DetailExpander level={1}>
           <STARResultDetailedStepsWidget results={results} rounds={rounds} t={t} filterRandomFromLogs={filterRandomFromLogs}/>
           <STAREqualPreferencesWidget frontRunners={candidates.slice(0, 2) as [starCandidate, starCandidate]}/>

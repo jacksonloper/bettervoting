@@ -10,6 +10,7 @@ import { IElectionRequest } from "../../IRequest";
 import { Response, NextFunction } from 'express';
 import { vote, ElectionResults, candidate, rawVote } from "@equal-vote/star-vote-shared/domain_model/ITabulators";
 import { Candidate } from "@equal-vote/star-vote-shared/domain_model/Candidate";
+import { matchesWriteInCandidate } from "@equal-vote/star-vote-shared/domain_model/WriteIn";
 var seedrandom = require('seedrandom');
 
 const BallotModel = ServiceLocator.ballotsDb();
@@ -46,16 +47,18 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
             winsAgainst: {}
         }))
 
-        // Add write-in candidates to the candidates list
-        if (useWriteIns) {
+        // Add approved write-in candidates to the candidates list
+        if (useWriteIns && writeInCandidates) {
             writeInCandidates.forEach((wc, i) => {
-                candidates.push({
-                    id: `write-in-${i}`,
-                    name: wc.candidate_name,
-                    tieBreakOrder: race.candidates.length + i,
-                    votesPreferredOver: {},
-                    winsAgainst: {}
-                })
+                if (wc.approved) {
+                    candidates.push({
+                        id: `write-in-${i}`,
+                        name: wc.candidate_name,
+                        tieBreakOrder: race.candidates.length + i,
+                        votesPreferredOver: {},
+                        winsAgainst: {}
+                    })
+                }
             })
         }
 
@@ -74,11 +77,11 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
                     if (score.candidate_id) {
                         // Regular candidate
                         marks[score.candidate_id] = score.score
-                    } else if (useWriteIns && score.write_in_name) {
+                    } else if (useWriteIns && score.write_in_name && writeInCandidates) {
                         // Write-in candidate - find which approved write-in it matches
                         const write_in_name = score.write_in_name
                         const writeInIndex = writeInCandidates.findIndex(wc =>
-                            wc.aliases.includes(write_in_name!)
+                            matchesWriteInCandidate(write_in_name, wc)
                         )
                         if (writeInIndex < 0) {
                             numUnprocessedWriteIns += 1
@@ -101,10 +104,9 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
         }
         const msg = `Tabulating results for ${voting_method} election`
         Logger.info(req, msg);
-        results[race_index] = {
-            ...VotingMethods[voting_method](candidates, cvr, num_winners, election.settings),
-            numUnprocessedWriteIns: useWriteIns ? numUnprocessedWriteIns : undefined
-        }
+        const tabResults = VotingMethods[voting_method](candidates, cvr, num_winners, election.settings) as any
+        tabResults.numUnprocessedWriteIns = useWriteIns ? numUnprocessedWriteIns : undefined
+        results[race_index] = tabResults
     }
     
     res.json(

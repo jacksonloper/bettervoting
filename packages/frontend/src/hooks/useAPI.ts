@@ -7,6 +7,7 @@ import { ElectionResults } from "@equal-vote/star-vote-shared/domain_model/ITabu
 import { Ballot, NewBallot, AnonymizedBallot, NewBallotWithVoterID, BallotSubmitStatus } from "@equal-vote/star-vote-shared/domain_model/Ballot";
 import { email_request_data } from "@equal-vote/star-vote-backend/src/Controllers/Election/sendEmailController"
 import { NumberObject } from "~/components/util";
+import { WriteInData, WriteInCandidate } from "@equal-vote/star-vote-shared/domain_model/WriteIn";
 
 export const useGetElection = (electionID: string | undefined) => {
     return useFetch<undefined, {
@@ -153,4 +154,16 @@ export const useGetSandboxResults = () => {
         num_winners: number,
         votingMethod: VotingMethod}, { results: ElectionResults, nWinners: number, candidates: string[]}>
         (`/API/Sandbox`, 'post')
+}
+
+export const useGetWriteInNames = (election_id: string | undefined) => {
+    return useFetch<undefined, { write_in_data: WriteInData[] }>(`/API/Election/${election_id}/getWriteIns`, 'get')
+}
+
+export const useSetWriteInCandidates = (election_id: string | undefined) => {
+    return useFetch<{ write_in_candidates: { race_id: string, write_in_candidates: WriteInCandidate[] } }, { election: Election }>(
+        `/API/Election/${election_id}/setWriteInCandidates`,
+        'post',
+        'Write-in candidates updated!'
+    )
 }
