@@ -30,6 +30,16 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
         throw new BadRequest(msg);
     }
 
+    // For 0 or 1 ballots, return empty results (frontend will show appropriate message)
+    if (ballots.length <= 1) {
+        Logger.info(req, `Insufficient ballots (${ballots.length}) to compute full results for election ${electionId}`);
+        res.json({
+            election: req.election,
+            results: []
+        })
+        return
+    }
+
     const election = req.election
     let results: ElectionResults[] = []
     for (let race_index = 0; race_index < election.races.length; race_index++) {

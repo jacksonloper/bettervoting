@@ -16,6 +16,7 @@ import useAuthSession from '../../AuthSessionContextProvider';
 import useFeatureFlags from '../../FeatureFlagContextProvider';
 import ElectionAuthForm from '~/components/ElectionForm/Details/ElectionAuthForm';
 import useSnackbar from "~/components/SnackbarContext";
+import { useEffect } from 'react';
 
 type SectionProps = {
     text: {[key: string]: string}
@@ -26,10 +27,15 @@ type SectionProps = {
 
 const AdminHome = () => {
     const authSession = useAuthSession()
-    const { election, refreshElection: fetchElection, permissions } = useElection()
+    const { election, refreshElection: fetchElection, permissions, fetchResultsIfNeeded } = useElection()
     const {t} = useSubstitutedTranslation(election.settings.term_type, {time_zone: election.settings.time_zone});
     const { makeRequest } = useSetPublicResults(election.election_id)
     const { setSnack } = useSnackbar()
+
+    // Fetch results for write-in badges if needed
+    useEffect(() => {
+        fetchResultsIfNeeded()
+    }, [election])
     const togglePublicResults = async () => {
         const public_results = !election.settings.public_results
         await makeRequest({ public_results: public_results })
