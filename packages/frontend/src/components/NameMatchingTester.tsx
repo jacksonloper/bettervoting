@@ -140,14 +140,6 @@ const computeHybridSimilarity = (name1: string, name2: string): number => {
     const initialScore = bothInitialized ? 0 : compareInitials(tokens1.initials, tokens2.initials);
 
     const bonus = wordScore > 0 && initialScore > 0 ? 0.1 : 0; // 10% bonus if both match
-    console.log(name1, name2)
-    console.log(tokens1, tokens2)
-    console.log('wordScore')
-    console.log(wordScore)
-    console.log('initialScore')
-    console.log(initialScore)
-    console.log('bonus')
-    console.log(bonus)
     return Math.max(wordScore, initialScore) + bonus;
 }
 
@@ -155,7 +147,7 @@ const NameMatchingTester = () => {
 
     const [names, setNames] = useState('John Fitzgerald Kennedy\nJFK\nJ.F.K\nJohn Kennedy\nJohn F. Kennedy\nJohn F. Kennedy Jr.\nJack Franklin Knight\nRobert\nRobbert\nAbdw\nSilence  Dogood')
     const [existingCandidates, setExistingCandidates] = useState('{\n  "John Fitzgerald Kennedy Jr.": ["JFK", "ABDW"],\n  "Benjamin Franklin": ["Silence Dogood"]\n}')
-    const [groups, setGroups] = useState(new Array<group>())
+    const [groups, setGroups] = useState<group[]>([])
     const [jsonError, setJsonError] = useState<string | null>(null)
     const [algorithmLog, setAlgorithmLog] = useState<string[]>([])
     const [method, setMethod] = useState<MatchingMethods>('hybrid')
@@ -191,6 +183,9 @@ const NameMatchingTester = () => {
         const unmatched: string[] = []
         const newGroups: group[] = []
 
+        // Track which write-ins have been matched
+        const matchedWriteIns = new Set<string>()
+
         // First, match write-ins to existing candidates
         Object.entries(existingCandidatesMap).forEach(([officialName, aliases], idx) => {
             const matched: string[] = []
@@ -203,17 +198,19 @@ const NameMatchingTester = () => {
                 // Check if this write-in matches the official name (by score) or is identical to an alias
                 const officialScore = similarityFn(writeIn, officialName)
 
-                // Check for exact alias match (case-insensitive, trimmed)
-                const normalizedWriteIn = writeIn.toLowerCase().trim()
+                // Check for exact alias match (case-insensitive)
+                const normalizedWriteIn = writeIn.toLowerCase()
                 const exactAliasMatch = aliases.some(alias =>
                     alias.toLowerCase().trim() === normalizedWriteIn
                 )
 
                 if (officialScore >= threshold && !matched.includes(writeIn)) {
                     matched.push(writeIn)
+                    matchedWriteIns.add(writeIn)
                     log.push(`  ✓ Matched "${originalWriteIn}" to official name (score: ${officialScore.toFixed(3)})`)
                 } else if (exactAliasMatch && !matched.includes(writeIn)) {
                     matched.push(writeIn)
+                    matchedWriteIns.add(writeIn)
                     const matchedAlias = aliases.find(a => a.toLowerCase().trim() === normalizedWriteIn)
                     log.push(`  ✓ Matched "${originalWriteIn}" to alias "${matchedAlias}" (*)`)
                 }
@@ -235,22 +232,11 @@ const NameMatchingTester = () => {
                     names: [officialName, ...aliases, ...uniqueMatches]
                 })
             }
-
-            // Track which write-ins were matched
-            matched.forEach(m => {
-                const index = unmatched.indexOf(m)
-                if (index === -1) {
-                    // Not in unmatched yet, so mark as matched
-                } else {
-                    unmatched.splice(index, 1)
-                }
-            })
         })
 
-        // Collect unmatched write-ins
+        // Collect unmatched write-ins in one pass
         writeInNames.forEach(writeIn => {
-            const isMatched = newGroups.some(g => g.names.includes(writeIn))
-            if (!isMatched) {
+            if (!matchedWriteIns.has(writeIn)) {
                 unmatched.push(writeIn)
             }
         })
