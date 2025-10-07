@@ -53,6 +53,7 @@ export interface candidate {
     tieBreakOrder: number,
     votesPreferredOver: keyedObject<number>,
     winsAgainst: keyedObject<boolean>,
+    hareScores?: number[], // Optional - used by IRV/STV
 }
 
 export interface genericSummaryData<CandidateType extends candidate> {

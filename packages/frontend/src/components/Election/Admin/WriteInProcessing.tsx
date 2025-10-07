@@ -27,7 +27,7 @@ import { useGetWriteInNames, useSetWriteInCandidates } from '../../../hooks/useA
 import { WriteInCandidate, matchesWriteInCandidate } from '@equal-vote/star-vote-shared/domain_model/WriteIn';
 
 export default function WriteInProcessing() {
-    const { race_id } = useParams<{ race_id: string }>();
+    const { race_id } = useParams();
     const { election, refreshElection } = useElection();
     const election_id = election.election_id;
     const navigate = useNavigate();

@@ -23,6 +23,7 @@ export interface IElectionContext {
         election: Election;
     }>;
     fetchResultsIfNeeded: () => Promise<void>;
+    refetchResults: () => Promise<void>;
     permissions: string[];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     t: (key?: string, v?: object) => any;
@@ -37,6 +38,7 @@ export const ElectionContext = createContext<IElectionContext>({
     refreshElection: () => Promise.resolve(false),
     updateElection: () => Promise.resolve(false),
     fetchResultsIfNeeded: () => Promise.resolve(),
+    refetchResults: () => Promise.resolve(),
     permissions: [],
     t: () => undefined
 })
@@ -70,6 +72,10 @@ export const ElectionContextProvider = ({ id, children }: { id: string, children
         }
     };
 
+    const refetchResults = async () => {
+        await fetchResults();
+    };
+
     // This should use local timezone by default, consumers will have to call it directly if they want it to use the election timezone
     const {t} = useSubstitutedTranslation(data?.election?.settings?.term_type ?? 'election');
 
@@ -82,6 +88,7 @@ export const ElectionContextProvider = ({ id, children }: { id: string, children
             refreshElection: refresh,
             updateElection: applyElectionUpdate,
             fetchResultsIfNeeded,
+            refetchResults,
             permissions: data?.voterAuth?.permissions,
             t,
         }}>

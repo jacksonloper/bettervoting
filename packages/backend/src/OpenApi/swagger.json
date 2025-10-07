@@ -197,6 +197,12 @@
       },
       "CandidateType": {
         "properties": {
+          "hareScores": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
           "id": {
             "type": "string"
           },
@@ -230,6 +236,12 @@
       },
       "CandidateType_1": {
         "properties": {
+          "hareScores": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
           "id": {
             "type": "string"
           },
@@ -263,6 +275,12 @@
       },
       "CandidateType_2": {
         "properties": {
+          "hareScores": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
           "id": {
             "type": "string"
           },
@@ -1553,6 +1571,12 @@
       },
       "allocatedScoreCandidate": {
         "properties": {
+          "hareScores": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
           "id": {
             "type": "string"
           },
@@ -1744,6 +1768,12 @@
       },
       "approvalCandidate": {
         "properties": {
+          "hareScores": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
           "id": {
             "type": "string"
           },
@@ -1930,6 +1960,12 @@
       },
       "candidate": {
         "properties": {
+          "hareScores": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
           "id": {
             "type": "string"
           },
@@ -2242,6 +2278,12 @@
       },
       "pluralityCandidate": {
         "properties": {
+          "hareScores": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
+          },
           "id": {
             "type": "string"
           },
@@ -2401,6 +2443,12 @@
         "properties": {
           "copelandScore": {
             "type": "number"
+          },
+          "hareScores": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
           },
           "id": {
             "type": "string"
@@ -2879,6 +2927,12 @@
         "properties": {
           "fiveStarCount": {
             "type": "number"
+          },
+          "hareScores": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array"
           },
           "id": {
             "type": "string"

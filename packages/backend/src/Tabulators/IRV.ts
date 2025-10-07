@@ -28,15 +28,36 @@ export function STV(candidates: candidate[], votes: rawVote[], nWinners = 1, ele
 export function IRV_STV(candidates: candidate[], votes: rawVote[], nWinners = 1, electionSettings?:ElectionSettings, proportional = true) {
 
     const {tallyVotes, summaryData} = getSummaryData<irvCandidate, Omit<irvSummaryData, 'nExhaustedViaOverVote' | 'nExhaustedViaSkippedRank' | 'nExhaustedViaDuplicateRank'>>(
-        candidates.map(c => ({...c, hareScores: []})), 
+        candidates.map(c => ({...c, hareScores: []})),
 		votes,
         'ordinal',
         undefined,
 		[
-			makeBoundsTest(0, electionSettings?.max_rankings ?? Infinity), 
+			makeBoundsTest(0, electionSettings?.max_rankings ?? Infinity),
 			makeAbstentionTest(),
 		]
 	);
+
+    // Early return if no votes - no rounds needed
+    if (tallyVotes.length === 0) {
+        const emptyResults: irvResults = {
+            votingMethod: proportional? 'STV' : 'IRV',
+            elected: [],
+            tied: [],
+            other: summaryData.candidates,
+            summaryData: {
+                ...summaryData,
+                candidates: summaryData.candidates.map(c => ({...c, hareScores: c.hareScores.map(h => h.valueOf())}))
+            },
+            roundResults: [],
+            exhaustedVoteCounts: [],
+            tieBreakType: 'none',
+            nExhaustedViaOvervote: 0,
+            nExhaustedViaSkippedRank: 0,
+            nExhaustedViaDuplicateRank: 0,
+        }
+        return emptyResults
+    }
 
     // Initialize output data structure
     const results: irvResults = {
@@ -64,7 +85,7 @@ export function IRV_STV(candidates: candidate[], votes: rawVote[], nWinners = 1,
         votes: [] as weightedVote[]
     }]))
 
-    // Initial vote distribution, moves weighted votes into the appropriate candidate pools 
+    // Initial vote distribution, moves weighted votes into the appropriate candidate pools
     distributeVotes(remainingCandidates, candidateVoteLists, weightedVotes, results, electionSettings)
 
     // Set quota based on number of winners and if its proportional
@@ -75,7 +96,7 @@ export function IRV_STV(candidates: candidate[], votes: rawVote[], nWinners = 1,
         quota = Math.floor(activeVotes.length/2 + 1)
     }
 
-    while (results.elected.length < nWinners) {
+    while (results.elected.length < nWinners && remainingCandidates.length > 0) {
 
         if (DEBUG) console.log("IRV Round");
 

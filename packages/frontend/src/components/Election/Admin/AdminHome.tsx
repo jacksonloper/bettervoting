@@ -27,15 +27,18 @@ type SectionProps = {
 
 const AdminHome = () => {
     const authSession = useAuthSession()
-    const { election, refreshElection: fetchElection, permissions, fetchResultsIfNeeded } = useElection()
+    const { election, refreshElection: fetchElection, permissions, fetchResultsIfNeeded, refetchResults } = useElection()
     const {t} = useSubstitutedTranslation(election.settings.term_type, {time_zone: election.settings.time_zone});
     const { makeRequest } = useSetPublicResults(election.election_id)
     const { setSnack } = useSnackbar()
 
-    // Fetch results for write-in badges if needed
+    // Fetch results for write-in badges on mount and when election changes
     useEffect(() => {
-        fetchResultsIfNeeded()
-    }, [election])
+        if (election?.state !== 'draft') {
+            // Refetch results when election changes (e.g., write-ins processed)
+            refetchResults()
+        }
+    }, [election?.election_id, election?.races])
     const togglePublicResults = async () => {
         const public_results = !election.settings.public_results
         await makeRequest({ public_results: public_results })

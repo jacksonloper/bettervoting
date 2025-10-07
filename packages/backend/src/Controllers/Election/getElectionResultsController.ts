@@ -30,28 +30,18 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
         throw new BadRequest(msg);
     }
 
-    // For 0 or 1 ballots, return empty results (frontend will show appropriate message)
-    if (ballots.length <= 1) {
-        Logger.info(req, `Insufficient ballots (${ballots.length}) to compute full results for election ${electionId}`);
-        res.json({
-            election: req.election,
-            results: []
-        })
-        return
-    }
-
     const election = req.election
     let results: ElectionResults[] = []
     for (let race_index = 0; race_index < election.races.length; race_index++) {
         const race = election.races[race_index]
         const useWriteIns = race.enable_write_in && race.write_in_candidates && race.write_in_candidates.length > 0
         const writeInCandidates = useWriteIns ? race.write_in_candidates : []
+        const voting_method = race.voting_method
 
         // Build candidates list including write-ins
         const candidates: candidate[] = race.candidates.map((c: Candidate, i) => ({
             id: c.candidate_id,
             name: c.candidate_name,
-            // These will be set later
             tieBreakOrder: i,
             votesPreferredOver: {},
             winsAgainst: {}
@@ -75,7 +65,6 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
         const race_id = race.race_id
         const cvr: rawVote[] = []
         const num_winners = race.num_winners
-        const voting_method = race.voting_method
         let numUnprocessedWriteIns = 0
 
         ballots.forEach((ballot: Ballot) => {
