@@ -32,7 +32,7 @@ const getBallotsByElectionID = async (req: IElectionRequest, res: Response, next
         ip_hash: undefined
     }));
 
-    Logger.debug(req, "ballots = ", ballots);
+    Logger.debug(req, "ballots = ", scrubbedBallots);
     res.json({ election: req.election, ballots: scrubbedBallots })
 }
 
