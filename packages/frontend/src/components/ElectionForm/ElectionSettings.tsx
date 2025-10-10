@@ -10,11 +10,13 @@ import structuredClone from '@ungap/structured-clone';
 import EditIcon from '@mui/icons-material/Edit';
 import { useSubstitutedTranslation } from '../util';
 import { ElectionSettings as IElectionSettings, TermType, electionSettingsValidation } from '@equal-vote/star-vote-shared/domain_model/ElectionSettings';
+import useFeatureFlags from '../FeatureFlagContextProvider';
 import useSnackbar from '../SnackbarContext';
 
 export default function ElectionSettings() {
     const { election, refreshElection, updateElection } = useElection()
     const { setSnack } = useSnackbar()
+    const flags = useFeatureFlags();
     const min_rankings = 3;
     const max_rankings = Number(process.env.REACT_APP_MAX_BALLOT_RANKS) ? Number(process.env.REACT_APP_MAX_BALLOT_RANKS) : 8;
     const default_rankings = Number(process.env.REACT_APP_DEFAULT_BALLOT_RANKS) ? Number(process.env.REACT_APP_DEFAULT_BALLOT_RANKS) : 6;
@@ -143,7 +145,7 @@ export default function ElectionSettings() {
                                 
 
                                 <CheckboxSetting setting='random_candidate_order'/>
-                                <CheckboxSetting setting='ballot_updates' disabled/>
+                                <CheckboxSetting setting='ballot_updates' disabled={!flags.isSet('BALLOT_UPDATES') || election.settings.voter_access === 'open'}/>
                                 <CheckboxSetting setting='public_results'/>
                                 <CheckboxSetting setting='random_ties' disabled checked/>
                                 <CheckboxSetting setting='voter_groups' disabled/>

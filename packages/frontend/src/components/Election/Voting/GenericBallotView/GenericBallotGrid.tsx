@@ -63,7 +63,7 @@ export default function GenericBallotGrid({
         rows += `${dividerHeight} `;
         //Each candidate has 2 rows, one for the candidate name and one for the divider
         ballotContext.candidates.forEach(() => {
-          rows += `auto 50px ${dividerHeight} `;
+          rows += `auto minmax(50px, max-content) ${dividerHeight} `;
         });
         return rows.trim();
       }, [leftTitle, columns.length, dividerHeight, ballotContext.candidates.length]);
@@ -99,7 +99,7 @@ export default function GenericBallotGrid({
             display: 'grid',
             gridTemplateColumns: {
                 xs: `0px repeat(${columns.length}, minmax(30px, ${columns.length == 1 ? '100%' : '40px'}))`,
-                sm: `fit-content(200px) repeat(${columns.length}, minmax(30px, 40px))`,
+                sm: `fit-content(300px) repeat(${columns.length}, minmax(30px, 40px))`,
             },
             gridTemplateRows: gridTemplateRows,
             filter: ballotContext.instructionsRead ? '' : 'blur(.4rem)',

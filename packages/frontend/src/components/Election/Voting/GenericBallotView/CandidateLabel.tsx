@@ -13,7 +13,7 @@ export default function CandidateLabel({ candidate, gridArea }: CandidateLabelPr
       }}>
       <Typography className="rowHeading" align='left' variant="h6" component="h6" sx={{
         wordBreak: "break-word",
-        mx: {
+        px: {
           xs: 0,
           sm: '10px',
         },
