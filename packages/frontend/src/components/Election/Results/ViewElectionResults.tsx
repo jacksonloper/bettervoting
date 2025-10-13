@@ -9,12 +9,20 @@ import DraftWarning from '../DraftWarning';
 import ShareButton from '../ShareButton';
 import { BallotDataExport } from './BallotDataExport';
 import SupportBlurb from '../SupportBlurb';
+import useRace from "~/components/RaceContextProvider";
 
 const ViewElectionResults = () => {
     const { election } = useElection();
     const { data, isPending, makeRequest: getResults } = useGetResults(election.election_id)
     useEffect(() => { getResults() }, [])
     const {t} = useSubstitutedTranslation(election.settings.term_type);
+    {/*
+    const {results} = useRace();
+    console.log("In ViewElectionResults, results = " + results)
+    const votingMethod = results.votingMethod;
+    */}
+    const votingMethod = "STAR"
+    console.log("In ViewElectionsResults, votingMethod = " + votingMethod);
     return (
       <>
         <DraftWarning />
@@ -43,6 +51,11 @@ const ViewElectionResults = () => {
             <Typography variant="h4" component="h4">
               {t("results.election_title", { title: election.title })}
             </Typography>
+              <Typography variant="h5" component="h5">
+                  {/* {t("Voting Method: " +   "this method" )} */}
+                  {t('results.method_context', {voting_method: votingMethod})}
+
+              </Typography>
             {isPending && <div> {t("results.loading_election")} </div>}
             {!isPending && !data && (
               <>
@@ -87,9 +100,14 @@ const ViewElectionResults = () => {
                       px: { xs: 5, sm: 1 },
                     }}
                   >
+
                     <BallotDataExport election={election} />
+
+
                   </Box>
                 )}
+
+                  {/* voting method is currently below here */}
 
                 {election.settings.voter_access !== "closed" && (
                   <Box
