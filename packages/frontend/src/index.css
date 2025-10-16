@@ -291,6 +291,7 @@ code {
 
 /* Ballot Bubbles*/
 .circle {
+  background: rgb(0 0 0 / 0%);
   display: inline-flex;
   flex-direction:column;
   width: calc(6*.32em);
