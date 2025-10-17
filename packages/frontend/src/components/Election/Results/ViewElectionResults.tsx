@@ -16,20 +16,13 @@ const ViewElectionResults = () => {
     useEffect(() => { getResults() }, [])
     const {t} = useSubstitutedTranslation(election.settings.term_type);
 
-    console.log("In ViewElectionsResults, election_id = " + election.election_id);
+    {/* Move voting method and learning link from bottom right */}
 
-    console.log("In ViewElectionsResults, number of races = " + election.races.length)
-
-    {/*  How to get the index for the race array */}
     const votingMethod = election.races[0].voting_method
     const {i18n} = useSubstitutedTranslation();
-    {/* Need to make voting method lower case */}
     const lowerMethod = votingMethod.toLowerCase();
     const learnLinkKey = `methods.${lowerMethod}.learn_link`
-    console.log("learnLinkKey", learnLinkKey)
-    console.log("i18n.exists(learnLinkKey)", i18n.exists(learnLinkKey))
 
-    console.log("In ViewElectionsResults, votingMethod = " + votingMethod);
     return (
       <>
         <DraftWarning />
@@ -72,13 +65,7 @@ const ViewElectionResults = () => {
               </>
             )}
 
-            {data?.results.map((results, race_index) => (
-              <Results
-                key={`results-${race_index}`}
-                race={election.races[race_index]}
-                results={results}
-              />
-            ))}
+
             <hr />
             <Box
               sx={{
