@@ -9,19 +9,26 @@ import DraftWarning from '../DraftWarning';
 import ShareButton from '../ShareButton';
 import { BallotDataExport } from './BallotDataExport';
 import SupportBlurb from '../SupportBlurb';
-import useRace from "~/components/RaceContextProvider";
 
 const ViewElectionResults = () => {
     const { election } = useElection();
     const { data, isPending, makeRequest: getResults } = useGetResults(election.election_id)
     useEffect(() => { getResults() }, [])
     const {t} = useSubstitutedTranslation(election.settings.term_type);
-    {/*
-    const {results} = useRace();
-    console.log("In ViewElectionResults, results = " + results)
-    const votingMethod = results.votingMethod;
-    */}
-    const votingMethod = "STAR"
+
+    console.log("In ViewElectionsResults, election_id = " + election.election_id);
+
+    console.log("In ViewElectionsResults, number of races = " + election.races.length)
+
+    {/*  How to get the index for the race array */}
+    const votingMethod = election.races[0].voting_method
+    const {i18n} = useSubstitutedTranslation();
+    {/* Need to make voting method lower case */}
+    const lowerMethod = votingMethod.toLowerCase();
+    const learnLinkKey = `methods.${lowerMethod}.learn_link`
+    console.log("learnLinkKey", learnLinkKey)
+    console.log("i18n.exists(learnLinkKey)", i18n.exists(learnLinkKey))
+
     console.log("In ViewElectionsResults, votingMethod = " + votingMethod);
     return (
       <>
@@ -52,8 +59,9 @@ const ViewElectionResults = () => {
               {t("results.election_title", { title: election.title })}
             </Typography>
               <Typography variant="h5" component="h5">
-                  {/* {t("Voting Method: " +   "this method" )} */}
                   {t('results.method_context', {voting_method: votingMethod})}
+                  {i18n.exists(learnLinkKey) && <><br/><a href={t(learnLinkKey)} style={{color: 'inherit'}}>{t('results.learn_link_text', {voting_method: votingMethod})}</a></>}
+
 
               </Typography>
             {isPending && <div> {t("results.loading_election")} </div>}
