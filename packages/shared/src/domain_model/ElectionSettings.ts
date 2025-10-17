@@ -88,7 +88,7 @@ export function electionSettingsValidation(obj:ElectionSettings): string | null 
   if (obj.reminders && typeof obj.reminders !== 'boolean'){
     return "Invalid Reminders";
   }
-  if (obj.ballot_updates && typeof obj.ballot_updates !== 'boolean'){
+  if (obj.ballot_updates && typeof obj.ballot_updates !== 'boolean') {
     return "Invalid Ballot Updates";
   }
   if (obj.public_results && typeof obj.public_results !== 'boolean'){
