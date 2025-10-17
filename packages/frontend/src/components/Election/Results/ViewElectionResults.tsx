@@ -51,13 +51,13 @@ const ViewElectionResults = () => {
             <Typography variant="h4" component="h4">
               {t("results.election_title", { title: election.title })}
             </Typography>
-              <Typography variant="h5" component="h5">
-                  {t('results.method_context', {voting_method: votingMethod})}
-                  {i18n.exists(learnLinkKey) && <><br/><a href={t(learnLinkKey)} style={{color: 'inherit'}}>{t('results.learn_link_text', {voting_method: votingMethod})}</a></>}
-
-
-              </Typography>
-            {isPending && <div> {t("results.loading_election")} </div>}
+            <Typography variant="h5" component="h5">
+              {t('results.method_context', {voting_method: votingMethod})}
+            </Typography>
+            <Typography variant="h6" component="h6">
+              {i18n.exists(learnLinkKey) && <><br/><a href={t(learnLinkKey)} style={{color: 'inherit'}}>{t('results.learn_link_text', {voting_method: votingMethod})}</a></>}
+            </Typography>
+              {isPending && <div> {t("results.loading_election")} </div>}
             {!isPending && !data && (
               <>
                 The election admins have not released the results yet. Feel free
