@@ -59,7 +59,7 @@ export const defaultElection: NewElection = {
             ip_address: false
         },
         ballot_updates: false,
-        public_results: true,
+        public_results: false,
         time_zone: DateTime.now().zone.name as TimeZone,
         random_candidate_order: false,
         require_instruction_confirmation: true,

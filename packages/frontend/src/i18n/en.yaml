@@ -685,6 +685,10 @@ tabulation_logs:
 #### PRIORITY 4 : Info Bubbles ####
 #######################################
 
+disabled_msgs:
+    ballot_updates: not supported with preliminary results
+    public_results: not supported with vote editing
+
 # Info bubbles
 tips:
   public_archive: 
