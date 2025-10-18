@@ -18,10 +18,12 @@ const ViewElectionResults = () => {
 
     {/* Move voting method and learning link from bottom right */}
 
-    const votingMethod = election.races[0].voting_method
+    const votingMethodBase = election.races[0].voting_method
     const {i18n} = useSubstitutedTranslation();
-    const lowerMethod = votingMethod.toLowerCase();
+    const lowerMethod = votingMethodBase.toLowerCase();
     const learnLinkKey = `methods.${lowerMethod}.learn_link`
+    const votingMethod = t(`methods.${lowerMethod}.full_name`)
+
 
     return (
       <>
