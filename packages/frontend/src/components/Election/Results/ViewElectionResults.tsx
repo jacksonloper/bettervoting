@@ -17,12 +17,20 @@ const ViewElectionResults = () => {
     const {t} = useSubstitutedTranslation(election.settings.term_type);
 
     {/* Move voting method and learning link from bottom right */}
-
-    const votingMethodBase = election.races[0].voting_method
+    {/* To be generalized to # of races */}
+    const raceCount = election.races.length
     const {i18n} = useSubstitutedTranslation();
-    const lowerMethod = votingMethodBase.toLowerCase();
-    const learnLinkKey = `methods.${lowerMethod}.learn_link`
-    const votingMethod = t(`methods.${lowerMethod}.full_name`)
+    const votingMethodBase = []
+    const lowerMethod = []
+    const learnLinkKey = []
+    const votingMethod = []
+
+    for (let i=0; i<raceCount; i++) {
+        votingMethodBase[i] = election.races[i].voting_method;
+        lowerMethod[i] = votingMethodBase[i].toLowerCase();
+        learnLinkKey[i] = `methods.${lowerMethod[i]}.learn_link`;
+        votingMethod[i] = t(`methods.${lowerMethod[i]}.full_name`)
+    }
 
 
     return (
@@ -53,11 +61,26 @@ const ViewElectionResults = () => {
             <Typography variant="h4" component="h4">
               {t("results.election_title", { title: election.title })}
             </Typography>
-            <Typography variant="h5" component="h5">
-              {t('results.method_context', {voting_method: votingMethod})}
-              {i18n.exists(learnLinkKey) && <><br/><a href={t(learnLinkKey)} style={{color: 'inherit'}}>{t('results.learn_link_text', {voting_method: votingMethod})}</a></>}
-            </Typography>
-            {isPending && <div> {t("results.loading_election")} </div>}
+
+
+            {/* Voting method and learning link */}
+              {/* Test of array of voting methods and learning links */}
+              {Array.from({ length: raceCount }).map((_, i) => (
+                  <Typography key={i} variant="h5" component="h5">
+                      {t('results.method_context', { voting_method: votingMethod[i] })}
+                      {i18n.exists(learnLinkKey[i]) && (
+                          <>
+                              <br />
+                              <a href={t(learnLinkKey[i])} style={{ color: 'inherit' }}>
+                                  {t('results.learn_link_text', { voting_method: votingMethod[i] })}
+                              </a>
+                          </>
+                      )}
+                  </Typography>
+              ))}
+
+
+              {isPending && <div> {t("results.loading_election")} </div>}
             {!isPending && !data && (
               <>
                 The election admins have not released the results yet. Feel free
@@ -65,6 +88,13 @@ const ViewElectionResults = () => {
               </>
             )}
 
+            {data?.results.map((results, race_index) => (
+                <Results
+                    key={`results-${race_index}`}
+                    race={election.races[race_index]}
+                    results={results}
+                />
+            ))}
 
             <hr />
             <Box

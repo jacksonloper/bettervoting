@@ -258,11 +258,12 @@ function ResultsViewer({ methodKey, children }:{methodKey: string, children:Reac
   return (
     <Box className="resultViewer">
       {children}
-
+       {/*
       <Typography component="p" sx={{textAlign: 'right', color: '#808080', fontSize: '.8rem', marginTop: '20px'}}>
         {t('results.method_context', {voting_method: votingMethod})}
         {i18n.exists(learnLinkKey) && <><br/><a href={t(learnLinkKey)} style={{color: 'inherit'}}>{t('results.learn_link_text', {voting_method: votingMethod})}</a></>}
       </Typography>
+      */}
 
     </Box>
   );
