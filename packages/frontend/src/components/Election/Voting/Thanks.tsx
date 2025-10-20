@@ -54,9 +54,9 @@ const Thanks = () => {
                 }
 
                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'column' } }} >
-                    {election.state == 'open' && election.settings.ballot_updates && voterAuth?.authorized_voter &&
+                    {election.state == 'open' && election.settings.ballot_updates &&
                         MainButton({
-                            href: `/${String(election?.election_id)}/vote`,
+                            href: (voterAuth?.authorized_voter ? `/${String(election?.election_id)}/vote` : `/${String(election?.election_id)}`),
                             text: t('editable_ballots.edit_vote')
                         })
                     }
