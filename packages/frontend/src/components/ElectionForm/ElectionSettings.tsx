@@ -79,11 +79,13 @@ export default function ElectionSettings() {
          setBallotUpdates(e.target.checked);
          setPublicResultsDisabled(e.target.checked);
          setPublicResultsDisabledMsg(e.target.checked);  
+         applySettingsUpdate(settings => { settings.ballot_updates = e.target.checked; });
     };
     const onChangePublicResults = async(e) => {
          setPublicResults(e.target.checked);
          setBallotUpdatesDisabled(ballotUpdatesConditionsNotMet || e.target.checked);
          setBallotUpdatesDisabledMsg(!ballotUpdatesConditionsNotMet && e.target.checked);
+         applySettingsUpdate(settings => { settings.public_results = e.target.checked; });
     };
     const CheckboxSetting = ({setting, disabled=false, checked=undefined, onChange=undefined, hidden=false, helperText=false}: CheckboxSettingProps) => <>
             <FormControlLabel hidden = {hidden} disabled={disabled} control={
