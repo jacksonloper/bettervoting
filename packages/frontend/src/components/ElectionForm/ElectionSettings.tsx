@@ -22,7 +22,7 @@ export default function ElectionSettings() {
     const min_rankings = 3;
     const max_rankings = Number(process.env.REACT_APP_MAX_BALLOT_RANKS) ? Number(process.env.REACT_APP_MAX_BALLOT_RANKS) : 8;
     const default_rankings = Number(process.env.REACT_APP_DEFAULT_BALLOT_RANKS) ? Number(process.env.REACT_APP_DEFAULT_BALLOT_RANKS) : 6;
-    const ballotUpdatesConditionsNotMet = !flags.isSet('BALLOT_UPDATES') || election.settings.voter_access === 'open' || election.settings.invitation != 'email';
+    const ballotUpdatesConditionsMet = flags.isSet('BALLOT_UPDATES') && election.settings.voter_access !== 'open' && election.settings.invitation === 'email';
 
     const {t} = useSubstitutedTranslation(election.settings.term_type, {min_rankings, max_rankings});
 
@@ -30,7 +30,7 @@ export default function ElectionSettings() {
     const [editedIsPublic, setEditedIsPublic] = useState(election.is_public);
     const [publicResults, setPublicResults] = useState(election.settings.public_results);
     const [ballotUpdates, setBallotUpdates] = useState(election.settings.ballot_updates);
-    const [ballotUpdatesDisabled, setBallotUpdatesDisabled] = useState(ballotUpdatesConditionsNotMet);
+    const [ballotUpdatesDisabled, setBallotUpdatesDisabled] = useState(!ballotUpdatesConditionsMet);
     const [publicResultsDisabled, setPublicResultsDisabled] = useState(false);
     const [publicResultsDisabledMsg, setPublicResultsDisabledMsg] = useState(undefined);
     const [ballotUpdatesDisabledMsg, setBallotUpdatesDisabledMsg] = useState(undefined);
@@ -84,8 +84,8 @@ export default function ElectionSettings() {
     };
     const onChangePublicResults = async(e) => {
          setPublicResults(e.target.checked);
-         setBallotUpdatesDisabled(ballotUpdatesConditionsNotMet || e.target.checked);
-         setBallotUpdatesDisabledMsg(!ballotUpdatesConditionsNotMet && e.target.checked);
+         setBallotUpdatesDisabled(!ballotUpdatesConditionsMet || e.target.checked);
+         setBallotUpdatesDisabledMsg(ballotUpdatesConditionsMet && e.target.checked);
          applySettingsUpdate(settings => { settings.public_results = e.target.checked; });
     };
     const CheckboxSetting = ({setting, disabled=false, checked=undefined, onChange=undefined, hidden=false, helperText=false}: CheckboxSettingProps) => <>
@@ -170,7 +170,7 @@ export default function ElectionSettings() {
                                 
 
                                 <CheckboxSetting setting='random_candidate_order'/>
-                                { ballotUpdatesConditionsNotMet || <CheckboxSetting setting='ballot_updates' hidden={ballotUpdatesConditionsNotMet}
+                                { ballotUpdatesConditionsMet && <CheckboxSetting setting='ballot_updates' hidden={!ballotUpdatesConditionsMet}
                                     disabled={ballotUpdatesDisabled} checked={ballotUpdates} onChange={(e) => onChangeBallotUpdates(e)} helperText={ballotUpdatesDisabledMsg}/>}
                                 <CheckboxSetting setting='public_results' checked={publicResults} onChange={(e) => onChangePublicResults(e)} disabled={publicResultsDisabled} helperText={publicResultsDisabledMsg}/>
                                 <CheckboxSetting setting='random_ties' disabled checked/>
