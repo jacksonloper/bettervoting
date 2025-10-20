@@ -260,7 +260,7 @@ const CreateElectionDialog = () => {
                             setErrors={setErrors}
                             showLabel={false}
                         />
-                        <StepButtons activeStep={1} setActiveStep={setActiveStep} canContinue={/^[^\s][a-zA-Z0-9\s]{3,49}$/.test(election.title) && errors.title == ''} />
+                        <StepButtons activeStep={1} setActiveStep={setActiveStep} canContinue={/^.{1,49}$/.test(election.title) && errors.title == ''} />
                     </StepContent>
                 </Step>
                 <Step>
