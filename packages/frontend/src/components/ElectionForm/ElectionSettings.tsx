@@ -11,6 +11,7 @@ import structuredClone from '@ungap/structured-clone';
 import EditIcon from '@mui/icons-material/Edit';
 import { useSubstitutedTranslation } from '../util';
 import { ElectionSettings as IElectionSettings, TermType, electionSettingsValidation } from '@equal-vote/star-vote-shared/domain_model/ElectionSettings';
+import { ElectionState } from '@equal-vote/star-vote-shared/domain_model/ElectionStates';
 import useFeatureFlags from '../FeatureFlagContextProvider';
 import useSnackbar from '../SnackbarContext';
 
@@ -21,7 +22,7 @@ export default function ElectionSettings() {
     const min_rankings = 3;
     const max_rankings = Number(process.env.REACT_APP_MAX_BALLOT_RANKS) ? Number(process.env.REACT_APP_MAX_BALLOT_RANKS) : 8;
     const default_rankings = Number(process.env.REACT_APP_DEFAULT_BALLOT_RANKS) ? Number(process.env.REACT_APP_DEFAULT_BALLOT_RANKS) : 6;
-    const ballotUpdatesConditionsNotMet = !flags.isSet('BALLOT_UPDATES') || election.settings.voter_access === 'open';
+    const ballotUpdatesConditionsNotMet = !flags.isSet('BALLOT_UPDATES') || election.settings.voter_access === 'open' || election.settings.invitation != 'email';
 
     const {t} = useSubstitutedTranslation(election.settings.term_type, {min_rankings, max_rankings});
 
@@ -35,14 +36,14 @@ export default function ElectionSettings() {
     const [ballotUpdatesDisabledMsg, setBallotUpdatesDisabledMsg] = useState(undefined);
 
     const applySettingsUpdate = (updateFunc: (settings: IElectionSettings) => void) => {
-        const settingsCopy = structuredClone(editedElectionSettings)
-        updateFunc(settingsCopy)
-        setEditedElectionSettings(settingsCopy)
+        const settingsCopy = structuredClone(editedElectionSettings);
+        updateFunc(settingsCopy);
+        setEditedElectionSettings(settingsCopy);
     };
 
-    const validatePage = (electionSettings:IElectionSettings) => {
+    const validatePage = (electionSettings:IElectionSettings, electionState: ElectionState) => {
         // Placeholder function
-        return electionSettingsValidation(electionSettings)
+        return electionSettingsValidation(electionSettings, electionState);
     }
 
     const [open, setOpen] = React.useState(false);
@@ -50,9 +51,9 @@ export default function ElectionSettings() {
     const handleClose = () => setOpen(false);
 
     const onSave = async () => {
-        if (validatePage(editedElectionSettings)) {
+        if (validatePage(editedElectionSettings, election.state)) {
             setSnack({
-                message: validatePage(editedElectionSettings),
+                message: validatePage(editedElectionSettings, election.state),
                 severity: 'error',
                 open: true,
                 autoHideDuration: 6000,
