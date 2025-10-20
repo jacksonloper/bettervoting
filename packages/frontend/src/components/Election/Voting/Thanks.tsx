@@ -9,8 +9,20 @@ import DraftWarning from '../DraftWarning';
 
 const Thanks = () => {
     
-    const { election } = useElection()
+    const { election, voterAuth } = useElection()
     const {t} = useSubstitutedTranslation(election.settings.term_type)
+
+    function MainButton({href, text} : {href: string, text : string}) {
+        return <Box sx={{ width: '100%',  p: 1, px:{xs: 5, sm: 1} }}>
+            <PrimaryButton
+                type='button'
+                fullWidth
+                href={href} >
+                {text}
+            </PrimaryButton>
+        </Box>
+    }
+
     return <>
         <DraftWarning/>
         {election &&
@@ -41,16 +53,18 @@ const Thanks = () => {
                     </Typography>
                 }
 
-                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' } }} >
+                <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'column' } }} >
+                    {election.state == 'open' && election.settings.ballot_updates && voterAuth?.authorized_voter &&
+                        MainButton({
+                            href: `/${String(election?.election_id)}/vote`,
+                            text: t('editable_ballots.edit_vote')
+                        })
+                    }
                     {['draft', 'open', 'closed'].includes(election.state) && election.settings.public_results === true &&
-                        <Box sx={{ width: '100%',  p: 1, px:{xs: 5, sm: 1} }}>
-                            <PrimaryButton
-                                type='button'
-                                fullWidth
-                                href={`/${election.election_id}/results`} >
-                                {t('ballot_submitted.results')}
-                            </PrimaryButton>
-                        </Box>
+                        MainButton({
+                            href: `/${election.election_id}/results`,
+                            text: t('ballot_submitted.results')
+                        })
                     }
                     {election.settings.voter_access !== 'closed' &&
                         <Box sx={{ width: '100%', p: 1, px:{xs: 5, sm: 1}  }}>
