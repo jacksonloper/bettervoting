@@ -39,6 +39,7 @@ export interface ElectionSettings {
     contact_email?: string; // Public contact email for voters to reach out to
     exhaust_on_N_repeated_skipped_marks?: number; // number of skipped ranks before exhausting
     draggable_ballot?: boolean; // Use draggable interface for IRV ballots
+    redact_voter_ids?: boolean; // Redact voter IDs from all views except emergency break glass endpoint. Required for ballot_updates.
 }
 function authenticationValidation(obj:authentication): string | null {
   if (!obj){
@@ -117,6 +118,16 @@ export function electionSettingsValidation(obj:ElectionSettings): string | null 
   }
   if (obj.draggable_ballot && typeof obj.draggable_ballot !== 'boolean'){
     return "Invalid Draggable Ballot";
+  }
+  if (obj.redact_voter_ids !== undefined && typeof obj.redact_voter_ids !== 'boolean'){
+    return "Invalid Redact Voter IDs";
+  }
+  // Auto-enable redact_voter_ids for backward compatibility with old elections that have ballot_updates
+  if (obj.ballot_updates && obj.redact_voter_ids === undefined) {
+    obj.redact_voter_ids = true;
+  }
+  if (obj.ballot_updates && !obj.redact_voter_ids){
+    return "Redact Voter IDs must be enabled when Ballot Updates is enabled";
   }
   return null;
 }

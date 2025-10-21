@@ -23,14 +23,23 @@ const className = "VoterRolls.Controllers";
 const addElectionRoll = async (req: IElectionRequest & { body: { electionRoll: ElectionRollInput[] } }, res: Response, next: NextFunction) => {
     expectPermission(req.user_auth.roles, permissions.canAddToElectionRoll)
     Logger.info(req, `${className}.addElectionRoll ${req.election.election_id}`);
+
+    // Prevent creating voters by voter_id when redact_voter_ids is enabled
+    if (req.election.settings.redact_voter_ids) {
+        const hasVoterId = req.body.electionRoll.some((rollInput: ElectionRollInput) => rollInput.voter_id);
+        if (hasVoterId) {
+            throw new BadRequest('Cannot create voters with voter_id when redact_voter_ids is enabled');
+        }
+    }
+
     const history = [{
         action_type: 'added',
         actor: req.user.email,
         timestamp: Date.now(),
     }]
-    
+
     // Generate all IDs in parallel first
-    const idPromises: Promise<string>[] = req.body.electionRoll.map((rollInput: ElectionRollInput) => 
+    const idPromises: Promise<string>[] = req.body.electionRoll.map((rollInput: ElectionRollInput) =>
         rollInput.voter_id || makeUniqueID(
             ID_PREFIXES.VOTER,
             ID_LENGTHS.VOTER,
