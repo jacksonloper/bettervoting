@@ -23,6 +23,7 @@ const SendEmailEventQueue = "sendEmailEvent";
 
 export type email_request_data = {
     voter_id?: string,
+    recipient_email?: string,
     email: {
         subject: string,
         body: string,
@@ -76,14 +77,29 @@ const sendEmailsController = async (req: IElectionRequest, res: Response, next: 
     let message_id = ''
 
     if (email_request.target == 'single') {
-        const electionRollResponse = await ElectionRollModel.getByVoterID(electionId, email_request.voter_id ?? '', req)
+        let electionRollResponse: ElectionRoll | null = null;
+
+        // When redact_voter_ids is enabled, voter_id is not available, so use recipient_email instead
+        if (email_request.voter_id) {
+            electionRollResponse = await ElectionRollModel.getByVoterID(electionId, email_request.voter_id, req);
+        } else if (email_request.recipient_email) {
+            const rollsByEmail = await ElectionRollModel.getRollsByElectionID(electionId, req);
+            if (rollsByEmail) {
+                electionRollResponse = rollsByEmail.find(roll => roll.email?.toLowerCase() === email_request.recipient_email?.toLowerCase()) ?? null;
+            }
+        } else {
+            const msg = `Either voter_id or recipient_email is required for single target`;
+            Logger.info(req, msg);
+            throw new BadRequest(msg);
+        }
+
         if (!electionRollResponse) {
             const msg = `Voter not found`;
             Logger.info(req, msg);
             throw new BadRequest(msg)
         }
         electionRoll = [electionRollResponse]
-        message_id = `dm_${email_request.voter_id}_${0}` //TODO: retreive count of previous dms
+        message_id = `dm_${email_request.voter_id ?? email_request.recipient_email}_${0}` //TODO: retreive count of previous dms
     } else if(email_request.target == 'test'){
         // Create dummy election rolls for each test email
         electionRoll = (email_request.testEmails ?? []).map(email => makeTestRoll(req.election.election_id, email));
