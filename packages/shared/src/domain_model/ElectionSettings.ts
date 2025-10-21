@@ -1,4 +1,5 @@
 import { timeZones, TimeZone } from "./Util";
+import { ElectionState } from "./ElectionStates"
 
 export interface registration_field {
   field_name: string;
@@ -68,7 +69,24 @@ function authenticationValidation(obj:authentication): string | null {
   }
   return null;
 }
-export function electionSettingsValidation(obj:ElectionSettings): string | null {
+
+function settingsCompatiblityValidation(settings: ElectionSettings, electionState?: ElectionState): string {
+    let errorMsg = ''
+    if (settings.ballot_updates) {
+        if (settings.public_results && electionState != 'closed') {
+            errorMsg += 'Preliminary results are not permitted when ballot editing is enabled.  ';
+        }
+        if (settings.voter_access == 'open') {
+            errorMsg += 'Vote editing is not permitted on open elections.  ';
+        }
+        if (settings.invitation != 'email') {
+            errorMsg += 'Vote editing is only permitted on email list elections.  ';
+        }
+    }
+    return errorMsg;
+}
+
+export function electionSettingsValidation(obj:ElectionSettings, electionState?: ElectionState): string | null {
   if (!obj){
     return "ElectionSettings is null";
   }
@@ -118,7 +136,9 @@ export function electionSettingsValidation(obj:ElectionSettings): string | null 
   if (obj.draggable_ballot && typeof obj.draggable_ballot !== 'boolean'){
     return "Invalid Draggable Ballot";
   }
+  const compatibilityError = settingsCompatiblityValidation(obj, electionState);
+  if (compatibilityError) {
+    return compatibilityError;
+  }
   return null;
 }
-
-  
