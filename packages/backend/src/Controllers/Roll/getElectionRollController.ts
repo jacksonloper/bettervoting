@@ -20,6 +20,9 @@ const redactString = (value: string, voterId: string | undefined, shouldRedact: 
     return value;
 }
 
+// Note: ElectionRoll history entries can have nested structures and the email_data field is typed as 'any'.
+// This function uses a defensive approach to handle multiple data types (arrays, objects, strings),
+// strips out email_data entirely, and redacts voter IDs from action_type and actor fields.
 const sanitizeHistory = (
     history: ElectionRoll['history'],
     voterId: string | undefined,
@@ -47,6 +50,11 @@ const sanitizeHistory = (
     });
 }
 
+// Note: email_data fields (inviteResponse, reminderResponse) are typed as 'any' in ElectionRoll.ts
+// since email providers could return a variety of response formats.
+// This function uses a defensive whitelist approach to only return known-safe fields and redact
+// any voter IDs that might be embedded in error messages or response bodies.
+// This is almost certainly not the right way to do this :).  But it could be fine for now.
 const sanitizeEmailMetadata = (
     emailData: ElectionRoll['email_data'],
     voterId: string | undefined,
