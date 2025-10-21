@@ -12,6 +12,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { PrimaryButton, SecondaryButton } from '../../styles';
 import useFeatureFlags from '../../FeatureFlagContextProvider';
 import { DragHandle } from '~/components/DragAndDrop';
+import LinkIcon from '@mui/icons-material/Link';
 
 interface CandidateDialogProps {
     onEditCandidate: (newCandidate: Candidate) => void,
@@ -301,6 +302,68 @@ interface CandidateFormProps {
     onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void,
     electionState: string
 }
+
+const LinkDialog = ({ onEditCandidate, candidate, open, handleClose }) => {
+    const onApplyEditCandidate = (updateFunc) => {
+        const newCandidate = { ...candidate }
+        updateFunc(newCandidate)
+        onEditCandidate(newCandidate)
+    }
+
+    const [linkInput, setLinkInput] = useState(candidate.candidate_url);
+
+    return (
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            scroll={'paper'}
+            keepMounted>
+            <DialogTitle> Update Hyperlink </DialogTitle>
+            <DialogContent>
+                <Box sx={{width: 300, height: 70}}>
+                    <TextField
+                        id="candidate url"
+                        label="Candidate URL"
+                        type="url"
+                        fullWidth
+                        value={linkInput}
+                        sx={{
+                            m: 1,
+                            p: 0,
+                            boxShadow: 2,
+                        }}
+                        onChange={(e) => setLinkInput(e.target.value)}
+                    />
+                </Box>
+            </DialogContent>
+
+            <DialogActions>
+                <SecondaryButton
+                    type='button'
+                    onClick={() => {
+                        onApplyEditCandidate((candidate) => { candidate.candidate_url = '' })
+                        handleClose()
+                    }}
+                >
+                    Remove
+                </SecondaryButton>
+                <PrimaryButton
+                    type='button'
+                    onClick={() => {
+                        onApplyEditCandidate((candidate) => {
+                            // Adding https:// if needed so it's not treated as a relative path
+                            candidate.candidate_url = linkInput.includes('//') ? linkInput : 'https://' + linkInput
+                        })
+                        handleClose()
+                    }}
+                >
+                    Apply
+                </PrimaryButton>
+            </DialogActions>
+        </Dialog>
+    )
+}
+
 export const CandidateForm = ({ onEditCandidate, candidate, index, onDeleteCandidate, disabled, inputRef, onKeyDown, electionState}: CandidateFormProps) => {
 
     const [open, setOpen] = React.useState(false);
@@ -308,6 +371,8 @@ export const CandidateForm = ({ onEditCandidate, candidate, index, onDeleteCandi
     const handleClose = () => setOpen(false);
     const flags = useFeatureFlags();
     const onSave = () => { handleClose() }
+    const [linkOpen, setLinkOpen] = React.useState(false);
+
     return (
         <Paper elevation={4} sx={{ width: '100%' }} aria-label={`Candidate ${index + 1} Form`}>
             <Box
@@ -340,7 +405,14 @@ export const CandidateForm = ({ onEditCandidate, candidate, index, onDeleteCandi
                         disabled={disabled}>
                         <EditIcon />
                     </IconButton>
-    }
+                }
+                <IconButton
+                    aria-label={`Update Link for Candidate Number ${index + 1}`}
+                    color={candidate.candidate_url ? 'info' : 'default'}
+                    onClick={() => setLinkOpen(true)}
+                    disabled={disabled}>
+                    < LinkIcon/>
+                </IconButton>
                 <IconButton
                     aria-label={`Delete Candidate Number ${index + 1}`}
                     color="error"
@@ -350,6 +422,8 @@ export const CandidateForm = ({ onEditCandidate, candidate, index, onDeleteCandi
                 </IconButton>
             </Box>
             <CandidateDialog onEditCandidate={onEditCandidate} candidate={candidate} onSave={onSave} open={open} handleClose={handleClose} />
+
+            <LinkDialog onEditCandidate={onEditCandidate} candidate={candidate} open={linkOpen} handleClose={() => setLinkOpen(false)} />
         </Paper >
     )
 }
