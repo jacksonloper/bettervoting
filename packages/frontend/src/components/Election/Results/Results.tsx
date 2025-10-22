@@ -256,13 +256,6 @@ function ResultsViewer({ methodKey, children }:{methodKey: string, children:Reac
   return (
     <Box className="resultViewer">
       {children}
-       {/*
-      <Typography component="p" sx={{textAlign: 'right', color: '#808080', fontSize: '.8rem', marginTop: '20px'}}>
-        {t('results.method_context', {voting_method: votingMethod})}
-        {i18n.exists(learnLinkKey) && <><br/><a href={t(learnLinkKey)} style={{color: 'inherit'}}>{t('results.learn_link_text', {voting_method: votingMethod})}</a></>}
-      </Typography>
-      */}
-
     </Box>
   );
 }
@@ -457,11 +450,6 @@ export default function Results({ race, results }: {race: Race, results: Electio
     const learnLinkKey = `methods.${lowerMethod}.learn_link`;
     const votingMethod= t(`methods.${lowerMethod}.full_name`)
 
-
-
-    console.log(`learnLinkKey = ${learnLinkKey}`);
-
-
     const winnersText = commaListFormatter
     .format(results.elected.map(c => c.name.replace(' ', '__REPLACE_ME__')))
     .split('__REPLACE_ME__')
@@ -499,19 +487,17 @@ export default function Results({ race, results }: {race: Race, results: Electio
           }
           <Typography variant="h6">{t('results.vote_count', {n: results.summaryData.nTallyVotes})}</Typography>
             {/* Voting method and learning link */}
-            {/* Test of array of voting methods and learning links */}
-                <Typography  variant="h5" component="h5">
-                    {t('results.method_context', { voting_method: votingMethod })}
-                    {i18n.exists(learnLinkKey) && (
-                        <>
-                            <br />
-                            <a href={t(learnLinkKey)} style={{ color: 'inherit' }}>
-                                {t('results.learn_link_text', { voting_method: votingMethod })}
-                            </a>
-                        </>
-                    )}
-                </Typography>
-
+            <Typography  variant="h5" component="h5">
+                {t('results.method_context', { voting_method: votingMethod })}
+                {i18n.exists(learnLinkKey) && (
+                    <>
+                        <br />
+                        <a href={t(learnLinkKey)} style={{ color: 'inherit' }}>
+                            {t('results.learn_link_text', { voting_method: votingMethod })}
+                        </a>
+                    </>
+                )}
+            </Typography>
         </>}
         </Box>
         {results.summaryData.nTallyVotes > 1 &&
