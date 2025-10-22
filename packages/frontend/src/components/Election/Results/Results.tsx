@@ -501,12 +501,12 @@ export default function Results({ race, results }: {race: Race, results: Electio
             {/* Voting method and learning link */}
             {/* Test of array of voting methods and learning links */}
                 <Typography  variant="h5" component="h5">
-                    {t('results.method_context', { voting_method: race.voting_method })}
+                    {t('results.method_context', { voting_method: votingMethod })}
                     {i18n.exists(learnLinkKey) && (
                         <>
                             <br />
                             <a href={t(learnLinkKey)} style={{ color: 'inherit' }}>
-                                {t('results.learn_link_text', { voting_method: race.voting_method })}
+                                {t('results.learn_link_text', { voting_method: votingMethod })}
                             </a>
                         </>
                     )}
