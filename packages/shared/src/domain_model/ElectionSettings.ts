@@ -83,6 +83,9 @@ function settingsCompatiblityValidation(settings: ElectionSettings, electionStat
         if (settings.invitation != 'email') {
             errorMsg += 'Vote editing is only permitted on email list elections.  ';
         }
+        if (!settings.redact_voter_ids) {
+            errorMsg += 'Redact Voter IDs must be enabled when Ballot Updates is enabled.  ';
+        }
     }
     return errorMsg;
 }
@@ -137,6 +140,15 @@ export function electionSettingsValidation(obj:ElectionSettings, electionState?:
   if (obj.draggable_ballot && typeof obj.draggable_ballot !== 'boolean'){
     return "Invalid Draggable Ballot";
   }
+  if (obj.redact_voter_ids !== undefined && typeof obj.redact_voter_ids !== 'boolean'){
+    return "Invalid Redact Voter IDs";
+  }
+
+  // Auto-enable redact_voter_ids for backward compatibility with old elections that have ballot_updates
+  if (obj.ballot_updates && obj.redact_voter_ids === undefined) {
+    obj.redact_voter_ids = true;
+  }
+
   const compatibilityError = settingsCompatiblityValidation(obj, electionState);
   if (compatibilityError) {
     return compatibilityError;
