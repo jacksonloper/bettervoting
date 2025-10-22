@@ -33,11 +33,14 @@ const addElectionRoll = async (req: IElectionRequest & { body: { electionRoll: E
     }
 
     const history = [{
-        action_type: 'added',
+        action_type: "added",
         actor: req.user.email,
         timestamp: Date.now(),
     }]
-
+    if (req.election.settings.invitation === "email" && req.body.electionRoll.some((r: ElectionRollInput) => r.voter_id)) {
+        throw new BadRequest("User provided voterIds are not permitted for email list elections");
+    }
+    
     // Generate all IDs in parallel first
     const idPromises: Promise<string>[] = req.body.electionRoll.map((rollInput: ElectionRollInput) =>
         rollInput.voter_id || makeUniqueID(
