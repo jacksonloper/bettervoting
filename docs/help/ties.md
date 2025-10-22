@@ -21,17 +21,19 @@ In the event that an election has already been conducted but no protocol was spe
 
 **Ties during the Scoring Round**
 * *Step 1*: If only 2 candidates are tied then the tie should be broken in favor of the candidate who was preferred (scored higher) by more voters, if possible. 
-* *Step 2*: If more than 2 candidates are tied, or if an equal number of voters supported both tied candidates, then break the tie in favor of the tied candidate who received the most five star ratings
+* *Step 2*: If more than 2 candidates are tied, or if an equal number of voters supported both tied candidates, then break the tie in favor of the tied candidate who received the most five star ratings.
 * *Step 3*: Otherwise break the tie randomly.
 
 **Ties during the Automatic Runoff Round**
 * *Step 1*: Ties in the Runoff Round should be broken in favor of the candidate who was scored higher if possible.
 * *Step 2*: If both runoff candidates have the same score, break the tie in favor of the tied candidate who received the most five star ratings.
-* *Step 3*: In the event that a tie can not be resolved as above, the tie will be broken randomly with a method such as a coin toss or by drawing a name out of a hat.
+* *Step 3*: Otherwise break the tie randomly.
 
 ## Random Tie-breakers
 
 In the event a random tiebreaker is needed, BetterVoting will shuffle the tied candidates using the number of voters as a seed. The implementation is available [open source](https://github.com/Equal-Vote/bettervoting/blob/f95431ddbaa4a41f21a77a5c16b06f1e19d8cb6c/packages/backend/src/Tabulators/Util.ts#L138) for those interested.
+
+Other common random tiebreaker approaches include doing a coin toss or drawing a name out of a hat.
 
 ## Custom Tie-breakers
 
