@@ -1,6 +1,6 @@
 ---
 layout: default
-title: STAR Voting Ties
+title: Ties
 nav_order: 6
 parent: BetterVoting Documentation
 ---
@@ -19,12 +19,12 @@ In the event that an election has already been conducted but no protocol was spe
 
 ## Official Tie-breaker Protocol
 
-**Ties during Scoring Round**
+**Ties during the Scoring Round**
 * *Step 1*: If only 2 candidates are tied then the tie should be broken in favor of the candidate who was preferred (scored higher) by more voters, if possible. 
 * *Step 2*: If more than 2 candidates are tied, or if an equal number of voters supported both tied candidates, then break the tie in favor of the tied candidate who received the most five star ratings
 * *Step 3*: Otherwise break the tie randomly.
 
-**Ties during Automatic Runoff Round**
+**Ties during the Automatic Runoff Round**
 * *Step 1*: Ties in the Runoff Round should be broken in favor of the candidate who was scored higher if possible.
 * *Step 2*: If both runoff candidates have the same score, break the tie in favor of the tied candidate who received the most five star ratings.
 * *Step 3*: In the event that a tie can not be resolved as above, the tie will be broken randomly with a method such as a coin toss or by drawing a name out of a hat.
