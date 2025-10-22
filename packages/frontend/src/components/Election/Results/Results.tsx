@@ -252,9 +252,7 @@ function ApprovalResultsViewer() {
 }
 
 function ResultsViewer({ methodKey, children }:{methodKey: string, children:ReactNode}) {
-  const {t, i18n} = useSubstitutedTranslation();
-  const learnLinkKey = `methods.${methodKey}.learn_link`
-  const votingMethod = t(`methods.${methodKey}.full_name`)
+
   return (
     <Box className="resultViewer">
       {children}
@@ -452,7 +450,19 @@ export default function Results({ race, results }: {race: Race, results: Electio
     }[results.votingMethod]
   });
 
-  const winnersText = commaListFormatter
+    const {i18n} = useSubstitutedTranslation();
+
+    const votingMethodBase = race.voting_method
+    const lowerMethod = votingMethodBase.toLowerCase();
+    const learnLinkKey = `methods.${lowerMethod}.learn_link`;
+    const votingMethod= t(`methods.${lowerMethod}.full_name`)
+
+
+
+    console.log(`learnLinkKey = ${learnLinkKey}`);
+
+
+    const winnersText = commaListFormatter
     .format(results.elected.map(c => c.name.replace(' ', '__REPLACE_ME__')))
     .split('__REPLACE_ME__')
     .map((s,i) => ([<React.Fragment key={i*2}>{s}</React.Fragment>, <React.Fragment key={i*2+1}>&nbsp;</React.Fragment>]))
@@ -488,6 +498,20 @@ export default function Results({ race, results }: {race: Race, results: Electio
             </Typography>
           }
           <Typography variant="h6">{t('results.vote_count', {n: results.summaryData.nTallyVotes})}</Typography>
+            {/* Voting method and learning link */}
+            {/* Test of array of voting methods and learning links */}
+                <Typography  variant="h5" component="h5">
+                    {t('results.method_context', { voting_method: race.voting_method })}
+                    {i18n.exists(learnLinkKey) && (
+                        <>
+                            <br />
+                            <a href={t(learnLinkKey)} style={{ color: 'inherit' }}>
+                                {t('results.learn_link_text', { voting_method: race.voting_method })}
+                            </a>
+                        </>
+                    )}
+                </Typography>
+
         </>}
         </Box>
         {results.summaryData.nTallyVotes > 1 &&
