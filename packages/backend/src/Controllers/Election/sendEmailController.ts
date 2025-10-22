@@ -83,9 +83,12 @@ const sendEmailsController = async (req: IElectionRequest, res: Response, next: 
         if (email_request.voter_id) {
             electionRollResponse = await ElectionRollModel.getByVoterID(electionId, email_request.voter_id, req);
         } else if (email_request.recipient_email) {
-            const rollsByEmail = await ElectionRollModel.getRollsByElectionID(electionId, req);
-            if (rollsByEmail) {
-                electionRollResponse = rollsByEmail.find(roll => roll.email?.toLowerCase() === email_request.recipient_email?.toLowerCase()) ?? null;
+            const rolls = await ElectionRollModel.getElectionRoll(electionId, null, email_request.recipient_email, null, req);
+            if (rolls && rolls.length > 0) {
+                if (rolls.length > 1) {
+                    Logger.warn(req, `Multiple voters found with email ${email_request.recipient_email} in election ${electionId}, using first match`);
+                }
+                electionRollResponse = rolls[0];
             }
         } else {
             const msg = `Either voter_id or recipient_email is required for single target`;
