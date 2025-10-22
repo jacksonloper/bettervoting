@@ -321,7 +321,7 @@ BetterVoting uses feature flags to test and gradually roll out new features. If 
 
 ### Chrome Feature Flags Extension
 
-We recommend using the [Feature Flags Chrome Extension](https://chromewebstore.google.com/detail/feature-flags/hmflgmhoghcbmckbbgahfmklegllkggn?pli=1) for managing feature flags during development.
+We recommend using the [Feature Flags Chrome Extension](https://chromewebstore.google.com/detail/hmflgmhoghcbmckbbgahfmklegllkggn) for managing feature flags during development.
 
 **Installation:**
 1. Install the extension from the Chrome Web Store
