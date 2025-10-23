@@ -29,19 +29,18 @@ export function formatMarkdown(text: string, options: FormatMarkdownOptions = {}
   // Sanitize first
   body = sanitizeHtml(body);
 
-  // Bold: **text** → <b>text</b>
-  body = body.split(rBold).map((str, i) => {
-    if (i % 2 === 0) return str;
-    return `<b>${str}</b>`;
-  }).join('');
-
-  // Links: [text](url) → <a href="url" target="_blank" rel="noopener noreferrer">text</a>
+  // Links first: [text](url) → <a href="url">text</a>
   let linkParts = body.split(rLink);
   body = linkParts.map((str, i) => {
     if (i % 3 === 0) return str;
     if (i % 3 === 2) return '';
-    return `<a href="${linkParts[i + 1]}" target="_blank" rel="noopener noreferrer">${linkParts[i]}</a>`;
+    // Process bold within link text
+    const linkText = str.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+    return `<a href="${linkParts[i + 1]}" target="_blank" rel="noopener noreferrer">${linkText}</a>`;
   }).join('');
+
+  // Bold on remaining text: **text** → <b>text</b>
+  body = body.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
   // Paragraph breaks: \n\n → </p><p>
   body = `<p>${body.replaceAll('\n\n', '</p><p>')}</p>`;
