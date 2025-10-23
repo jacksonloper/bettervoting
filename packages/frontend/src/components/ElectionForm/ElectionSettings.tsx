@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Grid from "@mui/material/Grid";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormHelperText from "@mui/material/FormHelperText";
@@ -34,6 +34,18 @@ export default function ElectionSettings() {
     const [publicResultsDisabled, setPublicResultsDisabled] = useState(false);
     const [publicResultsDisabledMsg, setPublicResultsDisabledMsg] = useState(undefined);
     const [ballotUpdatesDisabledMsg, setBallotUpdatesDisabledMsg] = useState(undefined);
+
+    // Sync state when election context changes
+    useEffect(() => {
+        setEditedElectionSettings(election.settings);
+        setEditedIsPublic(election.is_public);
+        setPublicResults(election.settings.public_results);
+        setBallotUpdates(election.settings.ballot_updates);
+        setBallotUpdatesDisabled(!ballotUpdatesConditionsMet);
+        setPublicResultsDisabled(false);
+        setPublicResultsDisabledMsg(undefined);
+        setBallotUpdatesDisabledMsg(undefined);
+    }, [election.election_id, ballotUpdatesConditionsMet]);
 
     const applySettingsUpdate = (updateFunc: (settings: IElectionSettings) => void) => {
         const settingsCopy = structuredClone(editedElectionSettings);

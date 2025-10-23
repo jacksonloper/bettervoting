@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Grid from "@mui/material/Grid";
 import { Box, IconButton, Paper, Typography } from "@mui/material"
 import ElectionStateChip from './ElectionStateChip';
@@ -18,6 +18,11 @@ export default function ElectionDetailsInlineForm() {
     const [open, setOpen] = useState(election.title.length==0);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    // Reset open state when election changes
+    useEffect(() => {
+        setOpen(election.title.length==0);
+    }, [election.election_id]);
 
     const handleSave = async () => {
         const success = await onSave()
