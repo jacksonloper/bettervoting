@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import ShareButton from "../ShareButton";
 import HowToVoteIcon from '@mui/icons-material/HowToVote';
-import { PrimaryButton } from "../../styles";
+import { PrimaryButton, SecondaryButton } from "../../styles";
 import useElection from '../../ElectionContextProvider';
 import { useSubstitutedTranslation } from '~/components/util';
 import DraftWarning from '../DraftWarning';
@@ -11,18 +11,6 @@ const Thanks = () => {
     
     const { election, voterAuth } = useElection()
     const {t} = useSubstitutedTranslation(election.settings.term_type)
-
-    function MainButton({href, text} : {href: string, text : string}) {
-        return <Box sx={{ width: '100%',  p: 1, px:{xs: 5, sm: 1} }}>
-            <PrimaryButton
-                type='button'
-                fullWidth
-                href={href} >
-                {text}
-            </PrimaryButton>
-        </Box>
-    }
-
     return <>
         <DraftWarning/>
         {election &&
@@ -54,17 +42,25 @@ const Thanks = () => {
                 }
 
                 <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'column' } }} >
-                    {election.state == 'open' && election.settings.ballot_updates &&
-                        MainButton({
-                            href: (voterAuth?.authorized_voter ? `/${String(election?.election_id)}/vote` : `/${String(election?.election_id)}`),
-                            text: t('editable_ballots.edit_vote')
-                        })
-                    }
                     {['draft', 'open', 'closed'].includes(election.state) && election.settings.public_results === true &&
-                        MainButton({
-                            href: `/${election.election_id}/results`,
-                            text: t('ballot_submitted.results')
-                        })
+                        <Box sx={{ width: '100%',  p: 1, px:{xs: 5, sm: 1} }}>
+                            <PrimaryButton
+                                type='button'
+                                fullWidth
+                                href={`/${election.election_id}/results`} >
+                                {t('ballot_submitted.results')}
+                            </PrimaryButton>
+                        </Box>
+                    }
+                    {election.state == 'open' && election.settings.ballot_updates &&
+                        <Box sx={{ width: '100%',  p: 1, px:{xs: 5, sm: 1} }}>
+                            <SecondaryButton
+                                type='button'
+                                fullWidth
+                                href={ (voterAuth?.authorized_voter ? `/${String(election?.election_id)}/vote` : `/${String(election?.election_id)}`)} >
+                                {t('editable_ballots.edit_vote')}
+                            </SecondaryButton>
+                        </Box>
                     }
                     {election.settings.voter_access !== 'closed' &&
                         <Box sx={{ width: '100%', p: 1, px:{xs: 5, sm: 1}  }}>
