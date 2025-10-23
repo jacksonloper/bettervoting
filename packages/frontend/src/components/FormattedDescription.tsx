@@ -2,7 +2,7 @@ import React from 'react';
 import { Typography, TypographyProps } from '@mui/material';
 import { formatMarkdown } from '@equal-vote/star-vote-shared/utils/formatMarkdown';
 
-interface FormattedDescriptionProps extends Omit<TypographyProps, 'children'> {
+interface FormattedDescriptionProps extends Omit<TypographyProps<'div'>, 'children' | 'component'> {
   description?: string;
 }
 
