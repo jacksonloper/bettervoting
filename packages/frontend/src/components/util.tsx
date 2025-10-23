@@ -113,9 +113,10 @@ interface LabelledTextFieldProps {
   setter: (value: string) => void;
   fullWidth?: boolean;
   rows?: number;
+  helperText?: string;
 }
 // defining in separate file: https://stackoverflow.com/questions/58778631/react-input-loses-focus-on-keypress
-export const LabelledTextField = ({ label, value, setter, fullWidth = false, rows = 1 }: LabelledTextFieldProps) =>
+export const LabelledTextField = ({ label, value, setter, fullWidth = false, rows = 1, helperText }: LabelledTextFieldProps) =>
   <FormControlLabel control={
     <TextField
       value={value}
@@ -124,6 +125,7 @@ export const LabelledTextField = ({ label, value, setter, fullWidth = false, row
       multiline={rows > 1}
       rows={rows}
       fullWidth
+      helperText={helperText}
     />
   }
     label={label}

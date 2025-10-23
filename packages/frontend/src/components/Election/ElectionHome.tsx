@@ -8,6 +8,7 @@ import useElection from '../ElectionContextProvider';
 import DraftWarning from "./DraftWarning";
 import SupportBlurb from './SupportBlurb';
 import { PrimaryButton, SecondaryButton } from '../styles';
+import { FormattedDescription } from '../FormattedDescription';
 
 const ElectionHome = () => {
   const { election, voterAuth } = useElection();
@@ -48,9 +49,10 @@ const ElectionHome = () => {
           </Box>
 
           <Box sx={{ flexGrow: 1 }}>
-            <Typography align='center' component="p" style={{ whiteSpace: 'pre-line' }}>
-              {election.description}
-            </Typography>
+            <FormattedDescription
+              description={election.description}
+              align='center'
+            />
           </Box>
 
           <VoterAuth />

@@ -5,6 +5,7 @@ import { BallotContext } from './VotePage';
 import { useSubstitutedTranslation } from '~/components/util';
 import useElection from '../../ElectionContextProvider';
 import { BallotCandidate } from './VotePage';
+import { FormattedDescription } from '~/components/FormattedDescription';
 
 type Score = number | null;
 
@@ -120,9 +121,11 @@ export default function DraggableIRVBallotView() {
         </Typography>
 
         {ballotContext.race.description && (
-          <Typography align="center" component="p" sx={{ mb: 3, whiteSpace: 'pre-line' }}>
-            {ballotContext.race.description}
-          </Typography>
+          <FormattedDescription
+            description={ballotContext.race.description}
+            align="center"
+            sx={{ mb: 3 }}
+          />
         )}
 
         {(() => {
