@@ -150,6 +150,9 @@ const CreateElectionDialog = () => {
     const [activeStep, setActiveStep] = useState(0);
 
     const onClose = () => {
+        // Reset state on close so next open starts fresh
+        setElection(defaultElection);
+        setErrors({ title: '' });
         setActiveStep(0);
         createElectionContext.closeDialog();
     };
