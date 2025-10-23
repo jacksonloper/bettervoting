@@ -17,6 +17,7 @@ export const getEntry = <ItemType extends GenericObject,>(arr: ItemType[], id: a
 
 export const urlRegex = /^(http|https):\/\/[^ "]+$/;
 export const timeZones = [
+  'Etc/GMT+12', // confusingly, this is actually UTC-12 timezone
   'Pacific/Midway',
   'Pacific/Pago_Pago',
   'Pacific/Honolulu',
