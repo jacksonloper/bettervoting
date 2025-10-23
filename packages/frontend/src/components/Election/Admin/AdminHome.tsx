@@ -344,7 +344,7 @@ const AdminHome = () => {
         sx={{ width: '100%', maxWidth: 800, margin: 'auto' }}
     >
         <HeaderSection />
-        <ElectionDetailsInlineForm key={election.election_id} />
+        <ElectionDetailsInlineForm />
         {(election.state !== 'draft' && election.state !== 'finalized') && 
             <Box display='flex' sx={{flexDirection:{xs: 'column', sm: 'row'}}} alignItems='center' gap={2} justifyContent='space-evenly' width='100%'>
                 <Box sx={{width: '100%', maxWidth: 300}}>
@@ -362,7 +362,7 @@ const AdminHome = () => {
             </Box>
         }
         {(election.settings.voter_access === 'open') && <ElectionAuthForm />}
-        <ElectionSettings key={election.election_id} />
+        <ElectionSettings />
         <Races />
         <Box sx={{width: '100%'}}>
             {(election.state === 'draft') && <TestBallotSection /> }
