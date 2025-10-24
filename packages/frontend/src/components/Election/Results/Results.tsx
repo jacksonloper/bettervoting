@@ -2,7 +2,7 @@ import { Box, Button, Pagination } from "@mui/material";
 import React, { ReactNode } from "react";
 import { useState } from 'react';
 import Typography from '@mui/material/Typography';
-import { commaListFormatter, formatPercent, useSubstitutedTranslation } from '../../util';
+import { commaListFormatter, formatPercent, methodValueToTextKey, useSubstitutedTranslation } from '../../util';
 import STARResultSummaryWidget from "./STAR/STARResultSummaryWidget";
 import STARDetailedResults from "./STAR/STARDetailedResults";
 import STARResultDetailedStepsWidget from "./STAR/STARResultDetailedStepsWidget";
@@ -446,9 +446,9 @@ export default function Results({ race, results }: {race: Race, results: Electio
     const {i18n} = useSubstitutedTranslation();
 
     const votingMethodBase = race.voting_method
-    const lowerMethod = votingMethodBase.toLowerCase();
-    const learnLinkKey = `methods.${lowerMethod}.learn_link`;
-    const votingMethod= t(`methods.${lowerMethod}.full_name`)
+    const methodKey = methodValueToTextKey[votingMethodBase];
+    const learnLinkKey = `methods.${methodKey}.learn_link`;
+    const votingMethod= t(`methods.${methodKey}.full_name`)
 
     const winnersText = commaListFormatter
     .format(results.elected.map(c => c.name.replace(' ', '__REPLACE_ME__')))
@@ -487,7 +487,7 @@ export default function Results({ race, results }: {race: Race, results: Electio
           }
           <Typography variant="h6">{t('results.vote_count', {n: results.summaryData.nTallyVotes})}</Typography>
             {/* Voting method and learning link */}
-            <Typography  variant="h5" component="h5">
+            <Typography component="p" sx={{color: '#808080', fontSize: '1rem', marginTop: '20px', mb: 2}}>
                 {t('results.method_context', { voting_method: votingMethod })}
                 {i18n.exists(learnLinkKey) && (
                     <>
