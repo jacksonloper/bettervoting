@@ -107,7 +107,6 @@ const templateMappers = {
                 voter_id: true
             },
             invitation: 'email',
-            redact_voter_ids: true,
         }
     }),
     'id_list': (election) => ({

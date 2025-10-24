@@ -118,7 +118,7 @@ const getRollsByElectionID = async (req: IElectionRequest, res: Response, next: 
     }
 
     // Scrub ballot_id to prevent linking voters to ballots
-    const redactVoterIds = req.election.settings.redact_voter_ids ?? false;
+    const redactVoterIds = req.election.settings.invitation === 'email';
     const scrubbedRoll = electionRoll.map((roll) => {
         const sanitizedHistory = sanitizeHistory(roll.history, roll.voter_id, redactVoterIds);
         const sanitizedEmailData = redactVoterIds ? sanitizeEmailMetadata(roll.email_data, roll.voter_id, redactVoterIds) : roll.email_data;
@@ -151,7 +151,7 @@ const getByVoterID = async (req: IElectionRequest, res: Response, next: NextFunc
     }
 
     // Scrub ballot_id to prevent linking voters to ballots
-    const redactVoterIds = req.election.settings.redact_voter_ids ?? false;
+    const redactVoterIds = req.election.settings.invitation === 'email';
     const scrubbedEntry: ElectionRoll = {
         ...electionRollEntry,
         ballot_id: undefined,

@@ -688,7 +688,6 @@ tabulation_logs:
 disabled_msgs:
     ballot_updates: not supported with preliminary results
     public_results: not supported with vote editing
-    redact_voter_ids: required when vote editing is enabled
 
 # Info bubbles
 tips:
@@ -712,13 +711,9 @@ tips:
     title: Head-to-Head Matchups 
     description: Shows which candidate would win in each one on one matchup based on the voters' preferences on the ballot. Information is identical to a preference or runoff matrix.
 
-  random_candidate_order: 
+  random_candidate_order:
     title: Randomize Candidate Order
     description: Randomizes the order of candidates on the ballots.
-
-  redact_voter_ids:
-    title: Hide Voter IDs From Admins
-    description: Hides voter IDs from all admin views to protect voter privacy. Only accessible via emergency break-glass endpoint. Required for editable ballots.
 
   ballot_updates:
     title: Allow Voters To Edit Vote
@@ -1118,8 +1113,6 @@ election_settings:
   not_supported: ' (currently not supported)'
 
   random_candidate_order: Randomize Candidate Order !tip(random_candidate_order)
-
-  redact_voter_ids: Hide Voter IDs From Admins !tip(redact_voter_ids)
 
   ballot_updates: Allow Voters To Edit Vote !tip(ballot_updates)
 

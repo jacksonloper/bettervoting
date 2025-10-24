@@ -30,9 +30,9 @@ const revealVoterIdByEmail = async (req: IElectionRequest, res: Response, next: 
     }
 
     // Reveal endpoint is only available when voter IDs are redacted
-    const redactVoterIds = req.election.settings?.redact_voter_ids ?? false;
+    const redactVoterIds = req.election.settings?.invitation === 'email';
     if (!redactVoterIds) {
-        throw new BadRequest('Reveal voter ID is only available for elections with redact_voter_ids enabled');
+        throw new BadRequest('Reveal voter ID is only available for email list elections');
     }
 
     expectPermission(req.user_auth.roles, permissions.canViewElectionRoll);

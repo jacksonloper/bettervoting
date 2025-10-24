@@ -30,7 +30,6 @@ export default function ElectionSettings() {
     const [editedIsPublic, setEditedIsPublic] = useState(election.is_public);
     const [publicResults, setPublicResults] = useState(election.settings.public_results);
     const [ballotUpdates, setBallotUpdates] = useState(election.settings.ballot_updates);
-    const [redactVoterIds, setRedactVoterIds] = useState(election.settings.redact_voter_ids);
     const [ballotUpdatesDisabled, setBallotUpdatesDisabled] = useState(!ballotUpdatesConditionsMet);
     const [publicResultsDisabled, setPublicResultsDisabled] = useState(false);
     const [publicResultsDisabledMsg, setPublicResultsDisabledMsg] = useState(undefined);
@@ -93,15 +92,8 @@ export default function ElectionSettings() {
          setBallotUpdates(e.target.checked);
          setPublicResultsDisabled(e.target.checked);
          setPublicResultsDisabledMsg(e.target.checked);
-         // When ballot_updates is enabled, redact_voter_ids must be enabled
-         if (e.target.checked) {
-             setRedactVoterIds(true);
-         }
          applySettingsUpdate(settings => {
              settings.ballot_updates = e.target.checked;
-             if (e.target.checked) {
-                 settings.redact_voter_ids = true;
-             }
          });
     };
     const onChangePublicResults = async(e) => {
@@ -200,10 +192,6 @@ export default function ElectionSettings() {
                                 <CheckboxSetting setting='custom_email_invite' disabled/>
                                 <CheckboxSetting setting='require_instruction_confirmation'/>
                                 <CheckboxSetting setting='draggable_ballot'/>
-                                <CheckboxSetting setting='redact_voter_ids' checked={ballotUpdates || redactVoterIds} onChange={(e) => {
-                                    setRedactVoterIds(e.target.checked);
-                                    applySettingsUpdate(settings => { settings.redact_voter_ids = e.target.checked; });
-                                }} disabled={ballotUpdates} helperText={ballotUpdates}/>
                                 <CheckboxSetting setting='publicly_searchable' checked={editedIsPublic === true} onChange={(e) => setEditedIsPublic(e.target.checked)}/>
                                 <CheckboxSetting setting='max_rankings' onChange={(e) => applySettingsUpdate(settings => {
                                     settings.max_rankings = e.target.checked ? default_rankings : undefined })

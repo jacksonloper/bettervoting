@@ -69,8 +69,8 @@ const ViewElectionRolls = () => {
         if (!results) return
         setEditedRoll(currentRoll => {
             if (!currentRoll) return null;
-            // When voter IDs are redacted, always match by email
-            const voterIdsAreRedacted = election.settings.redact_voter_ids ?? false;
+            // When voter IDs are redacted (email list elections), always match by email
+            const voterIdsAreRedacted = election.settings.invitation === 'email';
             const useEmail = voterIdsAreRedacted || !usesVoterIdAuthentication;
             const identifier = useEmail ? currentRoll.email : currentRoll.voter_id;
             if (!identifier) return null;

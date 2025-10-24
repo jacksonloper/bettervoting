@@ -173,7 +173,7 @@ async function uploadBallotsController(req: IElectionRequest, res: Response, nex
                 ),
                 'submitted_via_admin',
                 voter_id,
-                req.user?.email // Pass admin email for audit trail
+                req.user?.username // Pass admin username for audit trail
             ).catch((err) => ({
                 error: err,
                 ballot: ballot

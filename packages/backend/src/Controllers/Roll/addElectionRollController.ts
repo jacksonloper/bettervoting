@@ -24,11 +24,11 @@ const addElectionRoll = async (req: IElectionRequest & { body: { electionRoll: E
     expectPermission(req.user_auth.roles, permissions.canAddToElectionRoll)
     Logger.info(req, `${className}.addElectionRoll ${req.election.election_id}`);
 
-    // Prevent creating voters by voter_id when redact_voter_ids is enabled
-    if (req.election.settings.redact_voter_ids) {
+    // Prevent creating voters by voter_id when using email invitations
+    if (req.election.settings.invitation === 'email') {
         const hasVoterId = req.body.electionRoll.some((rollInput: ElectionRollInput) => rollInput.voter_id);
         if (hasVoterId) {
-            throw new BadRequest('Cannot create voters with voter_id when redact_voter_ids is enabled');
+            throw new BadRequest('Cannot create voters with voter_id when using email invitations');
         }
     }
 

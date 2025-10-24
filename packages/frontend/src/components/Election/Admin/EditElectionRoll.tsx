@@ -34,8 +34,8 @@ const EditElectionRoll = ({ roll, onClose, fetchRolls }:Props) => {
     const revealVoterId = useRevealVoterId(election.election_id)
     const { setSnack } = useSnackbar();
 
-    // Reveal flow is required when voter IDs are redacted
-    const requiresRevealFlow = election.settings.redact_voter_ids ?? false;
+    // Reveal flow is required when voter IDs are redacted (email list elections)
+    const requiresRevealFlow = election.settings.invitation === 'email';
 
     const onApprove = async () => {
         if (!await approve.makeRequest({ electionRollEntry: roll })) { return }
@@ -79,9 +79,9 @@ const EditElectionRoll = ({ roll, onClose, fetchRolls }:Props) => {
             payload.voter_id = roll.voter_id;
         } else if (requiresRevealFlow && roll.email) {
             payload.recipient_email = roll.email;
-        } else if (requiresRevealFlow) {
+        } else {
             setSnack({
-                message: 'Email address not available for this voter',
+                message: 'Voter ID or email address not available for this voter',
                 severity: 'error',
                 open: true,
                 autoHideDuration: 6000,
@@ -310,7 +310,7 @@ const EditElectionRoll = ({ roll, onClose, fetchRolls }:Props) => {
                     <DialogTitle>Obtain Unique Voting URL</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            This action reveals the voter ID for this voter so you can share their voting link if the email on file is not reaching them.
+                            This action reveals the unique voting link for the voter. This should only be done if the voter is unable to acquire their voting link through their email inbox.
                         </DialogContentText>
                         <DialogContentText sx={{ mt: 2 }}>
                             This action will:
