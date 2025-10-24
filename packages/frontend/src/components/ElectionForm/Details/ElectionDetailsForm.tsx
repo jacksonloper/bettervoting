@@ -102,6 +102,7 @@ export default function ElectionDetailsForm({editedElection, applyUpdate, errors
                     type="text"
                     error={errors.description !== ''}
                     value={editedElection.description}
+                    helperText={errors.description || "Supports **bold** and [link text](url) formatting"}
                     sx={{
                         mx: { xs: 0, },
                         my: { xs: 0 },
@@ -112,9 +113,6 @@ export default function ElectionDetailsForm({editedElection, applyUpdate, errors
                         applyUpdate(election => { election.description = e.target.value })
                     }}
                 />
-                <FormHelperText error sx={{ pl: 1, pt: 0 }}>
-                    {errors.description}
-                </FormHelperText>
             </Grid>
 
             <Grid item xs={12} sx={{ m: 0, p: 1 }}>

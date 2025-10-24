@@ -21,7 +21,8 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
     const postRoll = usePostRolls(election.election_id)
     const fileReader = new FileReader()
     const [enableVoterID, setEnableVoterID] = useState(election.settings.voter_authentication.voter_id && election.settings.invitation !== 'email')
-    const [enableEmail, setEnableEmail] = useState(election.settings.voter_authentication.email || election.settings.invitation === 'email')
+    const emailListOnly = election.settings.invitation === 'email'
+    const [enableEmail, setEnableEmail] = useState(emailListOnly)
     const [enablePrecinct, setEnablePrecinct] = useState(false)
     const inputRef = useRef(null)
 
@@ -59,7 +60,7 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                     email: undefined,
                     precinct: undefined,
                 }
-                if (enableVoterID){
+                if (enableVoterID && !emailListOnly){
                     roll.voter_id = csvSplit[count]
                     count += 1
                 }   
@@ -117,7 +118,7 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                     </Typography>
 
                     <Typography align='center' component="p">
-                        Enter your voter roll data in the field below.<br/>(1 voter per row, no spaces)
+                        Enter your voter roll data in the field below.<br/>{`(1 ${emailListOnly ? "email" : "voter"} per row, no spaces)`}
                     </Typography>
 
                     { election.settings.voter_access == 'closed' && 
@@ -132,26 +133,31 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
 
                     <Grid item sx={{ p: 1 }}>
                         <FormGroup row>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        id="enable-voter-id"
-                                        name="Voter ID"
-                                        checked={enableVoterID}
-                                        onChange={(e) => setEnableVoterID(e.target.checked)} />
-                                }
-                                label='Voter ID'
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
-                                        id="enable-email"
-                                        name="Email"
-                                        checked={enableEmail}
-                                        onChange={(e) => setEnableEmail(e.target.checked)} />
-                                }
-                                label='Email'
-                            />
+                            {
+                                emailListOnly ||
+                                    <>
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    id="enable-voter-id"
+                                                    name="Voter ID"
+                                                    checked={enableVoterID}
+                                                    onChange={(e) => setEnableVoterID(e.target.checked)} />
+                                            }
+                                            label='Voter ID'
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    id="enable-email"
+                                                    name="Email"
+                                                    checked={enableEmail}
+                                                    onChange={(e) => setEnableEmail(e.target.checked)} />
+                                            }
+                                            label='Email'
+                                        />
+                                    </>
+                            }
                             {flags.isSet('PRECINCTS') &&
                                 <FormControlLabel
                                     control={
@@ -170,7 +176,7 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                         <TextField
                             id="email-list"
                             name="email-list"
-                            label="Voter Data"
+                            label={`Voter ${emailListOnly ? "Emails" : "Data"}`}
                             required
                             rows={3}
                             placeholder={
@@ -217,7 +223,8 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                             Upload CSV
                         </Typography>
                         <Typography align='center' component="p">
-                            Upload a csv file of your voter data. Files can include voter IDs, email addresses, and precincts. Files must include headers with the expected spelling:voter_id,email,precinct.
+                            {`Upload a csv file of your voter data. Files can include ${emailListOnly ? "email addresses" : "voter IDs, email addresses,"} \
+                             and precincts. Files must include headers with the expected spelling:${emailListOnly ? "" : "voter_id,"}email,precinct.`}
                         </Typography>
                     </Grid>
                     <Grid item sx={{ m: 1 }}>

@@ -180,6 +180,7 @@ export default function RaceForm({
                         type="text"
                         error={errors.raceDescription !== ''}
                         value={editedRace.description}
+                        helperText={errors.raceDescription || "Supports **bold** and [link text](url) formatting"}
                         sx={{
                             m: 0,
                             boxShadow: 2,
@@ -189,9 +190,6 @@ export default function RaceForm({
                             applyRaceUpdate(race => { race.description = e.target.value })
                         }}
                     />
-                    <FormHelperText error sx={{ pl: 1, pt: 0 }}>
-                        {errors.raceDescription}
-                    </FormHelperText>
                 </Grid>
 
                 {

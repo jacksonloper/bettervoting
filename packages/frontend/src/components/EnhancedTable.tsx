@@ -356,7 +356,10 @@ function filterData<T>(array: readonly T[], headCells: HeadCell[], filters: any[
       if (!col.filterType) return true
       if (col.filterType === 'search') {
         if (filters[colInd] == '') return true
-        return row[col.id].toLowerCase().includes(filters[colInd].toLowerCase())
+        let item = row[col.id];
+        // if it's not a string, assume it's a ReactNode and strip away the noise
+        if(typeof item !== 'string') item = row[col.id].props.children[0]
+        return item.toLowerCase().includes(filters[colInd].toLowerCase())
       }
       if (col.filterType === 'groups') {
         return filters[colInd][row[col.id]]

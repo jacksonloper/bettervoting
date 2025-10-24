@@ -1045,6 +1045,8 @@ admin_home:
     title: Confirm Archive {{capital_election}}
     message: Are you sure you wish to archive this {{election}}? This action cannot be undone.
 
+  archive_snack: 'Election successfully archived!'
+
   close:
     description: Close
     subtext: Closes the {{election}}, preventing new votes
@@ -1219,6 +1221,7 @@ listed_datetime: '{{listed_datetime, datetime}}'
 
 # Full list of time zones
 time_zones:
+    Etc/GMT+12: Baker Island
     Pacific/Midway: Midway Island, Samoa
     Pacific/Pago_Pago: Pago Pago
     Pacific/Honolulu: Hawaii

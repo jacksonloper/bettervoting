@@ -100,6 +100,9 @@ const App = () => {
                 <Route path='/paper-ballots' element={<Redirect href='/paper_ballots'/>} /> 
                 <Route path='/paperballots' element={<Redirect href='/paper_ballots'/>} /> 
               <Route path='/hand_count' element={<Redirect href={'https://docs.bettervoting.com/help/hand_count.html'}/>} />
+                <Route path='/hand-count' element={<Redirect href='/hand_count'/>} /> 
+                <Route path='/handcount' element={<Redirect href='/handcount'/>} /> 
+              <Route path='/ties' element={<Redirect href={'https://docs.bettervoting.com/help/ties.html'}/>} />
               {/*Testing / Internal*/}
               <Route path='/name_match_testing' element={<NameMatchingTester />} />
                 <Route path='/name-match-testing' element={<Redirect href='/name_match_testing'/>} /> 

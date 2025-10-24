@@ -78,10 +78,15 @@ const AdminHome = () => {
     }
 
     const archiveElection = async () => {
-        const confirmed = await confirm(t('admin_home.finalize_confirm'))
+        const confirmed = await confirm(t('admin_home.archive_confirm'))
         if (!confirmed) return
         try {
-            await archive()
+            await archive() && setSnack({
+                message: t('admin_home.archive_snack'),
+                severity: 'success',
+                open: true,
+                autoHideDuration: 6000,
+            });
             await fetchElection()
         } catch (err) {
             console.error(err)
@@ -366,7 +371,7 @@ const AdminHome = () => {
             <DuplicateElectionSection/>
             {(election.state === 'open') && !election.start_time && !election.end_time && <CloseElectionSection />}
             {(election.state === 'closed') && !election.start_time && !election.end_time && <OpenElectionSection />}
-            <ArchiveElectionSection />
+            {election.state != 'archived' && <ArchiveElectionSection />}
         </Box>
 
         {election.state === 'draft' && <FinalizeSection /> }
