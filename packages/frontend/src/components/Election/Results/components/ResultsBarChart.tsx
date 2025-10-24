@@ -146,7 +146,7 @@ const [rawNumbers, setRawNumbers] = useState(false);
           type="category"
           axisLine={false}
           tickLine={false}
-          tick={{ fontSize: ".9rem", fill: "black", fontWeight: "bold" }}
+          tick={{ fontSize: ".8rem", fill: "black", fontWeight: "bold" }}
           width={adjustedAxisWidth}
           tickMargin={useTickMargin ? tickOffset : undefined}
           

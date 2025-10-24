@@ -8,6 +8,7 @@ import useElection from "../../../ElectionContextProvider";
 import useFeatureFlags from "../../../FeatureFlagContextProvider";
 import { useSubstitutedTranslation } from "~/components/util";
 import GenericBallotGrid from "./GenericBallotGrid";
+import { FormattedDescription } from "~/components/FormattedDescription";
 
 interface GenericBallotViewProps {
   onClick: (candidateIndex: number, columnValue: number) => void;
@@ -71,11 +72,12 @@ export default function GenericBallotView({
               {ballotContext.race.title}
             </Typography>
           </Grid>
-          {ballotContext.race.description && 
+          {ballotContext.race.description &&
             <Grid item sx={{ pb: 5, px: 3 }}>
-            <Typography align='center' component="p" style={{whiteSpace: 'pre-line'}}>
-              {ballotContext.race.description}
-            </Typography>
+            <FormattedDescription
+              description={ballotContext.race.description}
+              align='center'
+            />
           </Grid>}
 
           <Grid item xs={8} sx={{ pb:1, px:4 }} className="instructions">

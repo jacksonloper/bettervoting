@@ -1228,6 +1228,7 @@ listed_datetime: '{{listed_datetime, datetime}}'
 
 # Full list of time zones
 time_zones:
+    Etc/GMT+12: Baker Island
     Pacific/Midway: Midway Island, Samoa
     Pacific/Pago_Pago: Pago Pago
     Pacific/Honolulu: Hawaii
