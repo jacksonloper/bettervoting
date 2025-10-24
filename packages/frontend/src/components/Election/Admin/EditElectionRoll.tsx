@@ -313,15 +313,10 @@ const EditElectionRoll = ({ roll, onClose, fetchRolls }:Props) => {
                             This action reveals the unique voting link for the voter. This should only be done if the voter is unable to acquire their voting link through their email inbox.
                         </DialogContentText>
                         <DialogContentText sx={{ mt: 2 }}>
-                            This action will:
-                        </DialogContentText>
-                        <DialogContentText sx={{ mt: 1 }}>
-                            • Create a permanent audit log entry<br />
-                            • Record who performed this action<br />
-                            • Should only be used when necessary
+                            This action will create a permanent audit log entry and record who performed this action.
                         </DialogContentText>
                         <DialogContentText sx={{ mt: 2, fontWeight: 'bold' }}>
-                            Are you sure you want to proceed?
+                            Would you like to proceed?
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
