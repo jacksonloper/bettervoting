@@ -317,23 +317,7 @@ Congratulations, you got the whole service running locally!! 🥳🥳
 
 ## Using Feature Flags (Optional)
 
-BetterVoting uses feature flags to test and gradually roll out new features. If you're working on a feature that's behind a feature flag, or want to test unreleased features, you can use a browser extension to enable them locally.
-
-### Chrome Feature Flags Extension
-
-We recommend using the [Feature Flags Chrome Extension](https://chromewebstore.google.com/detail/hmflgmhoghcbmckbbgahfmklegllkggn) for managing feature flags during development.
-
-**Installation:**
-1. Install the extension from the Chrome Web Store
-2. The extension will automatically detect and allow you to toggle feature flags in BetterVoting
-
-**Security Note:**
-We generally trust this plugin, but if you prefer to be cautious, you can configure it to only run when you click on it:
-1. Right-click the extension icon in Chrome
-2. Select "Manage Extension"
-3. Under "Site access", select "On click" instead of "On all sites"
-
-This way, the extension will only activate when you explicitly click its icon.
+BetterVoting uses feature flags to test and gradually roll out new features. If you're working on a feature that's behind a feature flag, or want to test unreleased features, see [How to enable beta features](../../help/how_to_enable_beta_features.md).
 
 ## Making changes locally
 
