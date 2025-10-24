@@ -39,7 +39,7 @@ type BallotSubmitType = 'submitted_via_browser' | 'submitted_via_admin' | 'submi
 
 const castVoteEventQueue = "castVoteEvent";
 
-async function makeBallotEvent(req: IElectionRequest, targetElection: Election, inputBallot: NewBallot, submitType: BallotSubmitType, voter_id?: string, adminEmail?: string){
+async function makeBallotEvent(req: IElectionRequest, targetElection: Election, inputBallot: NewBallot, submitType: BallotSubmitType, voter_id?: string, adminUsername?: string){
     inputBallot.election_id = targetElection.election_id;
     let roll = null;
     // skip voter roll & validation steps while in draft mode
@@ -106,8 +106,8 @@ async function makeBallotEvent(req: IElectionRequest, targetElection: Election, 
         }
         roll.history.push({
             action_type: updatableBallot ? "update": "submit",
-            // Use admin email if submitted via admin, otherwise use voter_id
-            actor: (submitType === 'submitted_via_admin' && adminEmail) ? adminEmail : (roll===null ? '' : roll.voter_id),
+            // Use admin username if submitted via admin, otherwise use voter_id
+            actor: (submitType === 'submitted_via_admin' && adminUsername) ? adminUsername : (roll===null ? '' : roll.voter_id),
             timestamp:inputBallot.date_submitted,
         });
     }
