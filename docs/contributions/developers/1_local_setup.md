@@ -315,6 +315,9 @@ You should be able to create elections using the quick poll.
 
 Congratulations, you got the whole service running locally!! 🥳🥳
 
+## Using Feature Flags (Optional)
+
+BetterVoting uses feature flags to test and gradually roll out new features. If you're working on a feature that's behind a feature flag, or want to test unreleased features, see [How to enable beta features](../../help/how_to_enable_beta_features.md).
 
 ## Making changes locally
 
