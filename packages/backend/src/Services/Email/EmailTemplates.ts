@@ -98,6 +98,7 @@ export function Receipt(election: Election, email: string, ballot: Ballot, url: 
             ${election.state === 'draft' ? "<h3>⚠️This was cast as a test ballot. All test ballots will be removed once the election is finalized, and at that time you will need to vote again.⚠️</h3>" : ''}
             <p>Thank you for voting in ${election.title}!<p>
             <p>You can <a clicktracking="off" href="${url}/${election.election_id}/ballot/${ballot.ballot_id}">verify your ballot and ballot status</a> at any time.</p>
+            ${election.settings.ballot_updates ? `<p>While the election is still open, you can <a clicktracking="off" href="${url}/${election.election_id}/id/${ballot.user_id}">update your vote</a></p>.` : ''}
           </div>    
         `),
     }
