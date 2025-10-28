@@ -1,7 +1,6 @@
 import ServiceLocator from "../../ServiceLocator";
 import Logger from "../../Services/Logging/Logger";
 import { BadRequest } from "@curveball/http-errors";
-import { expectPermission } from "../controllerUtils";
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { IElectionRequest } from "../../IRequest";
 import { Response, NextFunction } from 'express';
@@ -15,8 +14,6 @@ const getBallotByBallotID = async (req: IElectionRequest, res: Response, next: N
         throw new BadRequest('No Ballot ID provided')
     }
     Logger.debug(req, "getBallotByBallotID: " + ballot_id);
-
-    expectPermission(req.user_auth.roles, permissions.canViewBallots)
 
     const ballot = await BallotModel.getBallotByID(ballot_id, req);
     if (!ballot) {
