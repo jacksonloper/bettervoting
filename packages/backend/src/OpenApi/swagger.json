@@ -715,6 +715,7 @@
               "Australia/Sydney",
               "CET",
               "Canada/Atlantic",
+              "Etc/GMT+12",
               "Etc/Greenwich",
               "Europe/Amsterdam",
               "Europe/Athens",
@@ -784,6 +785,25 @@
       },
       "Email": {
         "type": "string"
+      },
+      "FormatMarkdownOptions": {
+        "properties": {
+          "allowButtons": {
+            "type": "boolean"
+          },
+          "buttonContext": {
+            "properties": {
+              "electionHomeUrl": {
+                "type": "string"
+              },
+              "voteUrl": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
       },
       "GenericObject": {
         "additionalProperties": false,
@@ -1348,6 +1368,7 @@
           "Australia/Sydney",
           "CET",
           "Canada/Atlantic",
+          "Etc/GMT+12",
           "Etc/Greenwich",
           "Europe/Amsterdam",
           "Europe/Athens",
