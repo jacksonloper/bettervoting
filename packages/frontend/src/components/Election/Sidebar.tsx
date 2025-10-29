@@ -52,15 +52,14 @@ export default function Sidebar() {
                                 <ListItem text='Voters' link={`/${id}/admin/voters`} />
                             </PermissionHandler>}
                             {/*
-                            If all three condition are true, remove the "Ballots" option from the left popup menu.
-                            If one of them is false, don't remove the "Ballots" option from the left menu.
-                             */}
-                            { election.settings.ballot_updates = true }
+                            The "Ballots" choice on the left-hand menu is available only if
+                            public_results is true and the election is open
+                            */}
+                            {election.settings.public_results = false}
                             {
                             (
-                                !election.settings.ballot_updates ||
-                                !election.settings.public_results ||
-                                election.state === 'closed'
+                                election.settings.public_results &&
+                                election.state === 'open'
                             ) && (
                                 <PermissionHandler permissions={permissions} requiredPermission="canViewBallots">
                                     <ListItem text="Ballots" link={`/${id}/admin/ballots`} />
