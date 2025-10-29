@@ -55,6 +55,7 @@ export default function Sidebar() {
                             If all three condition are true, remove the "Ballots" option from the left popup menu.
                             If one of them is false, don't remove the "Ballots" option from the left menu.
                              */}
+                            { election.settings.ballot_updates = true }
                             {
                             (
                                 !election.settings.ballot_updates ||
