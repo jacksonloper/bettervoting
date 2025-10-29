@@ -40,7 +40,6 @@ const getRollsByElectionID = async (req: IElectionRequest, res: Response, next: 
 
 const getByVoterID = async (req: IElectionRequest, res: Response, next: NextFunction) => {
     Logger.info(req, `${className}.getByVoterID ${req.election.election_id} ${req.params.voter_id}`)
-    expectPermission(req.user_auth.roles, permissions.canViewElectionRoll)
     const electionRollEntry = await ElectionRollModel.getByVoterID(req.election.election_id, req.params.voter_id, req)
     if (!electionRollEntry) {
         const msg = "Voter Roll not found";
@@ -56,7 +55,6 @@ const getByVoterID = async (req: IElectionRequest, res: Response, next: NextFunc
     };
 
     res.json({ electionRollEntry: scrubbedEntry })
-    next()
 }
 
 export {

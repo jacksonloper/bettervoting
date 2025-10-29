@@ -59,10 +59,7 @@ const LandingPageCarousel = () => {
                 "voting_method": voting_method,
                 "candidates": []
             },
-            receiptEmail: {
-                sendReceipt: false,
-                email: ''
-            },
+            receiptEmail: "",
             setReceiptEmail: () => {},
             // disabling since I'm not sure it's a good idea anymore
             onUpdate: () => {},//onUpdate,
