@@ -57,7 +57,7 @@ const electionPostAuthMiddleware = async (req: IElectionRequest, res: any, next:
         var election = req.election;
         if (!election){
             var failMsg = "Election not found";
-            Logger.info(req, `${failMsg} electionId=${req.params.id}}`);
+            Logger.info(req, `${failMsg} electionId=${req.params.id}`);
             return responseErr(res, req, 400, failMsg);
         }
         election = await updateElectionStateIfNeeded(req, election);

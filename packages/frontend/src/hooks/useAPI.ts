@@ -79,6 +79,10 @@ export const useGetRolls = (electionID: string | undefined) => {
     return useFetch<undefined, { election: Election, electionRoll: ElectionRoll[] }>(`/API/Election/${electionID}/rolls`, 'get')
 }
 
+export const useGetRoll = (electionId: string, voterId) => {
+    return useFetch<undefined, {electionRollEntry: ElectionRoll} >(`/API/Election/${electionId}/rolls/${voterId}`, 'get')
+}
+
 export const usePutElectionRoles = (election_id: string) => {
     return useFetch<{ admin_ids: string[], audit_ids: string[], credential_ids: string[] }, object>(
         `/API/Election/${election_id}/roles/`, 
