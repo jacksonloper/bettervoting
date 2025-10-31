@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, Link, List, MenuItem } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, Link, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import useAuthSession from './AuthSessionContextProvider';
@@ -15,8 +15,6 @@ import { ReturnToClassicContext } from './ReturnToClassicDialog';
 import { useCookie } from '~/hooks/useCookie';
 import NavMenu from './NavMenu';
 import { PrimaryButton } from './styles';
-import { useClaimElection } from '~/hooks/useAPI';
-import useSnackbar from './SnackbarContext';
 
 const Header = () => {
     const flags = useFeatureFlags();
