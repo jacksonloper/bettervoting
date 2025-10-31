@@ -22,3 +22,12 @@ Here's how you enable these features
 By default the flags to whatever the current default is for the website. If you'd like to return to the default you can toggle the Reset flag
 
 NOTE: At the time of writing all the flags are set to false by default, but this will change as we release more features
+
+## Security Note (Optional)
+
+We generally trust this plugin, but if you prefer to be cautious, you can configure it to only run when you click on it:
+1. Right-click the extension icon in Chrome
+2. Select "Manage Extension"
+3. Under "Site access", select "On click" instead of "On all sites"
+
+This way, the extension will only activate when you explicitly click its icon.

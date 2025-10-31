@@ -83,6 +83,10 @@ export const useRevealVoterId = (election_id: string) => {
     return useFetch<{ email: string }, { voter_id: string, email: string, warning: string }>(`/API/Election/${election_id}/rolls/revealVoterId`, 'post')
 }
 
+export const useGetRoll = (electionId: string, voterId) => {
+    return useFetch<undefined, {electionRollEntry: ElectionRoll} >(`/API/Election/${electionId}/rolls/${voterId}`, 'get')
+}
+
 export const usePutElectionRoles = (election_id: string) => {
     return useFetch<{ admin_ids: string[], audit_ids: string[], credential_ids: string[] }, object>(
         `/API/Election/${election_id}/roles/`, 

@@ -25,6 +25,7 @@ const ElectionRollModel = ServiceLocator.electionRollDb();
 const BallotModel = ServiceLocator.ballotsDb();
 const EventQueue = ServiceLocator.eventQueue();
 const EmailService = ServiceLocator.emailService();
+const AccountService = ServiceLocator.accountService();
 
 type CastVoteEvent = {
     requestId:Uid,
@@ -232,7 +233,7 @@ async function castVoteController(req: IElectionRequest, res: Response, next: Ne
 
     let event = await makeBallotEvent(req, targetElection, req.body.ballot, 'submitted_via_browser')
 
-    event.userEmail = req.body.receiptEmail;
+    event.userEmail = event.roll?.email ?? AccountService.extractUserFromRequest(req).email ?? req.body.receiptEmail;
 
     await (await EventQueue).publish(castVoteEventQueue, event);
 
@@ -267,14 +268,13 @@ async function handleCastVoteEvent(job: { id: string; data: CastVoteEvent; }):Pr
     if (event.roll != null) {
         await ElectionRollModel.update(event.roll, ctx, `User submits a ballot`);
     }
-
-    if (event.userEmail){
+    if (event.userEmail) {
         const targetElection = await ElectionsModel.getElectionByID(event.inputBallot.election_id, ctx);
         if (targetElection == null){
             throw new InternalServerError("Target Election null: " + ctx.contextId);
         }
         const url = ServiceLocator.globalData().mainUrl;
-        const receipt = Receipt(targetElection, event.userEmail, savedBallot, url)
+        const receipt = Receipt(targetElection, event.userEmail, savedBallot, url, event.roll)
         await EmailService.sendEmails([receipt])
     }
 }

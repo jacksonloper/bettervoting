@@ -31,7 +31,7 @@ export default function Sidebar() {
                     display='flex'
                     justifyContent="center"
                     alignItems="center"
-                    sx={{ 
+                    sx={{
                         "@media print": {
                             display: 'none',
                         }
@@ -51,9 +51,20 @@ export default function Sidebar() {
                             {election.settings.voter_access != 'open' && <PermissionHandler permissions={permissions} requiredPermission={'canViewElectionRoll'}>
                                 <ListItem text='Voters' link={`/${id}/admin/voters`} />
                             </PermissionHandler>}
-                            <PermissionHandler permissions={permissions} requiredPermission={'canViewBallots'}>
-                                <ListItem text='Ballots' link={`/${id}/admin/ballots`} />
-                            </PermissionHandler>
+                            {/*
+                            The "Ballots" choice on the left-hand menu is available only if
+                            public_results is true or the election is closed
+                            */}
+                            {
+                                (
+                                    election.settings.public_results ||
+                                    election.state === 'closed'
+                                ) && (
+                                    <PermissionHandler permissions={permissions} requiredPermission="canViewBallots">
+                                        <ListItem text="Ballots" link={`/${id}/admin/ballots`} />
+                                    </PermissionHandler>
+                                )}
+
                         </Grid>
                     </Paper>
                 </Box>
