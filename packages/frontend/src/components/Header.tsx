@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, Link, List, MenuItem } from '@mui/material';
@@ -15,6 +15,8 @@ import { ReturnToClassicContext } from './ReturnToClassicDialog';
 import { useCookie } from '~/hooks/useCookie';
 import NavMenu from './NavMenu';
 import { PrimaryButton } from './styles';
+import { useClaimElection } from '~/hooks/useAPI';
+import useSnackbar from './SnackbarContext';
 
 const Header = () => {
     const flags = useFeatureFlags();
@@ -23,6 +25,7 @@ const Header = () => {
     // this is important for setting the default value
     useCookie('temp_id', makeID(ID_PREFIXES.VOTER, ID_LENGTHS.VOTER))
     const {t} = useSubstitutedTranslation();
+    
 
     const createElectionContext = useContext(CreateElectionContext);
 
