@@ -98,7 +98,7 @@ export function AuthSessionContextProvider({ children }: { children: React.React
 
         // Select Token retrieval method
         // Authorization Code: 
-        //      When users initially login through oAuth, the browser will be redirected our website, and it will inclue the auth code in the query parameters
+        //      When users initially login through oAuth, the browser will be redirected our website, and it will include the auth code in the query parameters
         //      This tempoary code can then be used the retrieve tokens
         // Refresh Token: 
         //      If the user is already logged in and their access token expires, 
