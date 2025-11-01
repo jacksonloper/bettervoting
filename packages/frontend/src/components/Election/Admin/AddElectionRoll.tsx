@@ -100,7 +100,7 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                 const obj = csvHeader.reduce((object, header, index) => {
                     object[header] = values[index];
                     return object;
-                }, { state: 'approved' });
+                }, { state: 'approved' } as Record<string, string>);
                 return obj;
             }).filter(roll => {
                 // Filter out rolls where all fields are empty
