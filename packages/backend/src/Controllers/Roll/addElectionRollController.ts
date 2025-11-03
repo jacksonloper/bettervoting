@@ -26,10 +26,7 @@ const addElectionRoll = async (req: IElectionRequest & { body: { electionRoll: E
 
     // Filter out empty roll entries (where all fields are empty)
     req.body.electionRoll = req.body.electionRoll.filter((rollInput: ElectionRollInput) => {
-        const hasVoterId = rollInput.voter_id && rollInput.voter_id.trim().length > 0;
-        const hasEmail = rollInput.email && rollInput.email.trim().length > 0;
-        const hasPrecinct = rollInput.precinct && rollInput.precinct.trim().length > 0;
-        return hasVoterId || hasEmail || hasPrecinct;
+        return rollInput.voter_id?.trim() || rollInput.email?.trim() || rollInput.precinct?.trim();
     });
 
     // Prevent creating voters by voter_id when using email invitations

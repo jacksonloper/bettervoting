@@ -15,8 +15,8 @@ const STARResultDetailedStepsWidget = ({ results, rounds, t, filterRandomFromLog
         'tabulation_logs.star.runoff_win',
         'tabulation_logs.star.runoff_tiebreak',
     ];
-    let roundLogGroups = results.roundResults.map(round => {
-        let logGroups = [];
+    const roundLogGroups = results.roundResults.map(round => {
+        const logGroups = [];
         let group = [];
         round.logs.forEach((log) => {
             if(typeof log === 'string'){

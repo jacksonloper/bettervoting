@@ -38,7 +38,7 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
     const onSubmit = async (e) => {
         e.preventDefault()
         try {
-            const rows = voterIDList.split('\n').filter(row => row.trim().length > 0)
+            const rows = voterIDList.split('\n').filter(row => row.trim())
             const rolls = []
             const expectedCounts = Number(enableVoterID) + Number(enableEmail) + Number(enablePrecinct)
             rows.forEach((row) => {
@@ -94,7 +94,7 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                 alert('Invalid headers')
                 return
             }
-            const csvRows = text.slice(text.indexOf("\n") + 1).split("\n").filter(row => row.trim().length > 0);
+            const csvRows = text.slice(text.indexOf("\n") + 1).split("\n").filter(row => row.trim());
             const rolls = csvRows.map(i => {
                 const values = i.split(",");
                 const obj = csvHeader.reduce((object, header, index) => {
@@ -104,9 +104,7 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                 return obj;
             }).filter(roll => {
                 // Filter out rolls where all fields are empty
-                return (roll.voter_id && roll.voter_id.trim().length > 0) || 
-                       (roll.email && roll.email.trim().length > 0) || 
-                       (roll.precinct && roll.precinct.trim().length > 0);
+                return roll.voter_id?.trim() || roll.email?.trim() || roll.precinct?.trim();
             });
             submitRolls(rolls)
         };

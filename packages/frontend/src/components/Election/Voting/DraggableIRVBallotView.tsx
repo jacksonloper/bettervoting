@@ -94,7 +94,7 @@ export default function DraggableIRVBallotView() {
     if (from === 'unranked' && to === 'unranked') return;
 
     // Remove id if coming from ranked
-    let base = rankedOrder.filter(x => x !== id);
+    const base = rankedOrder.filter(x => x !== id);
 
     if (to === 'unranked') {
       // Dropped into available: commit removal
