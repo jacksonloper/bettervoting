@@ -352,6 +352,7 @@ keyword:
   save: Save
   cancel: Cancel
   submit: Submit
+  close: Close
 
   # This is used in tables and charts
   total: Total 
@@ -743,7 +744,7 @@ tips:
     title: Use Draggable Ballots for IRV
     description: Enable a drag-and-drop interface for IRV (Instant Runoff Voting) ballots, allowing voters to rank candidates by dragging them into order.
 
-  publicly_searchable:
+  is_public:
     title: Make {{capital_election}} Publicly Searchable
     description: Allow {{capital_election}} to be listed under the browse polls tab.
 
@@ -974,8 +975,6 @@ about:
       github_image_id: 124646393
     - github_user_name: Yoemazing
       github_image_id: 100322179
-    # - github_user_name: 
-    #   github_image_id: 
 
   contribute_title: Contribute
   contribute_description: >
@@ -1128,7 +1127,7 @@ election_settings:
 
   draggable_ballot: Use Draggable Ballots for IRV !tip(draggable_ballot)
 
-  publicly_searchable: Make {{capital_election}} Publicly Searchable !tip(publicly_searchable)
+  is_public: Make {{capital_election}} Publicly Searchable !tip(is_public)
 
   max_rankings: Set Number Of Rankings Allowed !tip(max_rankings)
 

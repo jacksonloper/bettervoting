@@ -428,27 +428,6 @@ function EnhancedTableHead(props: EnhancedTableHeadProps) {
               />
             }
             {headCell.filterType === 'groups' &&
-              // <FormControl
-              //   sx={{ my: 1, width: 120 }} size="small"
-              // >
-              //   <Select
-              //     multiple
-              //     value={Object.keys(props.filters[cellInd]).filter(group => props.filters[cellInd][group])}
-              //     renderValue={(selected) => selected.join(', ')}
-              //   >
-              //     {Object.keys(headCell.filterGroups).map((group, i) => (
-              //       <MenuItem 
-              //         onClick={(e) => handleGroupFilterChange(cellInd, group, !props.filters[cellInd][group])}
-              //         key={`group-${i}`}
-              //       >
-              //         <Checkbox
-              //           checked={props.filters[cellInd][group] == true}
-              //         />
-              //         <ListItemText primary={group} />
-              //       </MenuItem>
-              //     ))}
-              //   </Select>
-              // </FormControl>
               <FormControl sx={{ my: 1, width: 130 }} size="small">
                 <Select
                   multiple

@@ -61,7 +61,7 @@ export const defaultElection: NewElection = {
         ballot_updates: false,
         public_results: false,
         time_zone: DateTime.now().zone.name as TimeZone,
-        random_candidate_order: false,
+        random_candidate_order: true,
         require_instruction_confirmation: true,
         draggable_ballot: false,
         invitation: undefined,
@@ -73,18 +73,11 @@ export const defaultElection: NewElection = {
 const templateMappers = {
     'demo': (election: NewElection): NewElection => ({
         ...election,
-    }),
-    /*'public': (election:NewElection):NewElection => ({
-        ...election,
-        is_public: true,
         settings: {
             ...election.settings,
-            voter_authentication: {
-                ...election.settings.voter_authentication,
-                voter_id: true
-            },
-        }
-    }),*/
+            public_results: true,
+        },
+    }),
     'unlisted': (election: NewElection): NewElection => ({
         ...election,
         is_public: false,
@@ -227,9 +220,9 @@ const CreateElectionDialog = () => {
                             <Tip name='polls_vs_elections' />
                         </Typography>
                         <RadioGroup row>
-                            {['poll', 'election'].map((type, i) =>
+                            {['poll', 'election'].map((type) =>
                                 <FormControlLabel
-                                    key={i}
+                                    key={type}
                                     value={capitalize(t(`keyword.${type}.election`))}
                                     control={<Radio />}
                                     label={capitalize(t(`keyword.${type}.election`))}
@@ -276,9 +269,9 @@ const CreateElectionDialog = () => {
                         </Typography>
 
                         <RadioGroup row>
-                            {[true, false].map((restricted, i) =>
+                            {[true, false].map((restricted) =>
                                 <FormControlLabel
-                                    key={i}
+                                    key={`${restricted}`}
                                     value={restricted}
                                     control={<Radio />}
                                     label={t(`keyword.${restricted ? 'yes' : 'no'}`)}
@@ -363,11 +356,10 @@ const CreateElectionDialog = () => {
         <DialogActions>
             <PrimaryButton
                 type='button'
-                variant="contained"
-                // width="100%"
+                variant='contained'
                 fullWidth={false}
                 onClick={onClose}>
-                Cancel
+                {t('keyword.cancel')}
             </PrimaryButton>
         </DialogActions>
     </Dialog>

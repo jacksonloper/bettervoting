@@ -1,6 +1,6 @@
 import ServiceLocator from "../../ServiceLocator";
 import Logger from "../../Services/Logging/Logger";
-import { BadRequest } from "@curveball/http-errors";
+import { BadRequest, Forbidden } from "@curveball/http-errors";
 import { Ballot } from '@equal-vote/star-vote-shared/domain_model/Ballot';
 import { Score } from '@equal-vote/star-vote-shared/domain_model/Score';
 import { expectPermission } from "../controllerUtils";
@@ -15,10 +15,17 @@ var seedrandom = require('seedrandom');
 const BallotModel = ServiceLocator.ballotsDb();
 
 const getElectionResults = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    var electionId = req.election.election_id;
+    const election = req.election
+    const electionId = election.election_id;
+
     Logger.info(req, `getElectionResults: ${electionId}`);
 
-    if (!req.election.settings.public_results) {
+    if (!election.settings.public_results) {
+        if (election.state == 'open') {
+            const msg = `Preliminary results not enabled for election ${electionId}`;
+            Logger.error(req, msg);
+            throw new Forbidden(msg);
+        }
         expectPermission(req.user_auth.roles, permissions.canViewPreliminaryResults)
     }
 
@@ -29,7 +36,6 @@ const getElectionResults = async (req: IElectionRequest, res: Response, next: Ne
         throw new BadRequest(msg);
     }
 
-    const election = req.election
     let results: ElectionResults[] = []
     for (let race_index = 0; race_index < election.races.length; race_index++) {
         const candidates: candidate[] = election.races[race_index].candidates.map((c: Candidate, i) => ({

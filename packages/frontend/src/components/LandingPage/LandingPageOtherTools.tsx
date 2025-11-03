@@ -31,7 +31,7 @@ export default function(){
                 flexWrap: 'wrap',
             }}>
                 {items.map((item, i) =>
-                    <Card className='otherTool' onClick={() => window.location.href = item.url} elevation={8} sx={{
+                    <Card className='otherTool' key={item.url} onClick={() => window.location.href = item.url} elevation={8} sx={{
                         width: '100%',
                         maxWidth: '20rem',
                         display: 'flex',
