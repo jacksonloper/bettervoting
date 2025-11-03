@@ -31,6 +31,8 @@ export default function ElectionSettings() {
     const [editedElectionSettings, setEditedElectionSettings] = useState(election.settings);
     const [publicResults, setPublicResults] = useState(election.settings.public_results);
     const [ballotUpdates, setBallotUpdates] = useState(election.settings.ballot_updates);
+
+    // Enforce mutual exclusion of ballot updates feature and preliminary results
     const [ballotUpdatesDisabled, setBallotUpdatesDisabled] = useState(!ballotUpdatesConditionsMet || election.settings.public_results);
     const [publicResultsDisabled, setPublicResultsDisabled] = useState(election.settings.ballot_updates);
     const [ballotUpdatesDisabledMsg, setBallotUpdatesDisabledMsg] = useState(ballotUpdatesConditionsMet && election.settings.public_results);
