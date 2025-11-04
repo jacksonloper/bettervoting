@@ -24,14 +24,14 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html', { open: process.env.OPEN_REPORT }],
-    
+
   ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: process.env.FRONTEND_URL,
     launchOptions: {
-      slowMo: 1000
+      slowMo: 100
     },
     actionTimeout: 30 * 1000, // Timeout for each action (like click, type, etc.)
     navigationTimeout: 30 * 1000, // Timeout for page navigation
@@ -48,7 +48,7 @@ export default defineConfig({
   projects: [
     {
       name: 'setup',
-      testMatch: /.*\.setup\.ts/ 
+      testMatch: /.*\.setup\.ts/
     },
     {
       name: 'chromium',
@@ -56,13 +56,13 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         storageState: path.join(__dirname, '/playwright/auth/user.json')
       },
-      dependencies: ['setup'],
+      // dependencies: ['setup'],
 
     },
 
     {
       name: 'firefox',
-      use: { 
+      use: {
         ...devices['Desktop Firefox'],
         storageState: path.join(__dirname, '/playwright/auth/user.json')
        },
@@ -71,7 +71,7 @@ export default defineConfig({
 
     {
       name: 'webkit',
-      use: { 
+      use: {
         ...devices['Desktop Safari'],
         storageState: path.join(__dirname, '/playwright/auth/user.json')
       },
