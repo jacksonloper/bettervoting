@@ -96,7 +96,6 @@ test.describe('Create Election', () => {
         await page.getByRole('link', { name: 'Create Election' }).click();
         await page.getByLabel('Election', { exact: true }).click();
         await page.getByRole('textbox', { name: 'Title'}).fill(' ');
-        await page.pause();
         await expect(page.getByRole('button', { name: 'Continue' }).first()).toBeDisabled({ timeout: 2000});
     });
 
