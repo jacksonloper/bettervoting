@@ -74,11 +74,9 @@ export default function ElectionDetailsForm({editedElection, applyUpdate, errors
     let {t} = useSubstitutedTranslation(editedElection.settings.term_type, {time_zone: timeZone});
 
     const [enableStartEndTime, setEnableStartEndTime] = useState(isValidDate(editedElection.start_time) || isValidDate(editedElection.end_time))
-    const [defaultStartTime, setDefaultStartTime] = useState(isValidDate(editedElection.start_time) ? editedElection.start_time : DateTime.now().setZone(timeZone, { keepLocalTime: true }).toJSDate())
-    const [defaultEndTime, setDefaultEndTime] = useState(isValidDate(editedElection.end_time) ? editedElection.end_time : DateTime.now().plus({ days: 1 }).setZone(timeZone, { keepLocalTime: true }).toJSDate())
+    const [defaultStartTime, setDefaultStartTime] = useState(isValidDate(editedElection.start_time) ? editedElection.start_time : DateTime.now().setZone(timeZone).toJSDate())
+    const [defaultEndTime, setDefaultEndTime] = useState(isValidDate(editedElection.end_time) ? editedElection.end_time : DateTime.now().plus({ days: 1 }).setZone(timeZone).toJSDate())
 
-    
-    
     return (
         <Grid container sx={{p: 4}}>
             <Grid item xs={12} sx={{ m: 0, p: 1 }}>
@@ -189,8 +187,10 @@ export default function ElectionDetailsForm({editedElection, applyUpdate, errors
                                     }
                                 }}
                             />
-                            <FormHelperText error sx={{ pl: 0, mt: 0 }}>
-                                {errors.startTime}
+                            <FormHelperText error={!!errors.startTime} sx={{ pl: 0, mt: 0 }}>
+                                {errors.startTime || (editedElection.start_time && timeZone !== DateTime.now().zone.name &&
+                                    `${DateTime.now().zone.name}: ${DateTime.fromJSDate(editedElection.start_time).setZone(DateTime.now().zone.name).toLocaleString(DateTime.DATETIME_SHORT)}`
+                                )}
                             </FormHelperText>
                         </FormControl>
                     </Grid>
@@ -213,8 +213,10 @@ export default function ElectionDetailsForm({editedElection, applyUpdate, errors
                                     }
                                 }}
                             />
-                            <FormHelperText error sx={{ pl: 0, mt: 0 }}>
-                                {errors.endTime}
+                            <FormHelperText error={!!errors.endTime} sx={{ pl: 0, mt: 0 }}>
+                                {errors.endTime || (editedElection.end_time && timeZone !== DateTime.now().zone.name &&
+                                    `${DateTime.now().zone.name}: ${DateTime.fromJSDate(editedElection.end_time).setZone(DateTime.now().zone.name).toLocaleString(DateTime.DATETIME_SHORT)}`
+                                )}
                             </FormHelperText>
                         </FormControl>
                     </Grid>
