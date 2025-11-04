@@ -202,7 +202,7 @@ copy packages/backend/sample.env packages/backend/.env
 
 #### Step 2: Setup Backend Connection
 
-Now your packages/frontend/.env file should 2 sections for connecting to the backend. One for a production backend, and one for local
+Now your packages/frontend/.env file should include 2 sections for connecting to the backend. One for a production backend, and one for local
 
 If you're running your own backend, then leave the default sample.env (which has the production backend commented out).
 
@@ -237,7 +237,7 @@ There will probably be lots of red in the terminal, but your frontend should be 
 
 Note: Most of you will need to setup the databases, but if you have production credentials in your .env then you can skip this step. Email elections@star.vote if you need access to the production databases.
 
-The database(s) inclue a postgresql database for storing all the election data, and a keycloak service which stores and manages all the user data. Both are defined within docker-compose, and can be started with some docker commands. 
+The database(s) include a postgresql database for storing all the election data, and a keycloak service which stores and manages all the user data. Both are defined within docker-compose, and can be started with some docker commands. 
 
 Luckily, all the commands here should only need to be ran once. After that the services should be available for all future dev sessions.  
 

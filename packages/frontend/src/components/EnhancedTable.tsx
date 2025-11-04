@@ -255,7 +255,7 @@ const headCellPool = {
     filterType: 'search',
     formatter: id => <>
       {id.startsWith('v-') && '(no account)'}
-      {!id.startsWith('v-') && <a target='_blank' href={`https://keycloak.prod.equal.vote/admin/master/console/#/Prod/users/${id}/settings`}>{limit(id, 6)}</a>}
+      {!id.startsWith('v-') && <a target='_blank' href={`https://keycloak.prod.equal.vote/admin/master/console/#/Prod/users/${id}/settings`} rel="noreferrer">{limit(id, 6)}</a>}
     </>
   },
   votes: {

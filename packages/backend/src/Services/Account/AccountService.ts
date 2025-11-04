@@ -2,9 +2,8 @@ import Logger from '../Logging/Logger';
 import axios from 'axios';
 import qs from 'qs';
 import 'dotenv/config';
-import { InternalServerError, Unauthorized } from "@curveball/http-errors";
+import { InternalServerError } from "@curveball/http-errors";
 import { IRequest } from '../../IRequest';
-import { Election } from '@equal-vote/star-vote-shared/domain_model/Election';
 import AccountServiceUtils from './AccountServiceUtils';
 
 var jwt = require('jsonwebtoken');

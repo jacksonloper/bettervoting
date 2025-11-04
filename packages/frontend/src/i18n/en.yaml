@@ -36,7 +36,7 @@ ballot:
 
   dialog_submit_title: Submit {{capital_ballot}}?
   dialog_send_receipt: Send Ballot Receipt Email?
-  dialog_email_placeholder: Receipt Email
+  dialog_email_placeholder: Receipt Email (Optional)
   dialog_cancel: Cancel
   dialog_submit: Submit
   dialog_abstention: Abstained - No preference was expressed
@@ -711,7 +711,7 @@ tips:
     title: Head-to-Head Matchups 
     description: Shows which candidate would win in each one on one matchup based on the voters' preferences on the ballot. Information is identical to a preference or runoff matrix.
 
-  random_candidate_order: 
+  random_candidate_order:
     title: Randomize Candidate Order
     description: Randomizes the order of candidates on the ballots.
 

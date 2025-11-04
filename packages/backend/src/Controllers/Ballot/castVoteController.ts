@@ -25,6 +25,7 @@ const ElectionRollModel = ServiceLocator.electionRollDb();
 const BallotModel = ServiceLocator.ballotsDb();
 const EventQueue = ServiceLocator.eventQueue();
 const EmailService = ServiceLocator.emailService();
+const AccountService = ServiceLocator.accountService();
 
 type CastVoteEvent = {
     requestId:Uid,
@@ -39,7 +40,7 @@ type BallotSubmitType = 'submitted_via_browser' | 'submitted_via_admin' | 'submi
 
 const castVoteEventQueue = "castVoteEvent";
 
-async function makeBallotEvent(req: IElectionRequest, targetElection: Election, inputBallot: NewBallot, submitType: BallotSubmitType, voter_id?: string){
+async function makeBallotEvent(req: IElectionRequest, targetElection: Election, inputBallot: NewBallot, submitType: BallotSubmitType, voter_id?: string, adminUsername?: string){
     inputBallot.election_id = targetElection.election_id;
     let roll = null;
     // skip voter roll & validation steps while in draft mode
@@ -106,7 +107,8 @@ async function makeBallotEvent(req: IElectionRequest, targetElection: Election, 
         }
         roll.history.push({
             action_type: updatableBallot ? "update": "submit",
-            actor: roll===null ? '' : roll.voter_id ,
+            // Use admin username if submitted via admin, otherwise use voter_id
+            actor: (submitType === 'submitted_via_admin' && adminUsername) ? adminUsername : (roll===null ? '' : roll.voter_id),
             timestamp:inputBallot.date_submitted,
         });
     }
@@ -163,7 +165,7 @@ async function uploadBallotsController(req: IElectionRequest, res: Response, nex
     }
  
     let events = await Promise.all(
-        req.body.ballots.map(({ballot, voter_id} : {ballot: OrderedNewBallot, voter_id: string}) => 
+        req.body.ballots.map(({ballot, voter_id} : {ballot: OrderedNewBallot, voter_id: string}) =>
             makeBallotEvent(
                 req,
                 targetElection,
@@ -171,7 +173,8 @@ async function uploadBallotsController(req: IElectionRequest, res: Response, nex
                     mapOrderedNewBallot(ballot, req.body.race_order as RaceCandidateOrder[])
                 ),
                 'submitted_via_admin',
-                voter_id
+                voter_id,
+                req.user?.username // Pass admin username for audit trail
             ).catch((err) => ({
                 error: err,
                 ballot: ballot
@@ -230,7 +233,7 @@ async function castVoteController(req: IElectionRequest, res: Response, next: Ne
 
     let event = await makeBallotEvent(req, targetElection, req.body.ballot, 'submitted_via_browser')
 
-    event.userEmail = req.body.receiptEmail;
+    event.userEmail = event.roll?.email ?? AccountService.extractUserFromRequest(req).email ?? req.body.receiptEmail;
 
     await (await EventQueue).publish(castVoteEventQueue, event);
 
@@ -265,8 +268,7 @@ async function handleCastVoteEvent(job: { id: string; data: CastVoteEvent; }):Pr
     if (event.roll != null) {
         await ElectionRollModel.update(event.roll, ctx, `User submits a ballot`);
     }
-
-    if (event.userEmail){
+    if (event.userEmail) {
         const targetElection = await ElectionsModel.getElectionByID(event.inputBallot.election_id, ctx);
         if (targetElection == null){
             throw new InternalServerError("Target Election null: " + ctx.contextId);

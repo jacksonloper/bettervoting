@@ -1,4 +1,4 @@
-import { createContext, useCallback, useState } from "react"
+import { createContext, useCallback, useState, useEffect } from "react"
 import BallotPageSelector from "./BallotPageSelector";
 import { useParams } from "react-router";
 import React from 'react'
@@ -7,7 +7,8 @@ import { Box, Checkbox, Container, Dialog, DialogActions, DialogContent, DialogC
 import { NewBallot } from "@equal-vote/star-vote-shared/domain_model/Ballot";
 import { Vote } from "@equal-vote/star-vote-shared/domain_model/Vote";
 import { Score } from "@equal-vote/star-vote-shared/domain_model/Score";
-import { usePostBallot } from "../../../hooks/useAPI";
+import { usePostBallot, useGetRoll } from "../../../hooks/useAPI";
+import { useCookie } from "../../../hooks/useCookie";
 import useElection from "../../ElectionContextProvider";
 import useAuthSession from "../../AuthSessionContextProvider";
 import { PrimaryButton, SecondaryButton } from "../../styles";
@@ -26,10 +27,6 @@ const CHECKED_BOX = "M 19 3 H 5 c -1.11 0 -2 0.9 -2 2 v 14 c 0 1.1 0.89 2 2 2 h 
 //const UNCHECKED_BOX = "M 19 5 v 14 H 5 V 5 h 14 m 0 -2 H 5 c -1.1 0 -2 0.9 -2 2 v 14 c 0 1.1 0.9 2 2 2 h 14 c 1.1 0 2 -0.9 2 -2 V 5 c 0 -1.1 -0.9 -2 -2 -2 Z"
 const DOT_ICON = "M12 6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6 2.69-6 6-6m0-2c-4.42 0-8 3.58-8 8s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8z"
 const WARNING_ICON = "M12,5.99L19.53,19H4.47L12,5.99 M12,2L1,21h22L12,2L12,2z"
-type receiptEmail = {
-  sendReceipt: boolean,
-  email: string
-}
 
 export interface BallotCandidate extends Candidate {
   score: number
@@ -41,8 +38,8 @@ export interface IBallotContext {
   candidates: BallotCandidate[],
   race: Race,
   onUpdate: (any) => void,
-  receiptEmail: receiptEmail,
-  setReceiptEmail: React.Dispatch<receiptEmail>
+  receiptEmail: string,
+  setReceiptEmail: React.Dispatch<string>
   maxRankings?: number,
   warningColumns?: number[],
   setWarningColumns?: (warningColumns: number[]) => void,
@@ -101,10 +98,15 @@ const VotePage = () => {
   }
 
   const { id } = useParams();
-  const [pages, setPages] = useState(makePages())
+  const [pages, setPages] = useState(makePages());
   const navigate = useNavigate();
+  const voterId = atob(useCookie('voter_id', '')[0]);
+  const { data: rollData, makeRequest: fetchRoll } = useGetRoll(election.election_id, voterId);
+  const [receiptEmail, setReceiptEmail] = useState(undefined);
+  const [inputEmail, setInputEmail] = useState(undefined);
+  useEffect(() => { voterId && fetchRoll() }, [voterId]);
+  useEffect(() => { setReceiptEmail(rollData?.electionRollEntry?.email ?? authSession.getIdField('email')) }, [authSession, rollData]);
   const [currentPage, setCurrentPage] = useState(0)
-  const [receiptEmail, setReceiptEmail] = useState<receiptEmail>(authSession.isLoggedIn() ? { sendReceipt: true, email: authSession.getIdField('email') } : { sendReceipt: false, email: '' })
   const setInstructionsRead = () => {
     pages[currentPage].instructionsRead = true;
     // shallow copy to trigger a refresh
@@ -178,10 +180,7 @@ const VotePage = () => {
       status: 'submitted',
     }
     // post ballot, if response ok navigate back to election home
-    if (!(await postBallot({ 
-      ballot: ballot, 
-      receiptEmail: receiptEmail.sendReceipt ? receiptEmail.email : undefined }
-      ))) {
+    if (!(await postBallot({ ballot, receiptEmail: receiptEmail ?? inputEmail}))) {
       return
     }
     navigate(`/${id}/thanks`)
@@ -281,30 +280,22 @@ const VotePage = () => {
         <DialogContent>
           <DialogContentText>
 
-            <FormControlLabel control={
-              <Checkbox
-                id="send-ballot-receipt"
-                name="Send Ballot Receipt Email"
-                checked={receiptEmail.sendReceipt}
-                onChange={(e) => setReceiptEmail({...receiptEmail, sendReceipt: e.target.checked})}
-              />}
-              label={t('ballot.dialog_send_receipt')}
-            />
-          <TextField
-                    id="receipt-email"
-                    inputProps={{ "aria-label": "Receipt Email" }}
-                    label={t('ballot.dialog_email_placeholder')}
-                    fullWidth
-                    type="text"
-                    value={receiptEmail.email}
-                    disabled={!receiptEmail.sendReceipt}
-                    sx={{
-                        mx: { xs: 0, },
-                        my: { xs: 1 },
-                        boxShadow: 2,
-                    }}
-                    onChange={(e) => setReceiptEmail({...receiptEmail, email: e.target.value})}
-                />
+            {!receiptEmail &&
+              <TextField
+                        id="receipt-email"
+                        inputProps={{ "aria-label": "Receipt Email" }}
+                        label={t('ballot.dialog_email_placeholder')}
+                        fullWidth
+                        type="text"
+                        value={inputEmail}
+                        sx={{
+                            mx: { xs: 0, },
+                            my: { xs: 1 },
+                            boxShadow: 2,
+                        }}
+                        onChange={(e) => setInputEmail(e.target.value)}
+                />}
+            {receiptEmail && <Typography>{`Receipt will be sent to ${receiptEmail}`}</Typography>}
             {pages.map((page, pageIndex) => (
               <Box key={pageIndex}>
                 <Typography variant="h6">
