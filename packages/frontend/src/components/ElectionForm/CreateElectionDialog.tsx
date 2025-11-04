@@ -263,7 +263,7 @@ const CreateElectionDialog = () => {
                             setErrors={setErrors}
                             showLabel={false}
                         />
-                        <StepButtons activeStep={1} setActiveStep={setActiveStep} canContinue={/^.{1,1000}$/.test(election.title) && errors.title == ''} />
+                        <StepButtons activeStep={1} setActiveStep={setActiveStep} canContinue={election.title.trim().length > 0 && election.title.length <= 1000 && errors.title == ''} />
                     </StepContent>
                 </Step>
                 <Step>
