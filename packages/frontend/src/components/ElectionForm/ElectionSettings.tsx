@@ -12,17 +12,15 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useSubstitutedTranslation } from '../util';
 import { ElectionSettings as IElectionSettings, TermType, electionSettingsValidation } from '@equal-vote/star-vote-shared/domain_model/ElectionSettings';
 import { ElectionState } from '@equal-vote/star-vote-shared/domain_model/ElectionStates';
-import useFeatureFlags from '../FeatureFlagContextProvider';
 import useSnackbar from '../SnackbarContext';
 
 export default function ElectionSettings() {
     const { election, refreshElection, updateElection } = useElection()
     const { setSnack } = useSnackbar()
-    const flags = useFeatureFlags();
     const min_rankings = 3;
     const max_rankings = Number(process.env.REACT_APP_MAX_BALLOT_RANKS) ? Number(process.env.REACT_APP_MAX_BALLOT_RANKS) : 8;
     const default_rankings = Number(process.env.REACT_APP_DEFAULT_BALLOT_RANKS) ? Number(process.env.REACT_APP_DEFAULT_BALLOT_RANKS) : 6;
-    const ballotUpdatesConditionsMet = flags.isSet('BALLOT_UPDATES') && election.settings.voter_access !== 'open' && election.settings.invitation === 'email';
+    const ballotUpdatesConditionsMet = election.settings.voter_access !== 'open' && election.settings.invitation === 'email';
 
     const {t} = useSubstitutedTranslation(election.settings.term_type, {min_rankings, max_rankings});
 
