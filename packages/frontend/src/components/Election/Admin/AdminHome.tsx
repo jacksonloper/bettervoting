@@ -129,7 +129,7 @@ const AdminHome = () => {
 
     const Section = ({ text, button, permission, includeDivider=true }: SectionProps) => 
         <Grid container sx={{ maxWidth: 800}}>
-            <Grid xs={12} md={8} sx={{ p: 1 }}>
+            <Grid item xs={12} md={8} sx={{ p: 1 }}>
                 <Box sx={{ minHeight: { xs: 0, md: 60 } }}>
                     <Typography variant="h5">
                         {text.description}
@@ -146,7 +146,7 @@ const AdminHome = () => {
                     }
                 </Box>
             </Grid>
-            <Grid xs={12} md={4} sx={{ p: 1, pl: 2, display: 'flex', alignItems: 'center' }}>
+            <Grid item xs={12} md={4} sx={{ p: 1, pl: 2, display: 'flex', alignItems: 'center' }}>
                 {button}
             </Grid>
             {includeDivider && <Divider style={{width: '100%'}}/>}
@@ -193,14 +193,6 @@ const AdminHome = () => {
             </PrimaryButton>
         }
     />
-
-    // const ResultsSection = () => <Section
-    //     text={t('admin_home.view_results')}
-    //     permission='canViewPreliminaryResults'
-    //     button={(<>
-            
-    //     </>)}
-    // />
 
     const TogglePublicResultsSection = () => {
         const m = t('admin_home.public_results');
@@ -269,14 +261,6 @@ const AdminHome = () => {
     const HeaderSection = () => {
         return <Box width='100%'>
 
-            {
-            /* Sometimes the email blast will bug, and then this message will make the UX of the bug worse */
-            /*{(election.state === 'open' || election.state == 'finalized') && election.settings.invitation &&
-                <Typography align='center' gutterBottom variant="h6" component="h6" >
-                    {t('admin_home.header_invitations_sent')}
-                </Typography>
-            }*/}
-
             {election.state === 'finalized' && election.start_time &&
                 <Typography align='center' gutterBottom variant="h6" component="h6" >
                     {t('admin_home.header_start_time', {datetime: election.start_time})}
@@ -301,25 +285,19 @@ const AdminHome = () => {
     }
 
     const FinalizeSection = () => <Box sx={{maxWidth: 800}}>
-        <Grid xs={12} sx={{ p: 1, pt: 3, pb: 0 }}>
+        <Grid item xs={12} sx={{ p: 1, pt: 3, pb: 0 }}>
             <Typography align='center' variant="body1" sx={{ pl: 2 }}>
                 {t('admin_home.finalize_description')}
                 {' '}
                 {t(election.start_time? 'admin_home.finalize_voting_begins_later' : 'admin_home.finalize_voting_begins_now')}
             </Typography>
-            {/* I don't think this is true anymore */}
-            {/* {election.settings.invitation &&
-                <Typography align='center' variant="body1" sx={{ pl: 2 }}>
-                   {t('admin_home.finalize_invitations_will_send')}
-                </Typography>
-            } */}
             {!hasPermission('canEditElectionState') &&
                 <Typography align='center' variant="body1" sx={{ color: 'error.main', pl: 2 }}>
                     {t('admin_home.permissions_error')}
                 </Typography>
             }
         </Grid>
-        <Grid xs={12} sx={{ p: 1, pt: 0, display: 'flex', alignItems: 'center' }}>
+        <Grid item xs={12} sx={{ p: 1, pt: 0, display: 'flex', alignItems: 'center' }}>
             <PrimaryButton
                 disabled={election.title.length === 0 || election.races.length === 0 || !hasPermission('canEditElectionState')}
                 fullWidth
@@ -350,15 +328,16 @@ const AdminHome = () => {
                 <Box sx={{width: '100%', maxWidth: 300}}>
                     <ShareButton url={`${window.location.origin}/${election.election_id}`} />
                 </Box>
-                <Box sx={{width: '100%', maxWidth: 300}}>
-                    <PrimaryButton
-                        disabled={!(hasPermission('canViewPreliminaryResults') || election.settings.public_results === true)}
-                        fullWidth
-                        component={Link} to={`/${election.election_id}/results`}
-                    >
-                        {t('admin_home.view_results.button')}
-                    </PrimaryButton>
-                </Box>
+                {(hasPermission('canViewPreliminaryResults') && election.settings.public_results || election.state === 'closed') &&
+                    <Box sx={{width: '100%', maxWidth: 300}}>
+                        <PrimaryButton
+                            fullWidth
+                            component={Link} to={`/${election.election_id}/results`}
+                        >
+                            {t('admin_home.view_results.button')}
+                        </PrimaryButton>
+                    </Box>
+                }
             </Box>
         }
         {(election.settings.voter_access === 'open') && <ElectionAuthForm />}

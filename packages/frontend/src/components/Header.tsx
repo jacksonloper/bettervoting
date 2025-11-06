@@ -1,9 +1,7 @@
 import { useContext, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, Link, Menu, MenuItem } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, IconButton, Link, List, MenuItem } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import useAuthSession from './AuthSessionContextProvider';
@@ -11,7 +9,6 @@ import { useThemeSelector } from '../theme';
 import useFeatureFlags from './FeatureFlagContextProvider';
 import { CreateElectionContext } from './ElectionForm/CreateElectionDialog';
 import { openFeedback, useSubstitutedTranslation } from './util';
-import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
 import { makeID, ID_PREFIXES, ID_LENGTHS } from '@equal-vote/star-vote-shared/utils/makeID';
 
 import { ReturnToClassicContext } from './ReturnToClassicDialog';
@@ -19,19 +16,15 @@ import { useCookie } from '~/hooks/useCookie';
 import NavMenu from './NavMenu';
 import { PrimaryButton } from './styles';
 
-const headerTextColor = 'primary.contrastText'
 const Header = () => {
     const flags = useFeatureFlags();
     const themeSelector = useThemeSelector()
     const authSession = useAuthSession()
     // this is important for setting the default value
     useCookie('temp_id', makeID(ID_PREFIXES.VOTER, ID_LENGTHS.VOTER))
-    const [openedMenu, setOpenedMenu] = useState(null);
     const {t} = useSubstitutedTranslation();
 
     const createElectionContext = useContext(CreateElectionContext);
-
-    const navTextSx = {fontWeight: 'bold', fontSize: '1rem'};
 
     const navItems = [
         {
@@ -122,7 +115,7 @@ const Header = () => {
                         {navItems.map((item, i) => 
                             <MenuItem
                                 key={`mobile-nav-${i}`}
-                                component={Link}
+                                component={item.items ? undefined : Link}
                                 href={item.href}
                                 target={item.target}
                             >
@@ -174,8 +167,7 @@ const Header = () => {
                 <Box
                     sx={{ flexGrow: 100, flexWrap: 'wrap', display: { xs: 'none', md: 'flex' }, gap: 4, rowGap: 0, position: 'relative', justifyContent: 'center' }}>
                     {navItems.map((item, i) => 
-                        <NavMenu name={`desktop-nav-${i}`} desktopText={item.text} href={item.href} target={item.target}>
-                            {!item.items && <></>}
+                        <NavMenu name={`desktop-nav-${i}`} key={`desktop-nav-${i}`} desktopText={item.text} href={item.href} target={item.target}>
                             {item.items && item.items.map((subitem, j) => 
                                 <MenuItem
                                     key={`desktop-subnav-${i}-${j}`}
@@ -186,12 +178,6 @@ const Header = () => {
                                     {subitem.text}
                                 </MenuItem>
                             )}
-                            {/* Saving this for when we have a search bar
-                            <Paper sx={{display: 'flex', alignItems: 'center', background: 'white', align: 'center', marginTop: 'auto', marginBottom: 'auto', padding: 1}}>
-                                <Search />
-                                <InputBase placeholder="Search Public Elections"/>
-                            </Paper>
-                            */}
                         </NavMenu>
                     )}
                 </Box>
@@ -199,9 +185,6 @@ const Header = () => {
                 {/**** ACCOUNT OPTIONS ****/}
                 <Box sx={{ flexGrow: 0, ml: 5}}>
                     {authSession.isLoggedIn() && <>
-                        {/*<NavMenu name='new_election' desktopText={t('nav.new_election')} onClick={() => createElectionContext.openDialog()}>
-                            <></>
-                        </NavMenu>*/}
                         <NavMenu name='user' mobileIcon={<AccountCircleIcon/>} desktopText={t('nav.greeting', {name: authSession.getIdField('given_name')})}>
                             <MenuItem component={Link} href={authSession.accountUrl} target='_blank'>
                                 {t('nav.your_account')}
@@ -209,9 +192,6 @@ const Header = () => {
                             <MenuItem component={Link} onClick={() => createElectionContext.openDialog()}>
                                 {t('nav.new_election')}
                             </MenuItem>
-                            {/*<MenuItem component={Link} href='/ElectionInvitations'>
-                                Election Invitations
-                            </MenuItem>*/}
                             <MenuItem component={Link} href='/manage'>
                                 {t('nav.my_elections')}
                             </MenuItem>
@@ -231,17 +211,15 @@ const Header = () => {
                             >
                                 {t('nav.logout')}
                             </MenuItem>
-                            {flags.isSet('THEMES') && <>
-                                <br/>
-                                <br/>
-                                <br/>
+                            {flags.isSet('THEMES') &&
                                 <MenuItem
                                     color='inherit'
                                     onClick={() => themeSelector.selectColorMode('browserDefault')}
                                 >
                                     browser default
                                 </MenuItem>
-                                {themeSelector.modes.map((mode, i) => (
+                            }
+                            {flags.isSet('THEMES') && themeSelector.modes.map((mode, i) => (
                                     <MenuItem
                                         color='inherit'
                                         onClick={() => themeSelector.selectColorMode(mode)}
@@ -250,7 +228,6 @@ const Header = () => {
                                         {mode}
                                     </MenuItem>
                                 ))}
-                            </>}
                         </NavMenu></>
                     }
                     {!authSession.isLoggedIn() &&

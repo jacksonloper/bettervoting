@@ -205,7 +205,7 @@ export default function DraggableIRVBallotView() {
                         >
                           <Box sx={{ display: 'grid', gridTemplateColumns: '28px 1fr', columnGap: 1, minWidth: 0, width: '100%' }}>
                             {/* Hidden gutter to match ranked layout and avoid jitter */}
-                            <Box aria-hidden sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary', minHeight: 48, py: 2, mb: 1, opacity: 0 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'text.secondary', minHeight: 48, py: 2, mb: 1, opacity: 0 }}>
                               <Typography variant="subtitle2">0</Typography>
                             </Box>
                             <Box sx={{ minWidth: 0 }}>

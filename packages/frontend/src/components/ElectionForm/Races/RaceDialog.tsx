@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-
-import { Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
+import { useSubstitutedTranslation } from '../../util';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material"
 import { PrimaryButton, SecondaryButton } from '../../styles';
 import useElection from '../../ElectionContextProvider';
 
@@ -16,6 +16,7 @@ interface RaceDialogProps {
 export default function RaceDialog({
   onSaveRace, open, handleClose, children, resetStep
 }: RaceDialogProps) {
+    const {t} = useSubstitutedTranslation();
     const { election } = useElection()
     const handleSave = () => onSaveRace()
 
@@ -52,15 +53,22 @@ export default function RaceDialog({
                 {children}
             </DialogContent>
             <DialogActions>
-                <SecondaryButton onClick={handleClose}>
-                    Cancel
-                </SecondaryButton >
-                <PrimaryButton
-                    onClick={() => handleSave()}
-                    disabled={election.state!=='draft'}
-                  >
-                    Save
-                </PrimaryButton>
+                {election.state === 'draft' ?
+                    <>
+                        <SecondaryButton onClick={handleClose}>
+                           {t('keyword.cancel')}
+                        </SecondaryButton >
+                        <PrimaryButton
+                            onClick={() => handleSave()}
+                        >
+                           {t('keyword.save')}
+                        </PrimaryButton>
+                    </>
+                :
+                        <PrimaryButton onClick={handleClose}>
+                           {t('keyword.close')}
+                        </PrimaryButton >
+                }
             </DialogActions>
         </Dialog>
     )

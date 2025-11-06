@@ -30,7 +30,7 @@ const About = () => {
 
         <h1>{t('about.team_title')}</h1>
         <h2>{t('about.leads_title')}</h2>
-        <ul>{t('about.leads').map(content => <li key={content}>{content}</li>)}</ul>
+        <ul>{t('about.leads').map((content, i) => <li key={i}>{content}</li>)}</ul>
 
         <h2>{t('about.contributors_title')}</h2>
         <Box

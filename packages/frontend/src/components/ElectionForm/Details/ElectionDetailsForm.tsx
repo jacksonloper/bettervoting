@@ -173,7 +173,6 @@ export default function ElectionDetailsForm({editedElection, applyUpdate, errors
                             <Input
                                 type='datetime-local'
                                 inputProps={{ "aria-label": "Start Time" }}
-                                // data-testid='start-time'
                                 error={errors.startTime !== ''}
                                 value={dateToLocalLuxonDate(editedElection.start_time, timeZone)}
                                 onChange={(e) => {

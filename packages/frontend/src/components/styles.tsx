@@ -67,15 +67,11 @@ export const PrimaryButton = (props: CustomButtonProps) => (
             p: 1,
             m: 0,
             boxShadow: 0,
-            //backgroundColor: 'primary.main',
             backgroundColor: 'var(--brand-pop)',//'#073763',
             fontFamily: 'Montserrat, Verdana, sans-serif',
             fontWeight: 'bold',
             fontSize: 18,
             color: 'primary.contrastText',
-            //'&:hover': {
-            //    backgroundColor: 'black',
-            //}
             ...props.sx,
         }}
     >

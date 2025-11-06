@@ -88,20 +88,6 @@ const DetailExpander = ({ children, level = 0 }: DetailExpanderProps) => {
               .map((c, i) => React.isValidElement(c) && <MenuItem key={i} value={i}>{t(selectorTitleKeys.get(c.type), {includeTips: false})}</MenuItem>)
             }
         </Select>
-        {/*<Select
-          native
-          value={selector}
-          label={t('results_ext.candidateSelector')}
-          onChange={(e) => setSelector(e.target.value as number)}
-          sx={{mb: 2, width: '300px', textAlign: 'left'}}
-        >
-          <optgroup label='Detailed Results'>
-            {children.slice(0,2).map((c, i) => <option key={i} value={i}>{t(selectorTitleKeys.get(c.type), {includeTips: false})}</option>)}
-          </optgroup>
-          <optgroup label='Stats for Nerds'>
-            {children.slice(2).map((c, i) => <option key={i} value={i}>{t(selectorTitleKeys.get(c.type), {includeTips: false})}</option>)}
-          </optgroup>
-        </Select>*/}
         <WidgetContainer >
           {children[selector]}
         </WidgetContainer>
