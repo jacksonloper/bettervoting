@@ -4,26 +4,24 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Box, Divider, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { useParams } from "react-router";
-import { useGetBallotByVoterId } from "../../../hooks/useAPI";
+import { useGetBallot } from "../../../hooks/useAPI";
 import useElection from "../../ElectionContextProvider";
-import { PrimaryButton, SecondaryButton } from "~/components/styles";
+import { SecondaryButton } from "~/components/styles";
 import ShareButton from "../ShareButton";
 import { useSubstitutedTranslation } from "../../util";
 
 
 const VerifyBallot = () => {
     const { election } = useElection()
-    const { voter_id } = useParams();
+    const { ballot_id } = useParams();
     const { t } = useSubstitutedTranslation(election.settings.term_type);
 
-    const { data, isPending, makeRequest: fetchBallot } = useGetBallotByVoterId(election.election_id, voter_id)
-    console.log(`voterId: ${voter_id} electionId: ${election.election_id}`);
+    const { data, isPending, makeRequest: fetchBallot } = useGetBallot(election.election_id, ballot_id);
     useEffect(() => {
-        if (election.election_id && voter_id ) {
+        if (ballot_id) {
             fetchBallot();
         }
-    }, [election, voter_id])
-
+    }, [ballot_id]);
     return (
         <Container>
             {isPending && <div> Loading Data... </div>}
@@ -52,29 +50,39 @@ const VerifyBallot = () => {
                 </Box>
 
                 <Divider sx={{my: 4}}/>
-
                 <Grid container direction="column" >
-                    {data?.ballot.precinct &&
-                        <Grid item sm={12}>
-                            <Typography align='left' variant="h6" component="h6">
-                                {`Precinct: ${data?.ballot.precinct}`}
-                            </Typography>
-                        </Grid>
-                    }
                     <Grid item sm={12}>
-                        <Typography align='left' variant="h6" component="h6">
-                            {`Status: ${data?.ballot.status}`}
-                        </Typography>
+                            <Typography component="div" align='left' variant="body1">
+                                    <Box sx={{fontWeight: 'bold', m: 1, display: 'inline'}}>{t('ballot_submitted.ballot_id')}</Box>
+                                    <Box sx={{fontWeight: 'regular', m: 1, display: 'inline'}}>{`${data.ballot.ballot_id}`}</Box>
+                            </Typography>
+                            {data.ballot.precinct &&
+                                <Typography component="div" align='left' variant="body1">
+                                    <Box sx={{fontWeight: 'bold', m: 1, display: 'inline'}}>{t('ballot_submitted.precinct')}</Box>
+                                    <Box sx={{fontWeight: 'regular', m: 1, display: 'inline'}}>{`${data.ballot.precinct}`}</Box>
+                                </Typography>
+                            }
+                            <Typography component="div" align='left' variant="body1">
+                                <Box sx={{fontWeight: 'bold', m: 1, display: 'inline'}}>{t('ballot_submitted.status')}</Box>
+                                <Box sx={{fontWeight: 'regular', m: 1, display: 'inline', textTransform: 'capitalize'}}>{`${data.ballot.status}`}</Box>
+                            </Typography >
+                            <Typography component="div" align="left" variant="body1" >
+                                <Box sx={{fontWeight: 'bold', m: 1, display: 'inline'}}>{t('ballot_submitted.update_ballot')}</Box>
+                                <Box sx={{fontWeight: 'regular', m: 1, display: 'inline'}}>
+                                    {t(`ballot_submitted.update_ballot_${election.settings.ballot_updates ? election.state == 'open' ? 'enabled_open' : 'enabled_closed' : 'disabled'}`)}
+                                </Box>
+                            </Typography >
                     </Grid>
-                    {data?.ballot.votes.map((vote, v) => (
+                    <Divider sx={{my: 4}}/>
+                    {data.ballot.votes.map((vote, v) => (
                         <>
 
-                            <Typography align='left' variant="h6" component="h6">
+                            <Typography key={`title_${v}`} align='left' variant="h6" component="h6">
                                 {election.races[v].title}
                             </Typography>
 
 
-                            <TableContainer component={Paper}>
+                            <TableContainer key={`container_${v}`} component={Paper}>
                                 <Table>
                                     <TableHead>
                                         <TableCell> Candidate </TableCell>
@@ -100,29 +108,10 @@ const VerifyBallot = () => {
                             </TableContainer>
                         </>
                     ))}
-                    { election.state === 'open' && election.settings.ballot_updates && data.ballot &&
-                        <Grid item sm={4} >
-                            <Box sx={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  size: "grow",
-                                  minHeight: "10vh",
-                                }}
-                            >
-                                <PrimaryButton
-                                    type='button'
-                                    sx={{ marginLeft: {xs: '10px', md: '40px'}}}
-                                    href={`/${election.election_id}/vote`} >
-                                    {t('ballot_submitted.edit')}
-                                </PrimaryButton>
-                            </Box>
-                        </Grid>
-                    }
                 </Grid>
             </>}
         </Container>
     )
 }
 
-export default VerifyBallot; 
+export default VerifyBallot;

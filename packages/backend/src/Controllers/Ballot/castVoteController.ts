@@ -278,7 +278,7 @@ async function handleCastVoteEvent(job: { id: string; data: CastVoteEvent; }):Pr
             throw new InternalServerError("Target Election null: " + ctx.contextId);
         }
         const url = ServiceLocator.globalData().mainUrl;
-        const receipt = Receipt(targetElection, event.userEmail, url, event.roll)
+        const receipt = Receipt(targetElection, event.userEmail, savedBallot, url, event.roll)
         await EmailService.sendEmails([receipt])
     }
 }

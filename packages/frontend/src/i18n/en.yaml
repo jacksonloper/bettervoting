@@ -181,13 +181,20 @@ methods:
     short_name: Choose One
 
 # Confirmation (after you've submitted a ballot)
+#(ex. https://bettervoting.com/<election_id>/ballot/<ballot_id>)
 ballot_submitted:
   title: '{{capital_ballot}} Submitted'
   description: Thank you for voting!
   results: Results
   donate: Donate to Equal Vote to support open source voting software
   end_time: '{{capital_election}} ends {{date}} at {{time}}'
-  edit: Edit Ballot
+  update_ballot_disabled: This election does not support ballot updates. All ballots are final once submitted
+  update_ballot_enabled_open: You can update your ballot using the link in your email receipt
+  update_ballot_enabled_closed: The election has closed. All ballots are final
+  status: 'Status:'
+  precinct: 'Precinct:'
+  ballot_id: 'Ballot ID:'
+  update_ballot: 'Update Ballot:'
 
 # Localisation for numbers
 number:
