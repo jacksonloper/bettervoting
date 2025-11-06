@@ -8,34 +8,24 @@ import { useGetBallot } from "../../../hooks/useAPI";
 import useElection from "../../ElectionContextProvider";
 import { SecondaryButton } from "~/components/styles";
 import ShareButton from "../ShareButton";
-import { Ballot } from "@equal-vote/star-vote-shared/domain_model/Ballot";
 import { useSubstitutedTranslation } from "../../util";
 
 
-interface ViewBallotProps {
-    ballot: Ballot | null,
-    onClose?: () => void
-}
-const ViewBallot = ({ ballot, onClose }: ViewBallotProps) => {
-    // ViewBallot doesn't iterate over races but it does referene them by index so we use the filtered version
+const VerifyBallot = () => {
     const { election } = useElection()
     const { ballot_id } = useParams();
     const { t } = useSubstitutedTranslation(election.settings.term_type);
 
-    const { data, isPending, makeRequest: fetchBallots } = useGetBallot(election.election_id, ballot_id)
-
+    const { data, isPending, makeRequest: fetchBallot } = useGetBallot(election.election_id, ballot_id);
     useEffect(() => {
         if (ballot_id) {
-            fetchBallots()
+            fetchBallot();
         }
-    }, [ballot_id])
-
-    const myballot = ballot === null ? data?.ballot : ballot;
-
+    }, [ballot_id]);
     return (
         <Container>
             {isPending && <div> Loading Data... </div>}
-            {myballot &&
+            {data?.ballot &&
                 <>
                 <Box display='flex' flexDirection='column' alignItems='center' sx={{maxWidth: '800px', margin: 'auto'}}>
                     <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', flexDirection: { xs: 'column', sm: 'row' } }} >
@@ -60,34 +50,39 @@ const ViewBallot = ({ ballot, onClose }: ViewBallotProps) => {
                 </Box>
 
                 <Divider sx={{my: 4}}/>
-
                 <Grid container direction="column" >
                     <Grid item sm={12}>
-                        <Typography align='left' variant="h6" component="h6">
-                            {`Ballot ID: ${myballot.ballot_id}`}
-                        </Typography>
-                    </Grid>
-                    {myballot.precinct &&
-                        <Grid item sm={12}>
-                            <Typography align='left' variant="h6" component="h6">
-                                {`Precinct: ${myballot.precinct}`}
+                            <Typography component="div" align='left' variant="body1">
+                                    <Box sx={{fontWeight: 'bold', m: 1, display: 'inline'}}>{t('ballot_submitted.ballot_id')}</Box>
+                                    <Box sx={{fontWeight: 'regular', m: 1, display: 'inline'}}>{`${data.ballot.ballot_id}`}</Box>
                             </Typography>
-                        </Grid>
-                    }
-                    <Grid item sm={12}>
-                        <Typography align='left' variant="h6" component="h6">
-                            {`Status: ${myballot.status}`}
-                        </Typography>
+                            {data.ballot.precinct &&
+                                <Typography component="div" align='left' variant="body1">
+                                    <Box sx={{fontWeight: 'bold', m: 1, display: 'inline'}}>{t('ballot_submitted.precinct')}</Box>
+                                    <Box sx={{fontWeight: 'regular', m: 1, display: 'inline'}}>{`${data.ballot.precinct}`}</Box>
+                                </Typography>
+                            }
+                            <Typography component="div" align='left' variant="body1">
+                                <Box sx={{fontWeight: 'bold', m: 1, display: 'inline'}}>{t('ballot_submitted.status')}</Box>
+                                <Box sx={{fontWeight: 'regular', m: 1, display: 'inline', textTransform: 'capitalize'}}>{`${data.ballot.status}`}</Box>
+                            </Typography >
+                            <Typography component="div" align="left" variant="body1" >
+                                <Box sx={{fontWeight: 'bold', m: 1, display: 'inline'}}>{t('ballot_submitted.update_ballot')}</Box>
+                                <Box sx={{fontWeight: 'regular', m: 1, display: 'inline'}}>
+                                    {t(`ballot_submitted.update_ballot_${election.settings.ballot_updates ? election.state == 'open' ? 'enabled_open' : 'enabled_closed' : 'disabled'}`)}
+                                </Box>
+                            </Typography >
                     </Grid>
-                    {myballot.votes.map((vote, v) => (
+                    <Divider sx={{my: 4}}/>
+                    {data.ballot.votes.map((vote, v) => (
                         <>
 
-                            <Typography align='left' variant="h6" component="h6">
+                            <Typography key={`title_${v}`} align='left' variant="h6" component="h6">
                                 {election.races[v].title}
                             </Typography>
 
 
-                            <TableContainer component={Paper}>
+                            <TableContainer key={`container_${v}`} component={Paper}>
                                 <Table>
                                     <TableHead>
                                         <TableCell> Candidate </TableCell>
@@ -113,15 +108,10 @@ const ViewBallot = ({ ballot, onClose }: ViewBallotProps) => {
                             </TableContainer>
                         </>
                     ))}
-                    {onClose &&
-                        <Grid item sm={4}>
-                            <SecondaryButton onClick={() => { onClose() }} > Close </SecondaryButton>
-                        </Grid>
-                    }
                 </Grid>
             </>}
         </Container>
     )
 }
 
-export default ViewBallot 
+export default VerifyBallot;
