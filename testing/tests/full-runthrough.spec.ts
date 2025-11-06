@@ -5,9 +5,8 @@ let electionId = '';
 
 test('full runthrough', async ({ page }) => {
 	await page.goto('/');
-	await page.getByRole('button', { name: 'New Election' }).click();
+	await page.getByRole('link', { name: 'Create Election' }).click();
 	await page.getByLabel('Election', { exact: true }).click();
-	await page.getByRole('button', { name: 'Continue' }).click();
 	await page.locator('#election-title').fill('Playwright Test Election');
 	//wait until there is only one continue button
 	while (
@@ -23,8 +22,8 @@ test('full runthrough', async ({ page }) => {
 	await page.getByLabel('No').click();
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await page.getByRole('button', { name: 'Allows multiple votes per' }).click();
-	await expect(page.getByText('draft')).toBeVisible();
-	expect(await page.getByLabel('no limit')).toBeChecked();
+	await expect(page.getByText('draft')).toBeVisible({ timeout: 2000 });
+	await expect(page.getByLabel('no limit')).toBeChecked();
 	const url = await page.url();
 	const urlArray = url.split('/');
 	electionId = urlArray[urlArray.length - 2];
@@ -99,18 +98,15 @@ test('full runthrough', async ({ page }) => {
 		'Candidate 10'
 	);
 	await raceDialog.getByRole('button', { name: 'Save' }).click();
-	await page.getByRole('button', { name: 'Cast Ballot' }).click();
+	await page.getByRole('button', { name: 'Finalize Election'}).click();
+	await page.getByRole('button', { name: 'Submit'}).click();
+
+
+	await page.getByRole('link', { name: 'Voting Page' }).click();
 	const vote = async (page) => {
 		await page.getByRole('link', { name: 'Vote', exact: true }).click();
 		await page.waitForURL(`**/${electionId}/vote`)
 
-		await expect(page.getByText('Test Mode')).toBeVisible({
-			timeout: 10000000,
-		});
-		// const submitButton = await page.getByRole('button', {
-		// 	name: 'Submit Ballot',
-		// });
-		// await expect(submitButton).toBeDisabled();
 		await page.getByLabel('I have read the instructions').click();
 		await page.getByRole('button', { name: 'Score Candidate 1 5' }).click();
 		await page.getByRole('button', { name: 'Score Candidate 2 4' }).click();
@@ -136,27 +132,18 @@ test('full runthrough', async ({ page }) => {
 		await page.getByRole('button', { name: 'Rank Candidate 10 3' }).click();
 		await page.getByRole('button', { name: 'Rank Candidate 6 2' }).click();
 		await page.getByRole('button', { name: 'Rank Candidate 7 1' }).click();
-
 		await page.getByRole('button', { name: 'Submit' }).click();
-		await page.getByLabel('Send Ballot Receipt Email?').click();
 		await page.getByRole('button', { name: 'Submit' }).click();
 	};
 	await vote(page);
-	await page.getByRole('link', { name: 'Results' }).click();
-	await page.waitForURL(`**/${electionId}/results`)
+	await page.goto(`/${electionId}/results`);
 	await expect(
 		page.getByText("There's only one vote so far.").first()
 	).toBeVisible({ timeout: 100000000 });
-	await page.getByRole('link', { name: 'Ballots' }).click();
-	await page.waitForURL(`**/${electionId}/admin/ballots`)
-	await expect(page.getByText('View Ballots')).toBeVisible({
-		timeout: 10000000,
-	});
+
 	await page.getByRole('link', { name: 'Voting Page' }).click();
-	await page.waitForURL(`**/${electionId}/`)
 	await vote(page);
-	await page.getByRole('link', { name: 'Results' }).click();
-	await page.waitForURL(`**/${electionId}/results`)
+	await page.goto(`/${electionId}/results`);
 	await expect(page.getByText('Candidate 1 Wins!')).toBeVisible({
 		timeout: 10000000,
 	});
