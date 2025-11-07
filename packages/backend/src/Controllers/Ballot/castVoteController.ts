@@ -79,7 +79,7 @@ async function makeBallotEvent(req: IElectionRequest, targetElection: Election, 
     }
     // preserve the ballot id if it's already provided from prior election
     let updatableBallot;
-    if (targetElection.settings.ballot_updates) {
+    if (targetElection.settings.ballot_updates && targetElection.state !== 'draft') {
         try {
             updatableBallot = await BallotModel.getBallotByVoterID(roll!.voter_id, inputBallot.election_id, req);
         } catch(e: any) {
