@@ -74,13 +74,13 @@ function settingsCompatiblityValidation(settings: ElectionSettings, electionStat
     let errorMsg = ''
     if (settings.ballot_updates) {
         if (settings.public_results && electionState != 'closed') {
-            errorMsg += 'Preliminary results are not permitted when ballot editing is enabled.  ';
+            errorMsg += 'Preliminary results are not permitted when ballot updating is enabled.  ';
         }
         if (settings.voter_access == 'open') {
-            errorMsg += 'Vote editing is not permitted on open elections.  ';
+            errorMsg += 'Ballot updating is not permitted on open access elections.  ';
         }
         if (settings.invitation != 'email') {
-            errorMsg += 'Vote editing is only permitted on email list elections.  ';
+            errorMsg += 'Ballot updating is only permitted on email list elections.  ';
         }
     }
     return errorMsg;
