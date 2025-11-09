@@ -725,8 +725,8 @@ tips:
     description: Randomizes the order of candidates on the ballots.
 
   ballot_updates:
-    title: Allow Voters To Edit Vote
-    description: Allow voters to update their ballots while election is still open
+    title: Allow Voters To Update Ballot
+    description: Allow voters to change their vote while election is still open
 
   public_results:
     title: Show Preliminary Results
