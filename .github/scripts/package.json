@@ -9,12 +9,8 @@
     "clean": "rm -rf dist",
 
     "issue-mgmt:start": "node dist/issue-management/check-stale-issues.js",
-    "issue-mgmt:dry-run": "node dist/issue-management/check-stale-issues.js",
-    "issue-mgmt:test": "DRY_RUN=true node dist/issue-management/check-stale-issues.js",
-    "issue-mgmt:prod": "DRY_RUN=false node dist/issue-management/check-stale-issues.js",
     "issue-mgmt:simulate": "node dist/issue-management/simulate-stale-issues.js",
 
-    "issue-mgmt:test:fork": "node -r dotenv/config dist/issue-management/check-stale-issues.js dotenv_config_path=.env.test",
     "issue-mgmt:test:create": "node -r dotenv/config dist/issue-management/create-test-issues.js dotenv_config_path=.env.test",
     "issue-mgmt:test:run": "node -r dotenv/config dist/issue-management/check-stale-issues.js dotenv_config_path=.env.test",
     "issue-mgmt:test:cleanup": "node -r dotenv/config dist/issue-management/cleanup-test-issues.js dotenv_config_path=.env.test",

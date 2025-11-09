@@ -9,7 +9,6 @@ This directory contains automated scripts for repository management using GitHub
 ├── src/                    # TypeScript source files
 │   └── issue-management/   # Issue management feature
 │       ├── *.ts           # TypeScript source
-│       ├── *.sh           # Shell scripts
 │       └── README.md      # Feature documentation
 ├── dist/                   # Compiled JavaScript (gitignored)
 │   └── issue-management/
@@ -110,7 +109,7 @@ npm run clean
 - `npm run clean` - Remove build artifacts
 
 ### Issue Management Scripts
-- `npm run issue-mgmt:start` - Run issue management (dry-run)
+- `npm run issue-mgmt:start` - Run issue management (uses .env settings)
 - `npm run issue-mgmt:simulate` - Simulation mode (no API calls)
 - `npm run issue-mgmt:test:workflow` - Full end-to-end test
 - See [issue-management README](src/issue-management/README.md) for all commands
@@ -119,9 +118,14 @@ npm run clean
 
 Environment files are located in the scripts root:
 
-- **`.env`** - Local development configuration (gitignored)
-- **`.env.test`** - Test environment configuration (gitignored)
+- **`.env`** - Local development and manual testing (gitignored)
+- **`.env.test`** - Automated testing on your fork (used by test scripts, gitignored)
 - **`sample.env`** - Template with all available options
+
+**When to use which:**
+- Use `.env` for local development and manual script execution
+- Use `.env.test` for automated end-to-end testing (referenced by `npm run issue-mgmt:test:*` commands)
+- Both files use the same format - copy `sample.env` to get started
 
 ### Required Variables
 

@@ -164,11 +164,11 @@ This script will:
 The test uses `.env.test` with these settings:
 
 ```bash
-GITHUB_REPOSITORY=recursivesquircle/star-server
+GITHUB_REPOSITORY=your-username/your-fork
 DRY_RUN=false
 TIME_UNIT=seconds       # Use seconds for fast testing
-WARNING_WEEKS=20        # 20 seconds
-UNASSIGN_WEEKS=60       # 60 seconds
+WARNING_WEEKS=40        # 40 seconds
+UNASSIGN_WEEKS=200      # 200 seconds
 ```
 
 ### Manual Step-by-Step Testing
