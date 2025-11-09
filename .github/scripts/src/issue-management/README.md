@@ -77,31 +77,48 @@ npm run issue-mgmt:prod
 | `GITHUB_TOKEN` | GitHub Personal Access Token | Required |
 | `GITHUB_REPOSITORY` | Repository in format "owner/repo" | Required |
 
-### Customizing Timeframes
+### Customizing Timeframes (Production)
 
-To change the timeframes, edit `.github/workflows/issue-management.yml`:
+**Important:** The warning and unassignment thresholds are hardcoded in the workflow file.
 
+To change the production timeframes, edit `.github/workflows/issue-management.yml` in **two places**:
+
+**1. Default values for manual triggers (lines ~25-28):**
 ```yaml
-env:
-  WARNING_WEEKS: '4'    # Warn after 4 weeks instead of 5
-  UNASSIGN_WEEKS: '5'   # Unassign after 5 weeks instead of 6
+warning_weeks:
+  default: '4'    # Change from '5' to '4'
+unassign_weeks:
+  default: '5'    # Change from '6' to '5'
 ```
 
-### Changing the Schedule
+**2. Fallback values for scheduled runs (lines ~73-74):**
+```yaml
+WARNING_WEEKS: ${{ ... || '4' }}    # Change from '5' to '4'
+UNASSIGN_WEEKS: ${{ ... || '5' }}   # Change from '6' to '5'
+```
 
-To run more or less frequently, edit the cron expression:
+After editing, commit and push the changes. The new values take effect on the next scheduled run.
+
+### Changing the Schedule (Production)
+
+To run more or less frequently, edit the cron expression in `.github/workflows/issue-management.yml` (line ~7):
 
 ```yaml
 schedule:
+  # Current: Daily at 9 AM UTC
+  - cron: '0 9 * * *'
+
   # Every 3 days at 9 AM UTC
   - cron: '0 9 */3 * *'
-  
+
   # Twice daily (9 AM and 9 PM UTC)
   - cron: '0 9,21 * * *'
-  
-  # Weekly on Mondays
+
+  # Weekly on Mondays at 9 AM UTC
   - cron: '0 9 * * 1'
 ```
+
+**Note:** Cron schedules only run on the default branch (main). Changes take effect on the next scheduled time after merging.
 
 ## 🧪 End-to-End Testing
 
@@ -243,6 +260,28 @@ Edit the warning and unassignment messages in `check-stale-issues.ts`:
 - `postWarningComment()` method for warning messages
 - `unassignIssue()` method for unassignment messages
 
+## 🎮 Manual Triggering (Production)
+
+You can manually trigger the workflow from the GitHub Actions tab:
+
+1. Go to **Actions** → **Issue Management**
+2. Click **Run workflow**
+3. **Configure the inputs:**
+
+| Input | Default | Description |
+|-------|---------|-------------|
+| **dry_run** | `false` | ⚠️ **IMPORTANT:** Default is FALSE, meaning it WILL make real changes! Check this box to preview only. |
+| **time_unit** | `weeks` | Time unit for thresholds (weeks/minutes/seconds) |
+| **warning_weeks** | `5` | Threshold for warnings (in selected time unit) |
+| **unassign_weeks** | `6` | Threshold for unassignments (in selected time unit) |
+
+**⚠️ Warning:** Manual triggers with default settings will **actually post comments and unassign issues**. Always check the **dry_run** box if you just want to preview what would happen!
+
+**Common use cases:**
+- **Test after deployment:** Set `dry_run: true` to verify the workflow works
+- **Force an immediate run:** Use defaults to run the automation right now instead of waiting for the scheduled time
+- **Test with different thresholds:** Temporarily try different warning/unassign values
+
 ## 📊 Monitoring
 
 ### GitHub Actions Logs
@@ -250,6 +289,7 @@ Edit the warning and unassignment messages in `check-stale-issues.ts`:
 - View execution logs in the **Actions** tab
 - See detailed output for each run
 - Monitor success/failure status
+- Check the **Summary** section for configuration used
 
 ### Issue Comments
 
@@ -307,6 +347,7 @@ Edit the warning and unassignment messages in `check-stale-issues.ts`:
 - No external tokens or secrets required
 - Automatically scoped to the repository
 - For local testing, use a Personal Access Token with `repo` scope
+- For github actions testing, use a Personal Access Token with `repo` scope and `workflow` access
 
 ## 📝 Notes
 
@@ -328,10 +369,12 @@ This makes them easy to identify and clean up.
 
 ## 🎯 Next Steps
 
-After successful testing:
-1. Test on the production repo with `npm run issue-mgmt:start` (dry-run)
-2. Review the GitHub Actions workflow
-3. Deploy to production when confident
-4. Monitor the scheduled runs
+After successful testing on your fork:
+1. Create a PR to merge your changes to the main branch
+2. Once merged, the workflow will run automatically via the cron schedule (daily at 9:00 AM UTC)
+3. Monitor the first few scheduled runs in the Actions tab
+4. Check that issues are being processed correctly
+
+**Note:** The cron schedule only runs on the default branch (main). Once merged, no manual intervention is needed - the automation runs automatically!
 
 Happy automating! 🚀
