@@ -102,8 +102,7 @@ class LocalTestWorkflow {
   private async cleanup(): Promise<void> {
     console.log('🧹 Cleaning up old test issues...');
     try {
-      execSync('npm run issue-mgmt:test:cleanup', {
-        cwd: path.join(process.cwd(), '../..'),
+      execSync('node -r dotenv/config dist/issue-management/cleanup-test-issues.js dotenv_config_path=.env.test', {
         stdio: 'inherit',
       });
     } catch (error) {
@@ -203,9 +202,8 @@ class LocalTestWorkflow {
     console.log('🚀 Running the issue management script...');
     console.log('════════════════════════════════════════');
     console.log('');
-    
-    execSync('npm run issue-mgmt:test:run', {
-      cwd: path.join(process.cwd(), '../..'),
+
+    execSync('node -r dotenv/config dist/issue-management/check-stale-issues.js dotenv_config_path=.env.test', {
       stdio: 'inherit',
     });
   }

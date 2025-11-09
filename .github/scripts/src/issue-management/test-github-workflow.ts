@@ -58,12 +58,24 @@ class GitHubWorkflowTester {
       process.exit(1);
     }
 
-    // Check if authenticated
+    // Check if we have a token in environment (from .env.test)
+    const hasEnvToken = !!process.env.GITHUB_TOKEN;
+
+    if (hasEnvToken) {
+      console.log('✅ GitHub CLI is installed');
+      console.log('✅ Using GITHUB_TOKEN from environment');
+      console.log('');
+      return;
+    }
+
+    // Check if authenticated with gh CLI
     const authResult = spawnSync('gh', ['auth', 'status'], { encoding: 'utf8' });
     if (authResult.status !== 0) {
-      console.error('❌ Error: Not authenticated with GitHub CLI!');
+      console.error('❌ Error: Not authenticated with GitHub CLI and no GITHUB_TOKEN in environment!');
       console.error('');
-      console.error('Please run: gh auth login');
+      console.error('Please either:');
+      console.error('  1. Set GITHUB_TOKEN in .env.test, OR');
+      console.error('  2. Run: gh auth login');
       console.error('');
       process.exit(1);
     }
@@ -78,16 +90,15 @@ class GitHubWorkflowTester {
   private cleanup(): void {
     console.log('🧹 Step 1: Cleaning up old test issues...');
     console.log('──────────────────────────────────────────');
-    
+
     try {
-      execSync('npm run issue-mgmt:test:cleanup', {
-        cwd: path.join(process.cwd(), '../..'),
+      execSync('node -r dotenv/config dist/issue-management/cleanup-test-issues.js dotenv_config_path=.env.test', {
         stdio: 'inherit',
       });
     } catch (error) {
       // Ignore cleanup errors
     }
-    
+
     console.log('');
   }
 
@@ -99,12 +110,11 @@ class GitHubWorkflowTester {
     console.log('──────────────────────────────────────────');
     console.log('This will create 8 issues in 3 staggered batches (~4-5 minutes)');
     console.log('');
-    
-    execSync('npm run issue-mgmt:test:create', {
-      cwd: path.join(process.cwd(), '../..'),
+
+    execSync('node -r dotenv/config dist/issue-management/create-test-issues.js dotenv_config_path=.env.test', {
       stdio: 'inherit',
     });
-    
+
     console.log('');
   }
 
@@ -127,6 +137,12 @@ class GitHubWorkflowTester {
     console.log(`  - unassign_weeks: ${unassignWeeks}`);
     console.log('');
 
+    // Set GH_TOKEN environment variable for gh CLI to use
+    const env = { ...process.env };
+    if (process.env.GITHUB_TOKEN) {
+      env.GH_TOKEN = process.env.GITHUB_TOKEN;
+    }
+
     const result = spawnSync(
       'gh',
       [
@@ -138,7 +154,7 @@ class GitHubWorkflowTester {
         '-f', `warning_weeks=${warningWeeks}`,
         '-f', `unassign_weeks=${unassignWeeks}`,
       ],
-      { encoding: 'utf8', stdio: 'inherit' }
+      { encoding: 'utf8', stdio: 'inherit', env }
     );
 
     if (result.status !== 0) {
@@ -157,9 +173,15 @@ class GitHubWorkflowTester {
     console.log('⏳ Step 4: Waiting for workflow to complete...');
     console.log('───────────────────────────────────────────────');
     console.log('Waiting for workflow to start...');
-    
+
     // Wait a bit for the workflow to start
     execSync('sleep 5', { stdio: 'inherit' });
+
+    // Set GH_TOKEN environment variable for gh CLI to use
+    const env = { ...process.env };
+    if (process.env.GITHUB_TOKEN) {
+      env.GH_TOKEN = process.env.GITHUB_TOKEN;
+    }
 
     const result = spawnSync(
       'gh',
@@ -171,11 +193,11 @@ class GitHubWorkflowTester {
         '--json', 'databaseId',
         '--jq', '.[0].databaseId',
       ],
-      { encoding: 'utf8' }
+      { encoding: 'utf8', env }
     );
 
     const runId = result.stdout.trim();
-    
+
     if (!runId || result.status !== 0) {
       console.error('❌ Error: Could not find workflow run!');
       process.exit(1);
@@ -192,10 +214,16 @@ class GitHubWorkflowTester {
    * Watch workflow completion
    */
   private watchWorkflow(runId: string): void {
+    // Set GH_TOKEN environment variable for gh CLI to use
+    const env = { ...process.env };
+    if (process.env.GITHUB_TOKEN) {
+      env.GH_TOKEN = process.env.GITHUB_TOKEN;
+    }
+
     spawnSync(
       'gh',
       ['run', 'watch', runId, '--repo', this.repository],
-      { stdio: 'inherit' }
+      { stdio: 'inherit', env }
     );
 
     console.log('');
@@ -207,6 +235,12 @@ class GitHubWorkflowTester {
    * Check workflow status
    */
   private checkWorkflowStatus(runId: string): string {
+    // Set GH_TOKEN environment variable for gh CLI to use
+    const env = { ...process.env };
+    if (process.env.GITHUB_TOKEN) {
+      env.GH_TOKEN = process.env.GITHUB_TOKEN;
+    }
+
     const result = spawnSync(
       'gh',
       [
@@ -215,7 +249,7 @@ class GitHubWorkflowTester {
         '--json', 'conclusion',
         '--jq', '.conclusion',
       ],
-      { encoding: 'utf8' }
+      { encoding: 'utf8', env }
     );
 
     return result.stdout.trim();
@@ -255,6 +289,12 @@ class GitHubWorkflowTester {
       fs.readFileSync(this.issuesFilePath, 'utf8')
     );
 
+    // Set GH_TOKEN environment variable for gh CLI to use
+    const env = { ...process.env };
+    if (process.env.GITHUB_TOKEN) {
+      env.GH_TOKEN = process.env.GITHUB_TOKEN;
+    }
+
     console.log('Checking test issues:');
     for (const issueNum of issueNumbers) {
       const result = spawnSync(
@@ -265,7 +305,7 @@ class GitHubWorkflowTester {
           '--json', 'number,title,assignees,comments',
           '--jq', '{number, title, assignees: [.assignees[].login], comment_count: (.comments | length)}',
         ],
-        { encoding: 'utf8' }
+        { encoding: 'utf8', env }
       );
 
       if (result.status === 0) {
