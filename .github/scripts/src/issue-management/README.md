@@ -367,14 +367,6 @@ All test issues include:
 
 This makes them easy to identify and clean up.
 
-## 🎯 Next Steps
-
-After successful testing on your fork:
-1. Create a PR to merge your changes to the main branch
-2. Once merged, the workflow will run automatically via the cron schedule (daily at 9:00 AM UTC)
-3. Monitor the first few scheduled runs in the Actions tab
-4. Check that issues are being processed correctly
-
 **Note:** The cron schedule only runs on the default branch (main). Once merged, no manual intervention is needed - the automation runs automatically!
 
 Happy automating! 🚀
