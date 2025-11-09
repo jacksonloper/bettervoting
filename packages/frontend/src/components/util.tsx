@@ -12,6 +12,8 @@ const rBold = /\*\*(.*?)\*\*/;
 const rTip = / !tip\((.*)\)/;
 
 export type StringObject = {[key: string]: string};
+export type NumberObject = {[key: string]: number};
+
 //I don't know how to fix this, but eslint doesn't like namespace
 // eslint-disable-next-line @typescript-eslint/no-namespace
 declare namespace Intl {
@@ -111,9 +113,10 @@ interface LabelledTextFieldProps {
   setter: (value: string) => void;
   fullWidth?: boolean;
   rows?: number;
+  helperText?: string;
 }
 // defining in separate file: https://stackoverflow.com/questions/58778631/react-input-loses-focus-on-keypress
-export const LabelledTextField = ({ label, value, setter, fullWidth = false, rows = 1 }: LabelledTextFieldProps) =>
+export const LabelledTextField = ({ label, value, setter, fullWidth = false, rows = 1, helperText }: LabelledTextFieldProps) =>
   <FormControlLabel control={
     <TextField
       value={value}
@@ -122,6 +125,7 @@ export const LabelledTextField = ({ label, value, setter, fullWidth = false, row
       multiline={rows > 1}
       rows={rows}
       fullWidth
+      helperText={helperText}
     />
   }
     label={label}
@@ -190,7 +194,7 @@ export const useSubstitutedTranslation = (electionTermType = 'election', v = {})
       if (typeof txt !== 'string') return txt;
       return txt.split(rBold).map((str, i) => {
         if (i % 2 == 0) return str
-        return <b key={`b_${keyPrefix}_${i}`}>{str}</b>;
+        return <i key={`b_${keyPrefix}_${i}`}>{str}</i>;
       })
     }
 

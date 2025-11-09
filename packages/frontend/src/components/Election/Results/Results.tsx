@@ -1,14 +1,14 @@
-import { Box, Pagination } from "@mui/material";
+import { Box, Button, Pagination } from "@mui/material";
 import React, { ReactNode } from "react";
 import { useState } from 'react';
 import Typography from '@mui/material/Typography';
-import { commaListFormatter, formatPercent, tabToCandidate, useSubstitutedTranslation } from '../../util';
+import { commaListFormatter, formatPercent, methodValueToTextKey, useSubstitutedTranslation } from '../../util';
 import STARResultSummaryWidget from "./STAR/STARResultSummaryWidget";
 import STARDetailedResults from "./STAR/STARDetailedResults";
 import STARResultDetailedStepsWidget from "./STAR/STARResultDetailedStepsWidget";
 import WinnerResultPages from "./WinnerResultPages";
 import { Race } from "@equal-vote/star-vote-shared/domain_model/Race";
-import { allocatedScoreResults, approvalCandidate, approvalResults, candidate, ElectionResults, irvResults, rankedRobinResults, starCandidate, starResults } from "@equal-vote/star-vote-shared/domain_model/ITabulators";
+import { allocatedScoreResults, approvalResults, ElectionResults, irvResults, rankedRobinResults, starCandidate, starResults } from "@equal-vote/star-vote-shared/domain_model/ITabulators";
 import useElection from "../../ElectionContextProvider";
 import DetailExpander from "./components/DetailExpander";
 import ResultsTable from "./components/ResultsTable";
@@ -18,7 +18,6 @@ import ResultsBarChart from "./components/ResultsBarChart";
 import HeadToHeadWidget from "./components/HeadToHeadWidget";
 import useRace, { RaceContextProvider } from "~/components/RaceContextProvider";
 import VoterProfileWidget from "./components/VoterProfileWidget";
-import { Candidate } from "@equal-vote/star-vote-shared/domain_model/Candidate";
 import VoterIntentWidget from "./components/VoterIntentWidget";
 import ColumnDistributionWidget from "./components/ColumnDistributionWidget";
 import NameRecognitionWidget from "./components/NameRecognitionWidget";
@@ -26,8 +25,7 @@ import ScoreRangeWidget from "./components/ScoreRangeWidget";
 import useFeatureFlags from "~/components/FeatureFlagContextProvider";
 import STAREqualPreferencesWidget from "./STAR/STAREqualPreferencesWidget";
 import VoterErrorStatsWidget from "./components/VoterErrorStatsWidget";
-import Pages from "./Pages";
-import { irvContext, irvWinnerSearch } from "./IRV/ifc";
+import { irvWinnerSearch } from "./IRV/ifc";
 import { IRVTopResultsView } from "./IRV/top";
 
 function STARResultsViewer({ filterRandomFromLogs }: {filterRandomFromLogs: boolean }) {
@@ -69,7 +67,7 @@ function STARResultsViewer({ filterRandomFromLogs }: {filterRandomFromLogs: bool
 
 function RankedRobinResultsViewer() {
   let {results} = useRace();
-  const {race, t} = useRace();
+  const {t} = useRace();
   results = results as rankedRobinResults;
 
   const candidates = results.summaryData.candidates;
@@ -107,7 +105,7 @@ function RankedRobinResultsViewer() {
 
 function IRVResultsViewer() {
   let {results} = useRace();
-  const { t, race} = useRace();
+  const {t} = useRace();
   results = results as irvResults;
 
   const {roundResults, exhaustedVoteCounts} = results;
@@ -120,7 +118,7 @@ function IRVResultsViewer() {
     console.error(Error("IRV round counts don't match."));
   const roundCount = roundResults.length;
   for (let idx = 0; idx < roundCount; idx++) {
-    let cur = roundResults[idx];
+    const cur = roundResults[idx];
     cur.exhaustedVoteCount = exhaustedVoteCounts[idx];
     cur.isStartOfSearch = 0 === idx || ! ! roundResults[idx - 1].winners.length;
   }
@@ -129,7 +127,7 @@ function IRVResultsViewer() {
 
   const wins: irvWinnerSearch[] = [];
   let rx = 0; /* round index */
-  let lim = roundResults.length;
+  const lim = roundResults.length;
   while (rx < lim) {
     const win: irvWinnerSearch = {
       firstRoundIndex: rx,
@@ -147,7 +145,7 @@ function IRVResultsViewer() {
   const tabulationRows = results.summaryData.candidates.map(c => ([c.name,...c.hareScores]));
   tabulationRows.unshift([
     t('results.rcv.tabulation_candidate_column'),
-    ...(Array(tabulationRows[0].length-1).keys().map(i => t('results.rcv.round_column', {n: i+1})))
+    ...(Array.from(Array(tabulationRows[0].length-1).keys()).map(i => t('results.rcv.round_column', {n: i+1})))
   ])
   tabulationRows.push([t('results.rcv.exhausted'), ...results.exhaustedVoteCounts.map(i => ''+i)])
 
@@ -173,7 +171,7 @@ function IRVResultsViewer() {
 }
 
 function PluralityResultsViewer() {
-  let { results } = useRace();
+  const { results } = useRace();
   const { t } = useRace();
 
   return <ResultsViewer methodKey='choose_one'>
@@ -254,16 +252,10 @@ function ApprovalResultsViewer() {
 }
 
 function ResultsViewer({ methodKey, children }:{methodKey: string, children:ReactNode}) {
-  const {t, i18n} = useSubstitutedTranslation();
-  const learnLinkKey = `methods.${methodKey}.learn_link`
-  const votingMethod = t(`methods.${methodKey}.full_name`)
+
   return (
     <Box className="resultViewer">
       {children}
-      <Typography component="p" sx={{textAlign: 'right', color: '#808080', fontSize: '.8rem', marginTop: '20px'}}>
-        {t('results.method_context', {voting_method: votingMethod})}
-        {i18n.exists(learnLinkKey) && <><br/><a href={t(learnLinkKey)} style={{color: 'inherit'}}>{t('results.learn_link_text', {voting_method: votingMethod})}</a></>}
-      </Typography>
     </Box>
   );
 }
@@ -271,7 +263,9 @@ function ResultsViewer({ methodKey, children }:{methodKey: string, children:Reac
 function STARPRResultsViewer() {
   const flags = useFeatureFlags();
   let {results} = useRace();
-  const {t, race} = useRace();
+  const {t} = useRace();
+  const [sortRound, setSortRound] = useState(undefined);
+  const [maxCandidates, setMaxCandidates] = useState(10);
   results = results as allocatedScoreResults;
 
   const [page, setPage] = useState(1);
@@ -295,13 +289,24 @@ function STARPRResultsViewer() {
     return i;
   }
 
-  const sortedCandidates = results.summaryData.candidates
+  let sortedCandidates = results.summaryData.candidates
     .map((c,i) => ({...c, index: i}))
     .sort((a, b) => {
       const finalScore = (aa) => results.summaryData.weightedScoresByRound.slice(-1)[0][aa.index]
       if(winIndex(a) != winIndex(b)) return winIndex(a) - winIndex(b);
       return -(finalScore(a) - finalScore(b));
     })
+
+  if(sortRound != undefined){
+    sortedCandidates = results.summaryData.candidates
+      .map((c,i) => ({...c, index: i}))
+      .sort((a, b) => {
+        const roundScore = (aa) => results.summaryData.weightedScoresByRound[sortRound-1][aa.index];
+        const w = (aa) => winIndex(aa) < sortRound-1 ? winIndex(aa) : 99;
+        if(w(a) != w(b)) return w(a) - w(b);
+        return -(roundScore(a) - roundScore(b));
+      })
+  }
 
   let remainingVoters = (results.summaryData.nTallyVotes*(1 - ((page-1)/results.summaryData.weightedScoresByRound.length)))
   remainingVoters = Math.round(remainingVoters*10)/10;
@@ -312,6 +317,14 @@ function STARPRResultsViewer() {
         <Typography>
             Chart shows total scores for the {remainingVoters} remaining unrepresented voters
         </Typography>
+        {flags.isSet('PR_CONTROLS') && <>
+          <Typography sx={{mt: 2}}>Round Selector</Typography>
+          <Pagination count={results.summaryData.weightedScoresByRound.length} page={page} onChange={handleChange} />
+          <Box display='flex' flexDirection='row' sx={{mb: 7, gap: 2}} >
+              <Button variant='outlined' onClick={() => setSortRound(page)}>Sort Candidates</Button>
+              <Button variant='outlined' onClick={() => setMaxCandidates(c => c == 10 ? 1000 : 10)}>Toggle Candidate Limit</Button>
+          </Box>
+        </>}
         <ResultsBarChart
           data={
             results.summaryData.weightedScoresByRound[page-1]
@@ -331,6 +344,7 @@ function STARPRResultsViewer() {
           maxBarSize = {results.summaryData.weightedScoresByRound[0].reduce(
             (prev, totalScore) => Math.max(prev, totalScore), 0
           )}
+          maxCandidates = {maxCandidates}
         />
         <Typography>Round Selector</Typography>
         <Pagination count={results.summaryData.weightedScoresByRound.length} page={page} onChange={handleChange} />
@@ -366,7 +380,7 @@ function STARPRResultsViewer() {
 
 function STVResultsViewer() {
   let {results} = useRace();
-  const { t, race} = useRace();
+  const {t} = useRace();
   results = results as irvResults;
   const [page, setPage] = useState(1);
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
@@ -413,7 +427,7 @@ function STVResultsViewer() {
 
 export default function Results({ race, results }: {race: Race, results: ElectionResults}) {
   const { election } = useElection();
-  const showTitleAsTie = ['random', 'five_star'].includes(results.tieBreakType);
+  const showTitleAsTie = ['random', 'five_star', 'head_to_head'].includes(results.tieBreakType);
   // added a null check for sandbox support
   const removeTieBreakFromTitle = (election?.settings.break_ties_randomly ?? false) && results.tieBreakType == 'random';
 
@@ -429,7 +443,14 @@ export default function Results({ race, results }: {race: Race, results: Electio
     }[results.votingMethod]
   });
 
-  const winnersText = commaListFormatter
+    const {i18n} = useSubstitutedTranslation();
+
+    const votingMethodBase = race.voting_method
+    const methodKey = methodValueToTextKey[votingMethodBase];
+    const learnLinkKey = `methods.${methodKey}.learn_link`;
+    const votingMethod= t(`methods.${methodKey}.full_name`)
+
+    const winnersText = commaListFormatter
     .format(results.elected.map(c => c.name.replace(' ', '__REPLACE_ME__')))
     .split('__REPLACE_ME__')
     .map((s,i) => ([<React.Fragment key={i*2}>{s}</React.Fragment>, <React.Fragment key={i*2+1}>&nbsp;</React.Fragment>]))
@@ -441,7 +462,7 @@ export default function Results({ race, results }: {race: Race, results: Electio
     <RaceContextProvider race={race} results={results} t={t}>
       <hr/>
       <Typography variant="h3" component="h3" sx={{marginBottom: 2}}>
-          {race.title}
+          {((election?.title != race.title) || (election?.races.length > 1)) && race.title}
       </Typography>
       <div className="flexContainer" style={{textAlign: 'center'}}>
         <Box sx={{pageBreakAfter:'avoid', pageBreakInside:'avoid', mx: 10}}>
@@ -452,7 +473,7 @@ export default function Results({ race, results }: {race: Race, results: Electio
             <>
             <Typography variant="h5" sx={{fontWeight: 'bold'}}>{t('results.tie_title')}</Typography>
             {!removeTieBreakFromTitle && <Typography component="p" sx={{fontWeight: 'bold'}}>
-                {t('results.tiebreak_subtitle', {names: commaListFormatter.format(results.elected.map(c => c.name))})}
+                {t('results.tiebreak_subtitle', {names: results.elected.map(c => c.name)})}
             </Typography>}
             </>
           :
@@ -465,6 +486,18 @@ export default function Results({ race, results }: {race: Race, results: Electio
             </Typography>
           }
           <Typography variant="h6">{t('results.vote_count', {n: results.summaryData.nTallyVotes})}</Typography>
+            {/* Voting method and learning link */}
+            <Typography component="p" sx={{color: '#808080', fontSize: '1rem', marginTop: '20px', mb: 2}}>
+                {t('results.method_context', { voting_method: votingMethod })}
+                {i18n.exists(learnLinkKey) && (
+                    <>
+                        <br />
+                        <a href={t(learnLinkKey)} style={{ color: 'inherit' }}>
+                            {t('results.learn_link_text', { voting_method: votingMethod })}
+                        </a>
+                    </>
+                )}
+            </Typography>
         </>}
         </Box>
         {results.summaryData.nTallyVotes > 1 &&

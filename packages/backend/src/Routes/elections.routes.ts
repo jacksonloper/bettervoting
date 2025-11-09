@@ -19,8 +19,10 @@ import {
     getSandboxResults,
     sendInvitationController,
     sendInvitationsController,
+    setOpenState,
     setPublicResults,
     sendEmailsController,
+    queryElections,
 } from '../Controllers/Election';
 import {upload, uploadImageController} from '../Controllers/uploadImageController';
 import asyncHandler from 'express-async-handler';
@@ -180,6 +182,59 @@ electionsRouter.delete('/Election/:id', asyncHandler(deleteElection))
  *                   $ref: '#/components/schemas/Election'
  *  */
  electionsRouter.post('/Elections/', asyncHandler(createElectionController))
+ 
+/** 
+ * @swagger
+ * /QueryElections:
+ *   get:
+ *     summary: Query Elections based on time range (sys-admin only)
+ *     tags: [Elections]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               start_time:
+ *                 type: date
+ *               end_time:
+ *                 type: date
+ *     responses:
+ *       200:
+ *         description: List of elections
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 open_elections:
+ *                   oneOf:
+ *                     - type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Election'
+ *                     - type: null
+ *                 closed_elections:
+ *                   oneOf:
+ *                     - type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Election'
+ *                     - type: null
+ *                     - type: undefined
+ *                 popular_elections:
+ *                   oneOf:
+ *                     - type: array
+ *                       items:
+ *                         $ref: '#/components/schemas/Election'
+ *                     - type: null
+ *                 vote_counts:
+ *                   oneOf:
+ *                     - type: array
+ *                       items:
+ *                         type: object
+ *                     - type: null
+  */
+ electionsRouter.post('/QueryElections', asyncHandler(queryElections))
  
  /** 
  * 
@@ -437,6 +492,47 @@ electionsRouter.post('/Election/:id/setPublicResults',asyncHandler(setPublicResu
  *         description: Election not found 
 */
 electionsRouter.post('/Election/:id/archive', asyncHandler(archiveElection))
+
+ /** 
+ * @swagger
+ * /Election/{id}/setOpenState:
+ *   post:
+ *     summary: Change an election's state from open to closed, or from closed to open
+ *     security:
+ *      - ApiKeyAuth: []
+ *     tags: [Elections]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The election ID
+ *     requestBody:
+ *      content:
+ *        application/json:
+ *          schema:
+ *           type: object
+ *           properties:
+ *            open:
+ *             type: boolean
+ *             description: True if reopening a closed election; false if closing an open election
+ *             required: true
+ *     responses:
+ *       200:
+ *         description: Election state changed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 election:
+ *                   type: object
+ *                   $ref: '#/components/schemas/Election'
+ *       404:
+ *         description: Election not found 
+*/
+electionsRouter.post('/Election/:id/setOpenState', asyncHandler(setOpenState))
 
 /** 
  * @swagger

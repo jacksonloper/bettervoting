@@ -23,14 +23,31 @@ const className = "VoterRolls.Controllers";
 const addElectionRoll = async (req: IElectionRequest & { body: { electionRoll: ElectionRollInput[] } }, res: Response, next: NextFunction) => {
     expectPermission(req.user_auth.roles, permissions.canAddToElectionRoll)
     Logger.info(req, `${className}.addElectionRoll ${req.election.election_id}`);
+
+    // Filter out empty roll entries (where all fields are empty)
+    req.body.electionRoll = req.body.electionRoll.filter((rollInput: ElectionRollInput) => {
+        return rollInput.voter_id?.trim() || rollInput.email?.trim() || rollInput.precinct?.trim();
+    });
+
+    // Prevent creating voters by voter_id when using email invitations
+    if (req.election.settings.invitation === 'email') {
+        const hasVoterId = req.body.electionRoll.some((rollInput: ElectionRollInput) => rollInput.voter_id);
+        if (hasVoterId) {
+            throw new BadRequest('Cannot create voters with voter_id when using email invitations');
+        }
+    }
+
     const history = [{
-        action_type: 'added',
+        action_type: "added",
         actor: req.user.email,
         timestamp: Date.now(),
     }]
+    if (req.election.settings.invitation === "email" && req.body.electionRoll.some((r: ElectionRollInput) => r.voter_id)) {
+        throw new BadRequest("User provided voterIds are not permitted for email list elections");
+    }
     
     // Generate all IDs in parallel first
-    const idPromises: Promise<string>[] = req.body.electionRoll.map((rollInput: ElectionRollInput) => 
+    const idPromises: Promise<string>[] = req.body.electionRoll.map((rollInput: ElectionRollInput) =>
         rollInput.voter_id || makeUniqueID(
             ID_PREFIXES.VOTER,
             ID_LENGTHS.VOTER,

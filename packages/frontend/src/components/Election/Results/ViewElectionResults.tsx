@@ -15,6 +15,7 @@ const ViewElectionResults = () => {
     const { data, isPending, makeRequest: getResults } = useGetResults(election.election_id)
     useEffect(() => { getResults() }, [])
     const {t} = useSubstitutedTranslation(election.settings.term_type);
+
     return (
       <>
         <DraftWarning />
@@ -43,7 +44,8 @@ const ViewElectionResults = () => {
             <Typography variant="h4" component="h4">
               {t("results.election_title", { title: election.title })}
             </Typography>
-            {isPending && <div> {t("results.loading_election")} </div>}
+
+              {isPending && <div> {t("results.loading_election")} </div>}
             {!isPending && !data && (
               <>
                 The election admins have not released the results yet. Feel free
@@ -52,12 +54,13 @@ const ViewElectionResults = () => {
             )}
 
             {data?.results.map((results, race_index) => (
-              <Results
-                key={`results-${race_index}`}
-                race={election.races[race_index]}
-                results={results}
-              />
+                <Results
+                    key={`results-${race_index}`}
+                    race={election.races[race_index]}
+                    results={results}
+                />
             ))}
+
             <hr />
             <Box
               sx={{
@@ -87,9 +90,14 @@ const ViewElectionResults = () => {
                       px: { xs: 5, sm: 1 },
                     }}
                   >
+
                     <BallotDataExport election={election} />
+
+
                   </Box>
                 )}
+
+                  {/* voting method is currently below here */}
 
                 {election.settings.voter_access !== "closed" && (
                   <Box

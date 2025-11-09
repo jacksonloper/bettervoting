@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { DateTime } from 'luxon'
 import useElection from '../../ElectionContextProvider';
 import { isValidDate } from '../../util';
@@ -29,6 +29,17 @@ export const useEditElectionDetails = () => {
         startTime: '',
         endTime: '',
     })
+
+    // Sync editedElection state when the election context changes
+    useEffect(() => {
+        setEditedElection(election)
+        setErrors({
+            title: '',
+            description: '',
+            startTime: '',
+            endTime: '',
+        })
+    }, [election.election_id])
 
     const applyUpdate = (updateFunc: (settings) => void) => {
         const settingsCopy = structuredClone(editedElection)

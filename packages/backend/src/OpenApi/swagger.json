@@ -577,6 +577,9 @@
           "contact_email": {
             "type": "string"
           },
+          "draggable_ballot": {
+            "type": "boolean"
+          },
           "email_campaign_count": {
             "type": "number"
           },
@@ -712,6 +715,7 @@
               "Australia/Sydney",
               "CET",
               "Canada/Atlantic",
+              "Etc/GMT+12",
               "Etc/Greenwich",
               "Europe/Amsterdam",
               "Europe/Athens",
@@ -781,6 +785,25 @@
       },
       "Email": {
         "type": "string"
+      },
+      "FormatMarkdownOptions": {
+        "properties": {
+          "allowButtons": {
+            "type": "boolean"
+          },
+          "buttonContext": {
+            "properties": {
+              "electionHomeUrl": {
+                "type": "string"
+              },
+              "voteUrl": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          }
+        },
+        "type": "object"
       },
       "GenericObject": {
         "additionalProperties": false,
@@ -1345,6 +1368,7 @@
           "Australia/Sydney",
           "CET",
           "Canada/Atlantic",
+          "Etc/GMT+12",
           "Etc/Greenwich",
           "Europe/Amsterdam",
           "Europe/Athens",
@@ -1445,6 +1469,7 @@
                 "canFlagElectionRoll",
                 "canInvalidateBallot",
                 "canInvalidateElectionRoll",
+                "canQueryElections",
                 "canSendEmails",
                 "canUnflagElectionRoll",
                 "canUpdatePublicArchive",
@@ -2991,6 +3016,7 @@
       "tieBreakType": {
         "enum": [
           "five_star",
+          "head_to_head",
           "none",
           "random",
           "score"
@@ -3579,6 +3605,101 @@
         }
       }
     },
+    "/QueryElections": {
+      "get": {
+        "summary": "Query Elections based on time range (sys-admin only)",
+        "tags": [
+          "Elections"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "start_time": {
+                    "type": "date"
+                  },
+                  "end_time": {
+                    "type": "date"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "List of elections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "open_elections": {
+                      "oneOf": [
+                        {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Election"
+                          }
+                        },
+                        {
+                          "type": null
+                        }
+                      ]
+                    },
+                    "closed_elections": {
+                      "oneOf": [
+                        {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Election"
+                          }
+                        },
+                        {
+                          "type": null
+                        },
+                        {
+                          "type": "undefined"
+                        }
+                      ]
+                    },
+                    "popular_elections": {
+                      "oneOf": [
+                        {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/Election"
+                          }
+                        },
+                        {
+                          "type": null
+                        }
+                      ]
+                    },
+                    "vote_counts": {
+                      "oneOf": [
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "object"
+                          }
+                        },
+                        {
+                          "type": null
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/GlobalElectionStats": {
       "get": {
         "summary": "Get global election statistics",
@@ -3943,6 +4064,67 @@
         "responses": {
           "200": {
             "description": "Election archived",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "election": {
+                      "type": "object",
+                      "$ref": "#/components/schemas/Election"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Election not found"
+          }
+        }
+      }
+    },
+    "/Election/{id}/setOpenState": {
+      "post": {
+        "summary": "Change an election's state from open to closed, or from closed to open",
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "tags": [
+          "Elections"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The election ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "open": {
+                    "type": "boolean",
+                    "description": "True if reopening a closed election; false if closing an open election",
+                    "required": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Election state changed",
             "content": {
               "application/json": {
                 "schema": {
@@ -4602,6 +4784,76 @@
           },
           "404": {
             "description": "Election not found"
+          }
+        }
+      }
+    },
+    "/Election/{id}/rolls/revealVoterId": {
+      "post": {
+        "summary": "🚨 EMERGENCY BREAK GLASS - Reveal voter ID by email address",
+        "description": "This endpoint should only be used in emergency situations. It reveals the voter_id for a given email and creates a prominent audit log entry.",
+        "tags": [
+          "Rolls"
+        ],
+        "security": [
+          {
+            "ApiKeyAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "The election ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "description": "Email address of the voter"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Voter ID revealed (action logged)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "voter_id": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "warning": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Voter not found"
           }
         }
       }

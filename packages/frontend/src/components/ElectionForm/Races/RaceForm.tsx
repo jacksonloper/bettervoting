@@ -30,42 +30,42 @@ interface RaceFormProps {
 }
 
 export default function RaceForm({
-  race_index, editedRace, errors, setErrors, applyRaceUpdate,
-  activeStep, setActiveStep
+    race_index, editedRace, errors, setErrors, applyRaceUpdate,
+    activeStep, setActiveStep
 }: RaceFormProps) {
-    const {t} = useSubstitutedTranslation();
+    const { t } = useSubstitutedTranslation();
     const flags = useFeatureFlags();
     const [showsAllMethods, setShowsAllMethods] = useState(false)
     const { election } = useElection()
     const PR_METHODS = ['STV', 'STAR_PR'];
     const isDisabled = election.state !== 'draft';
     const [methodFamily, setMethodFamily] = useState(
-        editedRace.num_winners == 1?
+        editedRace.num_winners == 1 ?
             'single_winner'
-        : (
-            PR_METHODS.includes(editedRace.voting_method)?
-                'proportional_multi_winner'
-            :
-                'bloc_multi_winner'
-        )
+            : (
+                PR_METHODS.includes(editedRace.voting_method) ?
+                    'proportional_multi_winner'
+                    :
+                    'bloc_multi_winner'
+            )
     )
     const confirm = useConfirm();
     const inputRefs = useRef([]);
     const ephemeralCandidates = useMemo(() => {
         // Get all existing candidate IDs
         const existingIds = new Set(editedRace.candidates.map(c => c.candidate_id));
-        
+
         const hasCollision = (id: string) => existingIds.has(id);
-        
+
         const newId = makeUniqueIDSync(
-            ID_PREFIXES.CANDIDATE, 
+            ID_PREFIXES.CANDIDATE,
             ID_LENGTHS.CANDIDATE,
             hasCollision
         );
-        
-        return [...editedRace.candidates, { 
-            candidate_id: newId, 
-            candidate_name: '' 
+
+        return [...editedRace.candidates, {
+            candidate_id: newId,
+            candidate_name: ''
         }];
     }, [editedRace.candidates]);
 
@@ -134,7 +134,7 @@ export default function RaceForm({
         }
     }, [ephemeralCandidates.length, applyRaceUpdate]);
 
-    const MethodBullet = ({value, disabled}: {value: string, disabled: boolean}) => <>
+    const MethodBullet = ({ value, disabled }: { value: string, disabled?: boolean }) => <>
         <FormControlLabel value={value} disabled={disabled} control={<Radio />} label={t(`edit_race.methods.${methodValueToTextKey[value]}.title`)} sx={{ mb: 0, pb: 0 }} />
         <FormHelperText sx={{ pl: 4, mt: -1 }}>
             {t(`edit_race.methods.${methodValueToTextKey[value]}.description`)}
@@ -149,7 +149,7 @@ export default function RaceForm({
                         id={`race-title-${String(race_index)}`}
                         disabled={isDisabled}
                         name="title"
-                        label="Title"
+                        label="Race Title"
                         type="text"
                         error={errors.raceTitle !== ''}
                         value={editedRace.title}
@@ -162,7 +162,7 @@ export default function RaceForm({
                             setErrors({ ...errors, raceTitle: '' })
                             applyRaceUpdate(race => { race.title = e.target.value })
                         }
-                    }
+                        }
                     />
                     <FormHelperText error sx={{ pl: 1, pt: 0 }}>
                         {errors.raceTitle}
@@ -180,6 +180,7 @@ export default function RaceForm({
                         type="text"
                         error={errors.raceDescription !== ''}
                         value={editedRace.description}
+                        helperText={errors.raceDescription || "Supports **bold** and [link text](url) formatting"}
                         sx={{
                             m: 0,
                             boxShadow: 2,
@@ -189,9 +190,6 @@ export default function RaceForm({
                             applyRaceUpdate(race => { race.description = e.target.value })
                         }}
                     />
-                    <FormHelperText error sx={{ pl: 1, pt: 0 }}>
-                        {errors.raceDescription}
-                    </FormHelperText>
                 </Grid>
 
                 {
@@ -223,9 +221,9 @@ export default function RaceForm({
                 }
             </Grid>
 
-            <Stepper nonLinear activeStep={activeStep} orientation="vertical" sx={{my: 3}}>
-                <Step>
-                    <StepButton aria-label='Method Family' onClick={() => setActiveStep(0)}>
+            <Stepper nonLinear activeStep={isDisabled ? -1 : activeStep} orientation="vertical" sx={{ my: 3 }}>
+                <Step >
+                    <StepButton disabled={isDisabled} aria-label='Method Family' onClick={() => setActiveStep(0)}>
                         {t('edit_race.how_many_winners')}
                         &nbsp;
                         {editedRace.num_winners == 1 ?
@@ -245,7 +243,7 @@ export default function RaceForm({
                             name="method-family-radio-buttons-group"
                             value={methodFamily}
                             onChange={(e) => {
-                                if(e.target.value == 'single'){
+                                if (e.target.value == 'single') {
                                     setErrors({ ...errors, raceNumWinners: '' })
                                     applyRaceUpdate(race => { race.num_winners = 1 })
                                 }
@@ -254,39 +252,36 @@ export default function RaceForm({
                         >
                             <FormControlLabel
                                 value="single_winner"
-                                disabled= {isDisabled}
                                 control={<Radio />}
                                 label={t('edit_race.single_winner')}
                                 sx={{ mb: 0, pb: 0 }}
                                 onClick={() => {
                                     applyRaceUpdate(race => {
-                                        if(PR_METHODS.includes(race.voting_method)) race.voting_method = '';
+                                        if (PR_METHODS.includes(race.voting_method)) race.voting_method = '';
                                         race.num_winners = 1
                                     })
                                 }}
                             />
                             <FormControlLabel
                                 value="bloc_multi_winner"
-                                disabled= {isDisabled}
                                 control={<Radio />}
                                 label={t('edit_race.bloc_multi_winner')}
                                 sx={{ mb: 0, pb: 0 }}
                                 onClick={() => {
                                     applyRaceUpdate(race => {
-                                        if(PR_METHODS.includes(race.voting_method)) race.voting_method = '';
+                                        if (PR_METHODS.includes(race.voting_method)) race.voting_method = '';
                                         race.num_winners = Math.max(2, race.num_winners)
                                     })
                                 }}
                             />
                             <FormControlLabel
                                 value="proportional_multi_winner"
-                                disabled= {isDisabled}
                                 control={<Radio />}
                                 label={t('edit_race.proportional_multi_winner')}
                                 sx={{ mb: 0, pb: 0 }}
                                 onClick={() => {
                                     applyRaceUpdate(race => {
-                                        if(!PR_METHODS.includes(race.voting_method)) race.voting_method = '';
+                                        if (!PR_METHODS.includes(race.voting_method)) race.voting_method = '';
                                         race.num_winners = Math.max(2, race.num_winners)
                                     })
                                 }}
@@ -299,14 +294,14 @@ export default function RaceForm({
                             transition: 'height .4s, opacity .7s',
                             maxWidth: '300px'
                         }}>
-                            <Typography id="num-winners-label" gutterBottom component="p" sx={{marginTop: 2}}>
+                            <Typography id="num-winners-label" gutterBottom component="p" sx={{ marginTop: 2 }}>
                                 <b>{t('edit_race.number_of_winners')}</b>
                             </Typography>
                             <TextField
                                 id={`num-winners-${String(race_index)}`}
                                 type="number"
                                 InputProps={{
-                                    inputProps: { 
+                                    inputProps: {
                                         min: 2,
                                         "aria-labelledby": "num-winners-label",
                                     }
@@ -330,7 +325,7 @@ export default function RaceForm({
                 </Step>
 
                 <Step>
-                    <StepButton onClick={() => setActiveStep(1)}>
+                    <StepButton disabled={isDisabled} onClick={() => setActiveStep(1)}>
                         {t('edit_race.which_voting_method')}
                         &nbsp;
                         <b>{editedRace.voting_method != '' && t(`methods.${methodValueToTextKey[editedRace.voting_method]}.full_name`)}</b>
@@ -339,19 +334,19 @@ export default function RaceForm({
                         <FormControl component="fieldset" variant="standard">
                             <RadioGroup
                                 aria-labelledby="voting-method-radio-group"
-                                
+
                                 name="voter-method-radio-buttons-group"
                                 value={editedRace.voting_method}
                                 onChange={(e) => applyRaceUpdate(race => { race.voting_method = e.target.value as NewRace['voting_method'] })}
-                                
+
                             >
                                 {methodFamily == 'proportional_multi_winner' ?
-                                    <MethodBullet value='STAR_PR' disabled={isDisabled}/>
-                                : <>
-                                    <MethodBullet value='STAR' disabled={isDisabled}/>
-                                    <MethodBullet value='RankedRobin' disabled={isDisabled}/>
-                                    <MethodBullet value='Approval' disabled={isDisabled}/>
-                                </>}
+                                    <MethodBullet value='STAR_PR'/>
+                                    : <>
+                                        <MethodBullet value='STAR'/>
+                                        <MethodBullet value='RankedRobin'/>
+                                        <MethodBullet value='Approval'/>
+                                    </>}
 
                                 <Box
                                     display='flex'
@@ -360,20 +355,19 @@ export default function RaceForm({
                                     sx={{ width: '100%', ml: -1 }}>
 
                                     {!showsAllMethods &&
-                                        <IconButton aria-labelledby='more-options' disabled={election.state != 'draft'} onClick={() => { setShowsAllMethods(true) }}>
+                                        <IconButton aria-labelledby='more-options' onClick={() => { setShowsAllMethods(true) }}>
                                             <ExpandMore />
+                                            <Typography variant="body1" id={'more-options'} > More Options </Typography>
                                         </IconButton>}
                                     {showsAllMethods &&
-                                        <IconButton aria-label='more-options'disabled={election.state != 'draft'} onClick={() => { setShowsAllMethods(false) }}>
+                                        <IconButton aria-label='more-options' onClick={() => { setShowsAllMethods(false) }}>
                                             <ExpandLess />
+                                            <Typography variant="body1" id={'more-options'} > More Options </Typography>
                                         </IconButton>}
-                                    <Typography variant="body1" id={'more-options'} >
-                                        More Options
-                                    </Typography>
                                 </Box>
                                 <Box sx={{
-                                    height: showsAllMethods? 0 : 'auto',
-                                    opacity: showsAllMethods? 0 : 1,
+                                    height: showsAllMethods ? 0 : 'auto',
+                                    opacity: showsAllMethods ? 0 : 1,
                                     overflow: 'hidden',
                                     transition: 'height .4s, opacity .7s',
                                 }}
@@ -383,19 +377,15 @@ export default function RaceForm({
                                         justifyContent="left"
                                         alignItems="center"
                                         sx={{ width: '100%', pl: 4, mt: -1 }}>
-
-                                        <FormHelperText >
-                                            These voting methods do not guarantee every voter an equally powerful vote if there are more than two candidates.
-                                        </FormHelperText>
                                     </Box>
 
 
                                     {methodFamily == 'proportional_multi_winner' ?
-                                        <MethodBullet value='STV' disabled={isDisabled}/>
-                                    : <>
-                                        <MethodBullet value='Plurality' disabled={isDisabled}/>
-                                        <MethodBullet value='IRV' disabled={isDisabled}/>
-                                    </>}
+                                        <MethodBullet value='STV' />
+                                        : <>
+                                            <MethodBullet value='Plurality' />
+                                            <MethodBullet value='IRV' />
+                                        </>}
 
                                 </Box>
                             </RadioGroup>
@@ -428,10 +418,10 @@ export default function RaceForm({
                                     candidate={candidate}
                                     index={index}
                                     onDeleteCandidate={() => onDeleteCandidate(index)}
-                                    disabled={ephemeralCandidates.length - 1 === index || election.state !== 'draft'}
-                                    inputRef={(el:React.MutableRefObject<HTMLInputElement[]>) => inputRefs.current[index] = el}
+                                    disabled={ephemeralCandidates.length - 1 === index || isDisabled}
+                                    inputRef={(el: React.MutableRefObject<HTMLInputElement[]>) => inputRefs.current[index] = el}
                                     onKeyDown={(event: React.KeyboardEvent<HTMLInputElement>) => handleKeyDown(event, index)}
-                                    electionState={election.state}/>
+                                    electionState={election.state} />
                             </SortableList.Item>
                         )}
                     />

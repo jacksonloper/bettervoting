@@ -8,7 +8,6 @@ import { formatPercent } from "~/components/util";
 import ResultsBarChart from "./ResultsBarChart";
 import HeadToHeadChart from "./HeadToHeadChart";
 import { getVoterErrorData } from "./VoterErrorStatsWidget";
-import { candidate } from "@equal-vote/star-vote-shared/domain_model/ITabulators";
 
 // candidates helps define the order
 const VoterProfileWidget = ({topScore, ranked=false} : {topScore: number, ranked?: boolean}) => {
@@ -126,7 +125,7 @@ const VoterProfileWidget = ({topScore, ranked=false} : {topScore: number, ranked
         <Divider variant='middle' sx={{width: '100%', m:1}}/>
         <Typography variant='h6'>{t(`results_ext.voter_profile_average_${ranked? 'ranks' : 'scores'}`, {name: refCandidate.name})}</Typography>
         {totalTopScored == 0 ? 'n/a' : <>
-            <Typography>{`${formatPercent(numBullets/totalTopScored)} of ${refCandidate.name} supporters only voted for one candidate`}</Typography>
+            <Typography>{`${formatPercent(numBullets/totalTopScored)} of ${refCandidate.name} supporters did not vote for any other candidate`}</Typography>
             <ResultsBarChart data={data} xKey='score' percentage={false}/>
         </>}
         {(race.voting_method === 'IRV' || race.voting_method === 'STV') && <>

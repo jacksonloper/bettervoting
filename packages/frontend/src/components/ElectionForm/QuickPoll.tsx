@@ -25,10 +25,13 @@ const QuickPoll = () => {
     const {t} = useSubstitutedTranslation('poll');
 
     // TODO: we may edit the db entries in the future so that these align
+    // NOTE: this is redundant with methodValueToTextKey in util
     const dbKeys = {
         'star': 'STAR',
         'approval': 'Approval',
         'ranked_robin': 'RankedRobin',
+        'rcv': 'IRV',
+        'choose_one': 'Plurality',
     }
 
     const existingIds = new Set<string>();
@@ -82,6 +85,7 @@ const QuickPoll = () => {
             public_results: true,
             random_candidate_order: false,
             require_instruction_confirmation: true,
+            draggable_ballot: false,
             term_type: 'poll',
         }
     }
@@ -226,6 +230,8 @@ const QuickPoll = () => {
                     <MenuItem value={'star'}>{t(`methods.star.full_name`)}</MenuItem>
                     <MenuItem value={'approval'}>{t(`methods.approval.full_name`)}</MenuItem>
                     <MenuItem value={'ranked_robin'}>{t(`methods.ranked_robin.full_name`)}</MenuItem>
+                    <MenuItem value={'choose_one'}>{t(`methods.choose_one.full_name`)}</MenuItem>
+                    <MenuItem value={'rcv'}>{t(`methods.rcv.full_name`)}</MenuItem>
                     <MenuItem disabled sx={{maxWidth: '350px', whiteSpace: 'normal'}}>{
                         t(`landing_page.hero.methods.more_methods.${
                             authSession.isLoggedIn()? 'full_editor_description' : 'sign_in_description'

@@ -99,25 +99,26 @@ const SendEmailDialog = ({open, onClose, onSubmit, targetedEmail=undefined, elec
         sx={audience != 'single' ? {background: '#0000bb88'} : {}}
     >
         <DialogTitle>Prepare Email Blast</DialogTitle>
-        <DialogContent sx={{overflow: 'hidden'}}>
-            <Box display='flex' flexDirection='row' sx={{overflow: 'hidden'}}>
+        <DialogContent>
+            <Box display='flex' flexDirection='row'>
                 <Box display='flex' flexDirection='row-reverse' sx={{
                     width: templateChosen ? 0 : sizes,
                     height: 'auto',
-                    opacity: templateChosen ? 0 : 1, 
+                    opacity: templateChosen ? 0 : 1,
                     overflow: 'hidden',
                     transition: 'width .4s, opacity .7s',
                 }}>
                     {/*minWidth keeps text from wrapping during the transition*/}
                     <Box display='flex' gap={1} flexDirection={'column'} sx={{width: '100%', minWidth: sizes}}>
-                        <Typography sx={{mb: 1}}>Which template would you like to start with?</Typography>
-                        {['invite', /*'receipt', */'blank'].map((v, i) => 
-                            <RowButtonWithArrow
-                                key={i}
-                                title={t(`voters.email_form.${v}`, {voter_id: targetedEmail})}
-                                onClick={() => setTemplate(v)}
-                                ariaLabel='Email Template'
-                            />
+                        <Typography sx={{mb: 1, marginLeft: '15px'}}>Which template would you like to start with?</Typography>
+                        {['invite', /*'receipt', */'blank'].map((v, i) =>
+                            <Box key={i} sx={{ml: '15px'}}>
+                                <RowButtonWithArrow
+                                    title={t(`voters.email_form.${v}`, {voter_id: targetedEmail})}
+                                    onClick={() => setTemplate(v)}
+                                    ariaLabel='Email Template'
+                                />
+                            </Box>
                         )}
                     </Box>
                 </Box>
@@ -153,7 +154,14 @@ const SendEmailDialog = ({open, onClose, onSubmit, targetedEmail=undefined, elec
                             setter={setAudience}
                         />
                         <LabelledTextField label='Email Subject' fullWidth value={emailSubject} setter={setEmailSubject}/>
-                        <LabelledTextField label='Email Body' fullWidth rows={10} value={emailBody} setter={setEmailBody}/>
+                        <LabelledTextField
+                            label='Email Body'
+                            fullWidth
+                            rows={10}
+                            value={emailBody}
+                            setter={setEmailBody}
+                            helperText="Supports **bold**, [link text](url), __VOTE_BUTTON__, and __ELECTION_HOME_BUTTON__"
+                        />
                     </Box>
                 </Box>
             </Box>

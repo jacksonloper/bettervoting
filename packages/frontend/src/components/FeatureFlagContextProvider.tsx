@@ -50,6 +50,7 @@ const flagDefinitions = {
 	PRECINCTS: 'Allows elections to groups voters by precinct',
 	THEMES: "Let's user pick a theme for their UI (temporarily via the top-right account button)",
 	ALL_STATS: 'Show all work in progress widgets under "Stats for Nerds"',
+	PR_CONTROLS: 'Adds extra controls for PR results',
 	FORCE_DISABLE_RANDOM_CANDIDATES:
 		'(testing only) Disables random candidate order on ballots',
 	FORCE_DISABLE_INSTRUCTION_CONFIRMATION:

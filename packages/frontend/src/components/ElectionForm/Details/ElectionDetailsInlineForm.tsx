@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Grid from "@mui/material/Grid";
 import { Box, IconButton, Paper, Typography } from "@mui/material"
 import ElectionStateChip from './ElectionStateChip';
@@ -8,6 +8,7 @@ import { useSubstitutedTranslation } from '../../util';
 import EditIcon from '@mui/icons-material/Edit';
 import ElectionDetailsForm from './ElectionDetailsForm';
 import { useEditElectionDetails } from './useEditElectionDetails';
+import { FormattedDescription } from '../../FormattedDescription';
 
 export default function ElectionDetailsInlineForm() {
     const { editedElection, applyUpdate, onSave, errors, setErrors } = useEditElectionDetails()
@@ -18,6 +19,11 @@ export default function ElectionDetailsInlineForm() {
     const [open, setOpen] = useState(election.title.length==0);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+
+    // Reset open state when election changes
+    useEffect(() => {
+        setOpen(election.title.length==0);
+    }, [election.election_id]);
 
     const handleSave = async () => {
         const success = await onSave()
@@ -53,9 +59,16 @@ export default function ElectionDetailsInlineForm() {
                             </Typography>
                         </Grid>
                         <Grid item xs={12}>
-                            <Typography gutterBottom variant="h6" component="h5" sx={{opacity: election.description == '' ? .5 : 1}}>
-                                {election.description == '' ? t('admin_home.description_unset') : election.description}
-                            </Typography>
+                            {election.description == '' ? (
+                                <Typography gutterBottom component="p" sx={{opacity: .5}}>
+                                    {t('admin_home.description_unset')}
+                                </Typography>
+                            ) : (
+                                <FormattedDescription
+                                    description={election.description}
+                                    gutterBottom
+                                />
+                            )}
                         </Grid>
                         <Grid item xs={12}>
                             <Typography sx={{mt: 2, opacity: (election.start_time || election.end_time)? 1 : .5}} component="p" variant='subtitle2'>{timeRange}</Typography>

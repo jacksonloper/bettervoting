@@ -156,7 +156,7 @@ This will allow you to:
 
 If you do run into issues, first perform a web search for your issue and see if it has already been answered. If you cannot find a solution, please search our [GitHub issues](https://github.com/Equal-Vote/bettervoting/issues) page for a solution and report the issue if it has not yet been reported.
 
-And as always, feel free to ask questions on the [#_software-dev slack channel](https://starvoting.slack.com/archives/C01EBAT283H).
+And as always, feel free to ask questions on the [#_bettervoting slack channel](https://starvoting.slack.com/archives/C01EBAT283H).
 
 > If you haven't joined the STAR Voting slack yet, you can [sign up with STAR Voting](https://starvoting.org/join) to received an invite link
 
@@ -202,7 +202,7 @@ copy packages/backend/sample.env packages/backend/.env
 
 #### Step 2: Setup Backend Connection
 
-Now your packages/frontend/.env file should 2 sections for connecting to the backend. One for a production backend, and one for local
+Now your packages/frontend/.env file should include 2 sections for connecting to the backend. One for a production backend, and one for local
 
 If you're running your own backend, then leave the default sample.env (which has the production backend commented out).
 
@@ -237,7 +237,7 @@ There will probably be lots of red in the terminal, but your frontend should be 
 
 Note: Most of you will need to setup the databases, but if you have production credentials in your .env then you can skip this step. Email elections@star.vote if you need access to the production databases.
 
-The database(s) inclue a postgresql database for storing all the election data, and a keycloak service which stores and manages all the user data. Both are defined within docker-compose, and can be started with some docker commands. 
+The database(s) include a postgresql database for storing all the election data, and a keycloak service which stores and manages all the user data. Both are defined within docker-compose, and can be started with some docker commands. 
 
 Luckily, all the commands here should only need to be ran once. After that the services should be available for all future dev sessions.  
 
@@ -315,6 +315,9 @@ You should be able to create elections using the quick poll.
 
 Congratulations, you got the whole service running locally!! 🥳🥳
 
+## Using Feature Flags (Optional)
+
+BetterVoting uses feature flags to test and gradually roll out new features. If you're working on a feature that's behind a feature flag, or want to test unreleased features, see [How to enable beta features](../../help/how_to_enable_beta_features.md).
 
 ## Making changes locally
 
@@ -554,7 +557,7 @@ For now we've been fixing the issue by clearing the dev database periodically. P
 
 ## Getting Help
 
-If you are stuck and need help, feel free to ask questions on the [#_software-dev slack channel](https://starvoting.slack.com/archives/C01EBAT283H).
+If you are stuck and need help, feel free to ask questions on the [#_bettervoting slack channel](https://starvoting.slack.com/archives/C01EBAT283H).
 
 > If you haven't joined the STAR Voting slack yet, you can follow the instructions [here](https://www.starvoting.us/get_involved) to get added
 
