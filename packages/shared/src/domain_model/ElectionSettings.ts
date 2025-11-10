@@ -73,7 +73,7 @@ function authenticationValidation(obj:authentication): string | null {
 function settingsCompatiblityValidation(settings: ElectionSettings, electionState?: ElectionState): string {
     let errorMsg = ''
     if (settings.ballot_updates) {
-        if (settings.public_results && electionState != 'closed') {
+        if (settings.public_results && ['closed', 'archived'].includes(electionState ?? '')) {
             errorMsg += 'Preliminary results are not permitted when ballot updating is enabled.  ';
         }
         if (settings.voter_access == 'open') {

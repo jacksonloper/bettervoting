@@ -35,8 +35,6 @@ export default function ElectionSettings() {
     const [publicResultsDisabled, setPublicResultsDisabled] = useState(election.settings.ballot_updates);
     const [ballotUpdatesDisabledMsg, setBallotUpdatesDisabledMsg] = useState(ballotUpdatesConditionsMet && election.settings.public_results);
 
-    console.log(`prelim: ${election.settings.public_results}`);
-    console.log(`open: ${election.settings.voter_access}`);
     // Sync state when election context changes
     const syncState = () => {
         setEditedElectionSettings(election.settings);
@@ -48,7 +46,7 @@ export default function ElectionSettings() {
     };
     useEffect(() => {
         syncState();
-    }, [election.election_id]);
+    }, [election]);
 
     const applySettingsUpdate = (updateFunc: (settings: IElectionSettings) => void) => {
         const settingsCopy = structuredClone(editedElectionSettings);
@@ -189,7 +187,8 @@ export default function ElectionSettings() {
                                 <CheckboxSetting setting='random_candidate_order' />
                                 { ballotUpdatesConditionsMet && <CheckboxSetting setting='ballot_updates' hidden={!ballotUpdatesConditionsMet}
                                     disabled={election.state !== 'draft' || ballotUpdatesDisabled} checked={ballotUpdates} onChange={onChangeBallotUpdates} helperText={ballotUpdatesDisabledMsg}/>}
-                                <CheckboxSetting setting='public_results' checked={publicResults} onChange={onChangePublicResults} disabled={election.state !== 'draft' || publicResultsDisabled} helperText={publicResultsDisabled}/>
+                                { ['draft', 'finalized', 'open'].includes(election.state) && <CheckboxSetting setting='public_results' checked={publicResults}
+                                    onChange={onChangePublicResults} disabled={election.state !== 'draft' || publicResultsDisabled} helperText={publicResultsDisabled}/>}
                                 <CheckboxSetting setting='require_instruction_confirmation'/>
                                 <CheckboxSetting setting='draggable_ballot'/>
                                 <CheckboxSetting setting='is_public'/>

@@ -345,7 +345,7 @@ const AdminHome = () => {
         <Races />
         <Box sx={{width: '100%'}}>
             {(election.state === 'draft') && <TestBallotSection /> }
-            {(election.state !== 'draft' && election.state !== 'finalized') && <TogglePublicResultsSection/>}
+            {!['draft', 'finalized'].includes(election.state) && !(election.state === 'open' && election.settings.ballot_updates) && <TogglePublicResultsSection/>}
             {flags.isSet('ELECTION_ROLES') && <EditRolesSection />}
             <DuplicateElectionSection/>
             {(election.state === 'open') && !election.start_time && !election.end_time && <CloseElectionSection />}
