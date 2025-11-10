@@ -119,11 +119,21 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
         fileReader.readAsText(e.target.files[0]);
     }
 
-    function removeDuplicates (pendingRolls: RollInput[]): RollInput[] {
-        const rolls = structuredClone(pendingRolls)
-        rolls[0] = pendingRolls[1]
-        return rolls
+    function removeDuplicates(pendingRolls: RollInput[]): RollInput[] {
+        const seen = new Set<string>();
+        const uniqueRolls: RollInput[] = [];
+
+        for (const roll of pendingRolls) {
+            const email = (roll.email || "").trim().toLowerCase();
+            if (!seen.has(email)) {
+                seen.add(email);
+                uniqueRolls.push(roll);
+            }
+        }
+
+        return uniqueRolls;
     }
+
 
     return (
         <form onSubmit={onSubmit}>
