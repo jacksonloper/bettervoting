@@ -5,7 +5,7 @@ on:
   # To change the schedule, modify the cron expression below
   # Examples: '0 */6 * * *' (every 6 hours), '0 9 * * 1' (Mondays only)
   schedule:
-    - cron: '0 0 1 1 *'
+    - cron: '0 9 * * *'
 
   # Manual triggering via Actions tab
   # IMPORTANT: Manual triggers use the input values below (or defaults if not changed)
