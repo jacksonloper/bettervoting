@@ -112,11 +112,19 @@ class StaleIssueManager {
 
 Hi ${assigneeLogins}! 
 
-This issue has been assigned for ${this.config.warningWeeks} weeks with no recent activity. 
+This issue hasn't had activity in the past ${this.config.warningWeeks} weeks. 
 
-**This task will auto-unassign in 1 week** unless there's activity (comments, commits, or other updates).
+Please add a comment using the below template (even if you have a pull request).
 
-If you're still working on this issue, please leave a comment to keep it assigned to you.
+1. Progress: "What is the current status of your project? What have you completed and what is left to do?"
+2. Blockers: "Difficulties or errors encountered."
+3. Availability: "How much time will you have in the coming weeks to work on this issue?"
+4. ETA: "When do you expect this issue to be completed?"
+5. Pictures (optional): "Add any pictures of the visual changes made to the site so far."
+
+If you need help, please request for assistance on the #bettervoting slack channel. 
+
+**This task will auto-unassign in ${this.config.unassignWeeks-this.config.warningWeeks} week** unless a comment is added.
 
 <!-- AUTO-UNASSIGN-WARNING -->
     `.trim();
