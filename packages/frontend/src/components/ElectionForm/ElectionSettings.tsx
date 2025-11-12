@@ -148,6 +148,7 @@ export default function ElectionSettings() {
                                         value={editedElectionSettings.contact_email ? editedElectionSettings.contact_email : ''}
                                         onChange={(e) => applySettingsUpdate((settings) => { settings.contact_email = e.target.value })}
                                         variant='standard'
+                                        fullWidth
                                         sx={{ mt: -1, display: 'block'}}
                                     />}
                                     label={t(`election_settings.contact_email`)}
