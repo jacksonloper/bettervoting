@@ -111,13 +111,6 @@ electionsRouter.get('/Election/:_id/exists', asyncHandler(electionExistsByID))
  *     responses:
  *       200:
  *         description: If claim was successful
- *         content: 
- *          application/json:
- *           schema:
- *            type: object
- *            properties:
- *             success:
- *              type: boolean
  * 
  *       404:
  *         description: Election not found

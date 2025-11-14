@@ -17,8 +17,7 @@ const claimElection = async (req: IElectionRequest, res: Response, next: NextFun
 
     // check for no-op
     if(req.election.owner_id == req.user.sub){
-        res.json({ success: true })
-        return;
+        return res.json({})
     }
 
     // must be logged in
@@ -31,15 +30,10 @@ const claimElection = async (req: IElectionRequest, res: Response, next: NextFun
         throw new Unauthorized("User does not have permissions: claim_key mismatch");
     }
 
-    var failMsg = "Failed to update Election";
     req.election.owner_id = req.user.sub;
-    const updatedElection = await ElectionsModel.updateElection(req.election, req, `Transferring Ownership`);
-    if (!updatedElection) {
-        Logger.info(req, failMsg);
-        throw new BadRequest(failMsg)
-    }
+    await ElectionsModel.updateElection(req.election, req, `Transferring Ownership`);
 
-    res.json({ success: true })
+    return res.json({})
 }
 
 export {claimElection}

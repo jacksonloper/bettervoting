@@ -111,7 +111,7 @@ export const useFinalizeElection = (election_id: string) => {
 }
 
 export const useClaimElection = (election_id: string) => {
-    return useFetch<{ claim_key: string }, { election: Election }>(`/API/Election/${election_id}/claim`, 'post')
+    return useFetch<{ claim_key: string }, undefined >(`/API/Election/${election_id}/claim`, 'post')
 }
 
 export const useArchiveEleciton = (election_id: string) => {

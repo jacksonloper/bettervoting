@@ -216,9 +216,6 @@ const AdminHome = () => {
         />
     }
 
-    const claimElection = () => {
-    }
-
     const ArchiveElectionSection = () => <Section
         text={t('admin_home.archive')}
         includeDivider={false}
