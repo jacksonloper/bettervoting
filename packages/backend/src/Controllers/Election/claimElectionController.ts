@@ -17,7 +17,8 @@ const claimElection = async (req: IElectionRequest, res: Response, next: NextFun
 
     // check for no-op
     if(req.election.owner_id == req.user.sub){
-        return res.json({})
+        res.send()
+        return;
     }
 
     // must be logged in
@@ -33,7 +34,7 @@ const claimElection = async (req: IElectionRequest, res: Response, next: NextFun
     req.election.owner_id = req.user.sub;
     await ElectionsModel.updateElection(req.election, req, `Transferring Ownership`);
 
-    return res.json({})
+    res.send()
 }
 
 export {claimElection}
