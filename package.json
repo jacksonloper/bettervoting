@@ -33,5 +33,12 @@
   "dependencies": {
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
+  },
+  "optionalDependencies": {
+    "@rspack/binding-linux-x64-gnu": "latest",
+    "@rspack/binding-linux-arm64-gnu": "latest",
+    "@rspack/binding-linux-x64-musl": "latest",
+    "@rspack/binding-darwin-arm64": "latest",
+    "@rspack/binding-darwin-x64": "latest"
   }
 }
