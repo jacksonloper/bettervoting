@@ -201,7 +201,7 @@ const Header = () => {
                             </MenuItem>
                             <MenuItem
                                 component={Link} 
-                                href='docs.bettervoting.com'
+                                href='https://docs.bettervoting.com'
                                 target='_blank'
                             >
                                 {t('nav.help')}
