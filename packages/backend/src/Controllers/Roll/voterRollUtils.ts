@@ -15,7 +15,8 @@ export async function getOrCreateElectionRoll(req: IRequest, election: Election,
     Logger.info(req, `getOrCreateElectionRoll`)
     const ip_hash = hashString(req.ip!)
     // Get data that is used for voter authentication
-    const require_ip_hash = election.settings.voter_authentication.ip_address ? ip_hash : null
+    // NOTE: I'm ensuring that undefined is coaleced into null, that makes it compliant with the type when calling getElectionRoll
+    const require_ip_hash = (election.settings.voter_authentication.ip_address ? ip_hash : null) ?? null;
     const email = election.settings.voter_authentication.email ? req.user?.email : null
     
     // Get voter ID if required and available, otherwise set to null
