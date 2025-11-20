@@ -1040,7 +1040,7 @@ admin_home:
 
   duplicate:
     description: Duplicate
-    subtext: Create copy of this {{election}}
+    subtext: Create a copy of this {{election}}
     button: Duplicate
 
   view_results:
