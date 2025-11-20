@@ -23,7 +23,10 @@ const ElectionsYouManage = () => {
     // Claim and fetch are in the same useEffect so that we can guarantee the correct sequence
     useEffect(() => {
         if(!authSession.isLoggedIn()) return;
-        if(electionToClaim){
+        if(electionToClaim && !claimKey){
+            setElectionToClaim('');
+        }
+        if(electionToClaim && claimKey){
             claim({claim_key: claimKey}).then(res => {
                 if(res){
                     setSnack({
