@@ -47,5 +47,6 @@ export function expectPermission(roles:roles[],permission:permission):any {
 
 // Note: it feels weird to have the same util function on both frontend and backend instead of using shared, but they need to use different libraries
 export function hashString(inputString: string) {
+    if(inputString === undefined) return undefined;
     return createHash('sha256').update(inputString).digest('hex')
 }
