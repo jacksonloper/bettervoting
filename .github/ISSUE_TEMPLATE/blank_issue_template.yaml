@@ -1,0 +1,38 @@
+name: Blank Issue Form
+description: 'BetterVoting issue form'
+labels: ['Role: Missing', 'Complexity: Missing', 'Missing Milestone']
+
+# TODO: automatically put this in the new issue approval lane
+
+body:
+  - type: input
+    id: overview
+    attributes:
+      label: Overview
+      description: Clearly state the purpose of this issue in 2 sentences or less (ex. We need to do X because of Y)
+    validations:
+      required: true
+  - type: textarea
+    id: action-items
+    attributes:
+      label: Action Items
+      description: "List the the steps to be completed. Note: If the steps can be divided into tasks for more than one person, we recommend dividing it up into separate issues"
+    validations:
+      required: true
+  - type: textarea
+    id: resources-instructions
+    attributes:
+      label: "Resources/Instructions"
+      description: "Provide links to resources or instructions that may help with this issue. This can include files to be worked on, external sites with solutions, documentation, etc."
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: 'make sure to add a role and complexity after adding'
+  - type: checkboxes
+    attributes:
+      label: Role Checkboxes
+      options:
+        - label: backend
+        - label: frontend
+        - label: devops
