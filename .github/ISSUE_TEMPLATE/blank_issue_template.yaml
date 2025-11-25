@@ -30,6 +30,6 @@ body:
     attributes:
       label: "I have set role label(s) below (others can be left missing)"
       options:
-        - label: "Yes"
+        - label: Yes
     validations:
       required: true
