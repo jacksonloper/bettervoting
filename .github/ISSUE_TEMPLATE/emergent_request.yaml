@@ -1,6 +1,7 @@
 name: Emergent Request
 description: When you discover something in your issue that is out of scope and it needs a new issue or discussion
 labels: ['Role: Missing', 'Complexity: Missing', 'Missing Milestone', 'ER']
+projects: ['Equal-Vote/3']
 
 body:
   - type: textarea

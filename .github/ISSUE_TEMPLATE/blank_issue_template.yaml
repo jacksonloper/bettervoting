@@ -1,6 +1,7 @@
 name: Blank Issue Form
 description: 'BetterVoting issue form'
 labels: ['Role: Missing', 'Complexity: Missing', 'Missing Milestone']
+projects: ['Equal-Vote/3']
 
 body:
   - type: input
