@@ -5,6 +5,9 @@ nav_order: 3
 has_children: true
 ---
 
+<img width="676" height="238" alt="image" src="https://github.com/user-attachments/assets/9296f6f9-094e-450b-aa93-7e5a07ad47f3" />
+
+
 # BetterVoting contribution guide
 
 We're so excited you're interested in contributing! Here's how to get plugged in
