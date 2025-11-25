@@ -25,7 +25,7 @@ body:
     validations:
       required: true
   - type: checkboxes
-    id: confirm label
+    id: confirm-label
     attributes:
       label: I have set role label(s) below (other's can be left missing)
       options:
