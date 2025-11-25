@@ -2,8 +2,6 @@ name: Blank Issue Form
 description: 'BetterVoting issue form'
 labels: ['Role: Missing', 'Complexity: Missing', 'Missing Milestone']
 
-# TODO: automatically put this in the new issue approval lane
-
 body:
   - type: input
     id: overview
@@ -26,13 +24,10 @@ body:
       description: "Provide links to resources or instructions that may help with this issue. This can include files to be worked on, external sites with solutions, documentation, etc."
     validations:
       required: true
-  - type: markdown
-    attributes:
-      value: 'make sure to add a role and complexity after adding'
   - type: checkboxes
     attributes:
-      label: Role Checkboxes
+      label: I have set role label(s) below
       options:
-        - label: backend
-        - label: frontend
-        - label: devops
+        - label: Yes
+    validations:
+      required: true
