@@ -113,7 +113,7 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
 
     const handleLoadCsv = (e) => {
         e.preventDefault()
-        fileReader.onload = function (event) {
+        fileReader.onload = async function (event) {
             let text = event.target.result;
             if (typeof text !== "string") {
                 alert('Invalid data type')
@@ -136,7 +136,25 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                 return obj;
             });
             setPendingRolls(rolls);
-            setShowDuplicatePopup(true);        };
+
+            const dupesExist = duplicatesExist(rolls)
+
+            if (!dupesExist) {
+                submitRolls(rolls)
+                return;
+            }
+
+
+
+            const dialogTitle = 'You entered duplicate emails, which is not supported. Would you like us to remove duplicates?'
+            const confirmed = await confirm({ title: dialogTitle, message: '', submit: 'Yes', cancel: 'No' });
+            if (confirmed) {
+                const newRolls = removeDuplicates(rolls)
+                submitRolls(newRolls);
+            }
+
+
+        };
         fileReader.readAsText(e.target.files[0]);
     }
 
