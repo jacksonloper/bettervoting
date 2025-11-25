@@ -12,6 +12,8 @@ import useSnackbar from "../../SnackbarContext";
 import useFeatureFlags from "../../FeatureFlagContextProvider";
 import { sharedConfig } from '@equal-vote/star-vote-shared/config';
 import { PrimaryButton, SecondaryButton } from "~/components/styles";
+import useConfirm from '../../ConfirmationDialogProvider';
+
 
 const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
     const { setSnack } = useSnackbar()
@@ -26,6 +28,7 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
     const [enablePrecinct, setEnablePrecinct] = useState(false)
     const inputRef = useRef(null)
     const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
+    const confirm = useConfirm();
     type RollInput = {
         voter_id?: string;
         email?: string;
@@ -72,19 +75,37 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                 if (enableVoterID && !emailListOnly){
                     roll.voter_id = csvSplit[count]
                     count += 1
-                }   
+                }
                 if (enableEmail){
                     roll.email = csvSplit[count]
                     count += 1
-                }           
+                }
                 if (enablePrecinct){
                     roll.precinct = csvSplit[count]
                     count += 1
-                }       
+                }
                 rolls.push(roll)
             })
             setPendingRolls(rolls);
-            setShowDuplicatePopup(true);
+            //setShowDuplicatePopup(true);
+
+
+            const dupesExist = duplicatesExist(rolls)
+            if (!dupesExist) {
+                submitRolls(rolls)
+                return;
+            }
+
+
+
+            const dialogTitle = 'You entered duplicate emails, which is not supported. Would you like us to remove duplicates?'
+            const confirmed = await confirm({ title: dialogTitle, message: '', submit: 'Yes', cancel: 'No' });
+            if (confirmed) {
+                const newRolls = removeDuplicates(rolls)
+                submitRolls(newRolls);
+            }
+
+
         } catch (error) {
             console.error(error)
         }
@@ -119,11 +140,12 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
         fileReader.readAsText(e.target.files[0]);
     }
 
-    function removeDuplicates(pendingRolls: RollInput[]): RollInput[] {
+
+    function removeDuplicates(checkRolls: RollInput[]): RollInput[] {
         const seen = new Set<string>();
         const uniqueRolls: RollInput[] = [];
 
-        for (const roll of pendingRolls) {
+        for (const roll of checkRolls) {
             const email = (roll.email || "").trim().toLowerCase();
             if (!seen.has(email)) {
                 seen.add(email);
@@ -132,6 +154,19 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
         }
 
         return uniqueRolls;
+    }
+
+    function duplicatesExist(pendingRolls: RollInput[]): boolean {
+        const seen = new Set<string>();
+        for (const roll of pendingRolls) {
+            const email = (roll.email || "").trim().toLowerCase();
+            if (seen.has(email)) return true;
+            if (!seen.has(email)) {
+                seen.add(email);
+            }
+        }
+
+        return false;
     }
 
 
