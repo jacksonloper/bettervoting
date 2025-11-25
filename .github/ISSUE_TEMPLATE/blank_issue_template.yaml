@@ -28,8 +28,8 @@ body:
   - type: checkboxes
     id: confirm-label
     attributes:
-      label: "I have set role label(s) below (others can be left missing)"
+      label: I have set role label(s) below (others can be left missing) 
       options:
-        - label: Yes
+        - label: "Yes" # These quotes are needed for some reason
     validations:
       required: true
