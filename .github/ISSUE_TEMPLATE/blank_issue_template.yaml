@@ -1,6 +1,6 @@
 name: Blank Issue Form
 description: 'BetterVoting issue form'
-labels: ['Role: Missing', 'Complexity: Missing', 'Missing Milestone']
+labels: ['Role: Missing', 'Complexity: Missing']
 projects: ['Equal-Vote/3']
 
 body:
@@ -28,8 +28,7 @@ body:
   - type: checkboxes
     id: confirm-label
     attributes:
-      label: I have set role label(s) below (others can be left missing) 
+      label: I have set labels for the following [https://github.com/hackforla/website/wiki/How-to-read-and-interpret-labels](more labels info)
       options:
-        - label: "Yes" # These quotes are needed for some reason
-    validations:
-      required: true
+        - label: "Role" # These quotes are needed for some reason
+        - label: "Complexity" # These quotes are needed for some reason
