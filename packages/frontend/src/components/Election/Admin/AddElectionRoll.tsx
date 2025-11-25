@@ -27,7 +27,6 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
     const [enableEmail, setEnableEmail] = useState(emailListOnly)
     const [enablePrecinct, setEnablePrecinct] = useState(false)
     const inputRef = useRef(null)
-    const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
     const confirm = useConfirm();
     type RollInput = {
         voter_id?: string;
@@ -87,8 +86,6 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                 rolls.push(roll)
             })
             setPendingRolls(rolls);
-            //setShowDuplicatePopup(true);
-
 
             const dupesExist = duplicatesExist(rolls)
             if (!dupesExist) {
@@ -329,53 +326,6 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                     </Grid>
                 </Grid>
             </Container >
-            {showDuplicatePopup && (
-                <div
-                    style={{
-                        position: "fixed",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        backgroundColor: "rgba(0,0,0,0.5)",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        zIndex: 1000,
-                    }}
-                >
-                    <div
-                        style={{
-                            background: "white",
-                            padding: "24px 36px",
-                            borderRadius: "8px",
-                            textAlign: "center",
-                        }}
-                    >
-                        <p>Do you want to remove duplicate emails?</p>
-                        <div style={{ marginTop: 16 }}>
-                            <button
-                                onClick={() => {
-                                    setShowDuplicatePopup(false);
-                                    const rolls = removeDuplicates(pendingRolls)
-                                    submitRolls(rolls);
-                                }}
-                                style={{ marginRight: 8 }}
-                            >
-                                Yes
-                            </button>
-                            <button
-                                onClick={() => {
-                                    setShowDuplicatePopup(false);
-                                    submitRolls(pendingRolls);
-                                }}
-                            >
-                                No
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
         </form >
     )
