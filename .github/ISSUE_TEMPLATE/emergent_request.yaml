@@ -10,11 +10,11 @@ body:
       description: Describe the problem you encountered
     validations:
       required: true
-  - type: input
+  - type: textarea # I'm using a text area since auto complete doesn't work on input
     id: where
     attributes:
       label: Link to issue you discovered this emergent requirement in
-      placeholder: https://github.com/Equal-Vote/bettervoting/issues/1103
+      placeholder: '#811'
   - type: input
     id: date
     attributes:
@@ -27,7 +27,7 @@ body:
     attributes:
       label: Describe any temporary measures that needed to be taken
       value: "None"
-  - type: input
+  - type: textarea # I'm using a text area since auto complete doesn't work on input
     id: who
     attributes:
       label: Who was involved?
