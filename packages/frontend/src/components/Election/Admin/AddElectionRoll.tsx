@@ -34,8 +34,6 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
         precinct?: string;
         state?: string;
     };
-    const [pendingRolls, setPendingRolls] = useState<RollInput[]>([]);
-
 
     const submitRolls = async (rolls) => {
 
@@ -85,7 +83,6 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                 }
                 rolls.push(roll)
             })
-            setPendingRolls(rolls);
 
             const dupesExist = duplicatesExist(rolls)
             if (!dupesExist) {
@@ -132,7 +129,6 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                 }, { state: 'approved' });
                 return obj;
             });
-            setPendingRolls(rolls);
 
             const dupesExist = duplicatesExist(rolls)
 
