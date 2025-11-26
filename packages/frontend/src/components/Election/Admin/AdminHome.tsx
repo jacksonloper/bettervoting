@@ -1,8 +1,8 @@
 import Grid from "@mui/material/Grid";
 import { Box, Button, Divider } from "@mui/material";
-import { Link, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import { PrimaryButton } from "../../styles";
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ShareButton from "../ShareButton";
 import { useArchiveEleciton, useSetOpenState, useFinalizeElection, usePostElection, useSetPublicResults } from "../../../hooks/useAPI";
 import { useSubstitutedTranslation } from '../../util';
