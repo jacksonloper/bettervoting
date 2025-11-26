@@ -175,7 +175,7 @@ const AdminHome = () => {
                 type='button'
                 role='button'
                 fullWidth
-                href={`/${election.election_id}`}
+                component={Link} to={`/${election.election_id}`}
             >
                 {t('admin_home.test_ballot.button')}
             </PrimaryButton>
