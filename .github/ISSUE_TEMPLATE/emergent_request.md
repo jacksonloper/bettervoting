@@ -5,7 +5,7 @@
 name: Emergent Request
 about: When you discover something in your issue that is out of scope and it needs a new issue or discussion
 title: 'ER: [replace with info ] '
-labels: 'Complexity: Missing, Role: missing'
+labels: 'Complexity: Missing, Role: Missing'
 assignees: '' 
 projects: 'Equal-Vote/3'
 ---
