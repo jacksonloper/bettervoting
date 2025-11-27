@@ -12,6 +12,8 @@ import useSnackbar from "../../SnackbarContext";
 import useFeatureFlags from "../../FeatureFlagContextProvider";
 import { sharedConfig } from '@equal-vote/star-vote-shared/config';
 import { PrimaryButton, SecondaryButton } from "~/components/styles";
+import useConfirm from '../../ConfirmationDialogProvider';
+
 
 const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
     const { setSnack } = useSnackbar()
@@ -25,6 +27,13 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
     const [enableEmail, setEnableEmail] = useState(emailListOnly)
     const [enablePrecinct, setEnablePrecinct] = useState(false)
     const inputRef = useRef(null)
+    const confirm = useConfirm();
+    type RollInput = {
+        voter_id?: string;
+        email?: string;
+        precinct?: string;
+        state?: string;
+    };
 
     const submitRolls = async (rolls) => {
 
@@ -63,25 +72,42 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                 if (enableVoterID && !emailListOnly){
                     roll.voter_id = csvSplit[count]
                     count += 1
-                }   
+                }
                 if (enableEmail){
                     roll.email = csvSplit[count]
                     count += 1
-                }           
+                }
                 if (enablePrecinct){
                     roll.precinct = csvSplit[count]
                     count += 1
-                }       
+                }
                 rolls.push(roll)
             })
-            submitRolls(rolls)
+
+            const dupesExist = duplicatesExist(rolls)
+            if (!dupesExist) {
+                submitRolls(rolls)
+                return;
+            }
+
+
+
+            const dialogTitle = 'You entered duplicate emails, which is not supported. Would you like us to remove duplicates?'
+            const confirmed = await confirm({ title: dialogTitle, message: '', submit: 'Yes', cancel: 'No' });
+            if (confirmed) {
+                const newRolls = removeDuplicates(rolls)
+                submitRolls(newRolls);
+            }
+
+
         } catch (error) {
             console.error(error)
         }
     }
+
     const handleLoadCsv = (e) => {
         e.preventDefault()
-        fileReader.onload = function (event) {
+        fileReader.onload = async function (event) {
             let text = event.target.result;
             if (typeof text !== "string") {
                 alert('Invalid data type')
@@ -106,10 +132,57 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                 // Filter out rolls where all fields are empty
                 return roll.voter_id?.trim() || roll.email?.trim() || roll.precinct?.trim();
             });
-            submitRolls(rolls)
+
+            const dupesExist = duplicatesExist(rolls)
+
+            if (!dupesExist) {
+                submitRolls(rolls)
+                return;
+            }
+
+
+
+            const dialogTitle = 'You entered duplicate emails, which is not supported. Would you like us to remove duplicates?'
+            const confirmed = await confirm({ title: dialogTitle, message: '', submit: 'Yes', cancel: 'No' });
+            if (confirmed) {
+                const newRolls = removeDuplicates(rolls)
+                submitRolls(newRolls);
+            }
+
+
         };
         fileReader.readAsText(e.target.files[0]);
     }
+
+
+    function removeDuplicates(checkRolls: RollInput[]): RollInput[] {
+        const seen = new Set<string>();
+        const uniqueRolls: RollInput[] = [];
+
+        for (const roll of checkRolls) {
+            const email = (roll.email || "").trim().toLowerCase();
+            if (!seen.has(email)) {
+                seen.add(email);
+                uniqueRolls.push(roll);
+            }
+        }
+
+        return uniqueRolls;
+    }
+
+    function duplicatesExist(pendingRolls: RollInput[]): boolean {
+        const seen = new Set<string>();
+        for (const roll of pendingRolls) {
+            const email = (roll.email || "").trim().toLowerCase();
+            if (seen.has(email)) return true;
+            if (!seen.has(email)) {
+                seen.add(email);
+            }
+        }
+
+        return false;
+    }
+
 
     return (
         <form onSubmit={onSubmit}>
@@ -252,6 +325,7 @@ const AddElectionRoll = ({ onClose }: { onClose: () => void }) => {
                     </Grid>
                 </Grid>
             </Container >
+
         </form >
     )
 }
