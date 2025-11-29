@@ -17,6 +17,7 @@ Team members can create issues directly in GitHub using one of our issue templat
 All issues end up in the board, and then progress as follows:
 
  * Discuss in Next Meeting
+ * Ice Box
  * Emergent Requests
  * ERs ready for Issue
  * New Issue Approval
@@ -156,6 +157,12 @@ Most communication should happen async through updates on the issue it's self, b
 
 Before regular meetings, the dev leads will ensure sort the items in the lane so that they're properly prioritized for the meeting. Then the meeting will have a decidated block (30-60 minutes) where we'll address as many issues as possible. Any issues left unaddressed will roll over to the next meeting. 
 
+# Ice Box
+
+When issues are blocked by other issues they should have the "blocked by" relationship set on the issue and moved into the Ice Box.
+
+Once they're unblocked, they can be moved back into the "New Issue Approval" lane. It should always go up for reapproval (even if it's been approved previously) just in case there's been changes to the project priorities since the issue entered the Ice Box.
+
 # Issue Parties
 
 Consistently writing high quality issues is important to ensure the prioritized backlog has sufficient issues.
@@ -170,7 +177,7 @@ These meetings can have several different formats depending on the issues that a
 
 Dev Leads is a team of experienced developers who have a broad understanding of the project. They're in charge of keeping the kanban flowing and ensuring that other developers are unblocked. They will also meet monthly to review our process.
 
-Dev Leads have an "oncall" rotation to ensure everything is reviewed in a timly manner. When oncall dev leads will check the following at least once per day:
+Dev Leads have an "helper rotation" to ensure everything is reviewed in a timly manner. When dev leads have a turn as the helper they will check the following at least once per day:
  * Reviewing and Prioritizing issues
  * Reviewing and Merging Pull Requests
  * Assisting other devs who need help
@@ -181,12 +188,11 @@ NOTE: This is a big list, but it should be managable with our current scale. As 
 
 Other members are also encouraged to participate in reviewing and merging issues, but there will also be a dev lead as back up.
 
-IMPORTANT: Oncall only implies daily check ins. Acknowledging that we're a volunteer team, oncall *DOES NOT* imply constant availability. If urgent issues come up, then dev leads are welcome to assist, but Arend (as staff) will ultimately be accountable to triage those issues. 
+IMPORTANT: This is NOT oncall, and the helper rotation only implies daily check ins. Acknowledging that we're a volunteer team, it *DOES NOT* imply constant availability. If urgent issues come up, then dev leads are welcome to assist, but Arend (as staff) will ultimately be accountable to triage those issues. 
 
-Current Dev Leads: Arend C.
+Current Dev Leads: Arend Castelein, Jon Blauvelt, Jackson Loper
 
 # Future Considerations
- * Icebox: Lane on the kanban board dedicated to issues blocked by other issues
  * QA: After merge, there could be an extra QA step to verify the issue
  * Merge Team: As more devs get onboarded we could have an additional merge team. This team could split off some of the work from dev leads
  * 1 issue per member rule: This could have a couple of benefits, it creates more focus, it minimizes the management overhead for dev leads, and it encourages members to participate in reviewing other issues/PRs while their issue is in review.
