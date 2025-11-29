@@ -23,12 +23,12 @@ body:
     attributes:
       label: "Resources/Instructions"
       description: "Provide links to resources or instructions that may help with this issue. This can include files to be worked on, external sites with solutions, documentation, etc."
-    validations:
-      required: true
   - type: checkboxes
     id: confirm-label
     attributes:
       label: I have set labels for the following [https://github.com/hackforla/website/wiki/How-to-read-and-interpret-labels](more labels info)
       options:
         - label: "Role" # These quotes are needed for some reason
+          required: true
         - label: "Complexity" # These quotes are needed for some reason
+          required: true
