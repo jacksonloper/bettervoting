@@ -67,7 +67,7 @@ Here's some videos to quickly get up to speed on the core skills
 
 ### Additional Reading
 
-We compile our typescript using Vite, you can learn more in the [Vite](https://vitejs.dev/) and [Vite Awesome Repo](https://github.com/vitejs/awesome-vite).
+We compile and bundle our frontend using Rspack, you can learn more in the [Rspack website](https://rspack.rs/) and [Github Repo](https://github.com/web-infra-dev/rspack).
 
 To learn more React, check out the [React documentation](https://reactjs.org/).
 
