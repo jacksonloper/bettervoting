@@ -14,6 +14,8 @@ Team members can create issues directly in GitHub using one of our issue templat
 
 # Board Lanes
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/8QJwyjeS290?si=YzXSTD0LfnnU5nCC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 All issues end up in the board, and then progress as follows:
 
  * Discuss in Next Meeting
@@ -92,9 +94,7 @@ Our current milestones can be viewed at https://github.com/Equal-Vote/bettervoti
 
 Once issue is made, they can be moved to the "New Issue Approval" lane, and a tag for "Ready for Dev Lead" can be added. Dev leads will check for issue quality, then set a milestone and add it to the prioritized backlog.
 
-The prioritized backlog will primarily be sorted by milestone, with the exception of issues with the time sensitive label. Time sensitive gets sorted to the top regardless of the label
-
-If an issue is marked with the "Outside Roadmap" milestone, then the issue is removed from kanban board (by removing the project label). These issues can be added back to the board later as new milestones are added.
+The prioritized backlog will primarily be sorted by milestone, with the exception of issues with the time sensitive label. Time sensitive gets sorted to the top regardless of the label.
 
 # Assigning Issues
 
@@ -175,7 +175,7 @@ These meetings can have several different formats depending on the issues that a
 
 # Dev Leads
 
-Dev Leads is a team of experienced developers who have a broad understanding of the project. They're in charge of keeping the kanban flowing and ensuring that other developers are unblocked. They will also meet monthly to review our process.
+Dev Leads is a team of experienced developers who have a broad understanding of the project. They're in charge of keeping the project board flowing and ensuring that other developers are unblocked. They will also meet monthly to review our process.
 
 Dev Leads have an "helper rotation" to ensure everything is reviewed in a timly manner. When dev leads have a turn as the helper they will check the following at least once per day:
  * Reviewing and Prioritizing issues
