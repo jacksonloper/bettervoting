@@ -14,7 +14,7 @@ Team members can create issues directly in GitHub using one of our issue templat
 
 # Board Lanes
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/8QJwyjeS290?si=YzXSTD0LfnnU5nCC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<a href="https://www.youtube.com/watch?v=8QJwyjeS290"><img width="318" height="214" alt="image" src="https://github.com/user-attachments/assets/584205ee-2451-4cc1-9270-986a9b29571d" /><br/>Click for video</a>
 
 All issues end up in the board, and then progress as follows:
 
