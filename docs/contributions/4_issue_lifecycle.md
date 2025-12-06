@@ -6,13 +6,15 @@ parent: Contribution Guide
 has_children: true
 ---
 
-# Reporting Problems and Feedback
+# Issue Lifecycle
+
+## Reporting Problems and Feedback
 
 Users can quickly report problems using the "Feedback?" button in the bottom right of BetterVoting.com these will be sent to the Dev Leads as a ticket. After review this will be turned into a GitHub issue for further tracking.
 
 Team members can create issues directly in GitHub using one of our issue templates. Templates help standardize our process and ensure that all relevant information is captured in every issue.
 
-# Board Lanes
+## Board Lanes
 
 <a href="https://www.youtube.com/watch?v=8QJwyjeS290"><img width="318" height="214" alt="image" src="https://github.com/user-attachments/assets/584205ee-2451-4cc1-9270-986a9b29571d" /><br/>Click for video</a>
 
@@ -32,7 +34,7 @@ Our current board can be viewed at https://github.com/orgs/Equal-Vote/projects/3
 
 The following sections will detail each of these stages
 
-# Emergent Requests
+## Emergent Requests
 
 When items come up during a meeting or a pull request, then they can initially be created as Emergent Requests. ER give a quick way to file the request or problem, but they won't necessarily be actionable. ERs can be turned into issues later. 
 
@@ -40,7 +42,7 @@ To create an Emergent Request navigate to the [bettervoting](https://github.com/
 
 Dev Leads can add ERs to the "ERs ready for Issue" lane. There it's available for any member to proceed to create an issue from the ER.
 
-# Creating a GitHub Issue
+## Creating a GitHub Issue
 
 GitHub issues are created to document actionable tasks that a developer can take on. 
 
@@ -57,7 +59,7 @@ As you write the issue, make sure it passes the "New Team Member" test. A new te
  * The new person assigned to it can start making progress as soon as they have absorbed the context, in a week or less (preferable 1 work day)
  * Be properly labeled (see next section)
 
-# Issue Labels
+## Issue Labels
 
 We use the following labels
 
@@ -80,7 +82,7 @@ Other Labels
 
 (Heavily inspired by https://github.com/hackforla/website/wiki/How-to-read-and-interpret-labels)
 
-# Milestone
+## Milestone
 
 Milestones will be added when reviewed issues are reviewed by the dev lead the numbers show it's priority order (example "30-Technical Debt")
 
@@ -90,13 +92,13 @@ Milestones can be reordered by the project lead, and the numbering will reflect 
 
 Our current milestones can be viewed at https://github.com/Equal-Vote/bettervoting/milestones (at time of writing these still need to be updated to reflect the new convention)
 
-# Triaging & Priotiziations
+## Triaging & Priotiziations
 
 Once issue is made, they can be moved to the "New Issue Approval" lane, and a tag for "Ready for Dev Lead" can be added. Dev leads will check for issue quality, then set a milestone and add it to the prioritized backlog.
 
 The prioritized backlog will primarily be sorted by milestone, with the exception of issues with the time sensitive label. Time sensitive gets sorted to the top regardless of the label.
 
-# Assigning Issues
+## Assigning Issues
 
 Any member can self-assign issues from the Priorizied Backlog. 
 
@@ -108,7 +110,7 @@ New members should aim to progress as follows with their first issues:
 
 After self assigning the issue can be moved to the "In Progress" lane.
 
-# Check-Ins
+## Check-Ins
 
 Most issues should sized to be solvable within a week (and ideally within a day). When an issue has been assigned for a week, then a bot will automatically add the "Status: To Update !" label and leave a message. The goal here is to not be intrusive, but to quickly locate team members that need help, and provide a platform to communicate their needs and current status. The team member can then add an update, then manually replace the label with "Status: Updated".
 
@@ -139,31 +141,31 @@ Ensuring regular check-ins has a number of benefit for keeping the project susta
  - Hand offs will be easier since all context is in the issue.
  - Helps members judge their availability for future issues.
 
-# Pull Request
+## Pull Request
 
 Once you've opened a pull request (see our [pull request guide](https://docs.bettervoting.com/contributions/developers/2_how_to_open_a_pull_request.html) ), move your issue into the "Questions / In Review" lane.
 
 Members can review any issue with a complexity that they've already resolved.
 
-# Need help?
+## Need help?
 
 If a member is stuck on an issue they can apply the "Status: Help Needed" label, and also move it to the "Questions / In Review" lane in the board. This will alert other team members to come look at your issue to try to unblock them.
 
 💡Idea: In the future there could also be a slack integration that automatically pings the #bettervoting channel with the issue number whenever a "Status: Help Needed" label is added to an issue.
 
-# Discuss in Next Meeting
+## Discuss in Next Meeting
 
 Most communication should happen async through updates on the issue it's self, but if an issue requires further discussion then it can be added to the "Discuss in Next Meeting" lane to be discussed in regular meeting.
 
 Before regular meetings, the dev leads will ensure sort the items in the lane so that they're properly prioritized for the meeting. Then the meeting will have a decidated block (30-60 minutes) where we'll address as many issues as possible. Any issues left unaddressed will roll over to the next meeting. 
 
-# Ice Box
+## Ice Box
 
 When issues are blocked by other issues they should have the "blocked by" relationship set on the issue and moved into the Ice Box.
 
 Once they're unblocked, they can be moved back into the "New Issue Approval" lane. It should always go up for reapproval (even if it's been approved previously) just in case there's been changes to the project priorities since the issue entered the Ice Box.
 
-# Issue Parties
+## Issue Parties
 
 Consistently writing high quality issues is important to ensure the prioritized backlog has sufficient issues.
 
@@ -173,7 +175,7 @@ Issue parties allow the team to build shared ownership of the tasks, and it spre
 
 These meetings can have several different formats depending on the issues that are being made. 
 
-# Dev Leads
+## Dev Leads
 
 Dev Leads is a team of experienced developers who have a broad understanding of the project. They're in charge of keeping the project board flowing and ensuring that other developers are unblocked. They will also meet monthly to review our process.
 
@@ -192,7 +194,7 @@ IMPORTANT: This is NOT oncall, and the helper rotation only implies daily check 
 
 Current Dev Leads: Arend Castelein, Jon Blauvelt, Jackson Loper
 
-# Future Considerations
+## Future Considerations
  * QA: After merge, there could be an extra QA step to verify the issue
  * Merge Team: As more devs get onboarded we could have an additional merge team. This team could split off some of the work from dev leads
  * 1 issue per member rule: This could have a couple of benefits, it creates more focus, it minimizes the management overhead for dev leads, and it encourages members to participate in reviewing other issues/PRs while their issue is in review.
