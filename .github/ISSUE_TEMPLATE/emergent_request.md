@@ -16,13 +16,6 @@ projects: 'Equal-Vote/3'
 ### Issue you discovered this emergent requirement in
 - #
 
-### Date discovered 
-
-
-### Did you have to do something temporarily
-- [ ] YES
-- [ ] NO
-
 ### Who was involved
 @
 
@@ -37,4 +30,4 @@ projects: 'Equal-Vote/3'
 - [ ] Discuss with team
 - [ ] Let a Team Lead know
 
-### Potential solutions [draft]
+(optional: elaborate on action items here)

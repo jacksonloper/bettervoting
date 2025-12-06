@@ -98,9 +98,9 @@ Once issue is made, they can be moved to the "New Issue Approval" lane, and a ta
 
 The prioritized backlog will primarily be sorted by milestone, with the exception of issues with the time sensitive label. Time sensitive gets sorted to the top regardless of the label.
 
-## Assigning Issues
+## Issue Assignment Progression
 
-Any member can self-assign issues from the Priorizied Backlog. 
+Any member can self-assign issues from the Priorizied Backlog. After self assigning the issue can be moved to the "In Progress" lane.
 
 New members should aim to progress as follows with their first issues:
  - 2 good first issues
@@ -108,7 +108,12 @@ New members should aim to progress as follows with their first issues:
  - 1 medium complexity issue
  - 1 large complexity issue
 
-After self assigning the issue can be moved to the "In Progress" lane.
+The reasons for this progression are:
+ - The issues start out as being prescriptive and become less so as you gain more experience by working through increasingly complex issues.
+ - We are trying to teach you the team methodology through the issues themselves.
+ - It ensures you understand what we expect and the quality of contributions.
+ - Eventually team members should primarily be working on large complexity issues, but members may continue
+ - Team members may work on more gfi/small/medium issues as long as you're continuing to learn something new, but please be aware that we have a limited number of these issue types. In general we try to have at least 6 issues of each type available at all times (and 12 for GFI).
 
 ## Check-Ins
 
