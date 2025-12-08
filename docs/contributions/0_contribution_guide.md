@@ -18,7 +18,7 @@ We're so excited you're interested in contributing! Here's how to get plugged in
 <div style="display: grid; column-gap: 10px; row-gap: 20px; grid-template-rows: 1fr 1fr; grid-template-columns: max-content 1fr">
     <div><i>For Developers:</i></div>
     <div>
-        <a href="developers/1_local_setup.html">Create a companion issue</a> walking you through the onboarding!
+        <a href="1_developers.html">Create a companion issue</a> walking you through the onboarding!
     </div>
     <div><i>For DevOps Engineers:</i></div>
     <div>
