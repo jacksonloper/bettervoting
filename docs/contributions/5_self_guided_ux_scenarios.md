@@ -72,9 +72,9 @@ Your town is hosting an election, and your city clerk asks you to create an elec
 
 ### Registered Voters
 
-| Email |
+| Emails |
 |-|
-| your email |
+| *your email* |
 | arendpeter+ux@equal.vote |
 
 ### Final steps

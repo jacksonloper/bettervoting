@@ -32,7 +32,9 @@ Sections
 10 - [Additional reading 2](#section-10)
 11 - [Small Issue](#section-11)
 12 - [Pull Request Reviews - Small](#section-12)
-13 - [Issue Making - Level 1 (GFI & Small)](#section-13)
+13 - [Self-Guided UX Scenarios](#section-13)
+14 - [Proceed to Resolve Other Issues](#section-14)
+
 [FAQ](#section-faq)
 [Resources](#resources)
 
@@ -285,7 +287,7 @@ bettervoting.com/about
 [**⇧** Table of Contents](#table-of=contents)
 
 <a name="section-9"></a>
-#### 9 - REVIEWING PULL REQUEST REVIEWS
+#### 9 - REVIEWING PULL REQUESTS
 Now that you have two merged `good first issue` PRs, you are eligible to review [good first issue PRs, Review Required](https://github.com/Equal-Vote/bettervoting/pulls?q=is%3Apr+is%3Aopen+label%3A%22good+first+issue%22+review%3Arequired+), and in general once you've solved an issue of a certain complexity, you will also be elligible to review PRs with that same complexity.
 
 See [How to review Pull Requests](https://github.com/hackforla/website/wiki/How-to-review-pull-requests) guide will teach you how to review pull requests.
@@ -415,9 +417,35 @@ Please review 2 `small` PRs.  By reviewing 2 small PRs you are repaying the effo
 [**⇧** Table of Contents](#table-of=contents)
 
 <a name="section-13"></a>
-#### 13 - PROCEED TO RESOLVE OTHER ISSUES
+#### 13 - SELF-GUIDED UX SCENARIOS
 
-This is the end of the onboarding guide for now, but your next steps will proceed as follows
+We've documented [a couple of UX scenarios](https://docs.bettervoting.com/contributions/5_self_guided_ux_scenarios.html) that are primarily used for testing the experience with real users. 
+
+There are also several benefits for new members self-guiding through the scenarios:
+ - It helps you get familiar with features on the website.
+ - With a fresh perspective, you'll be more equipped to identify difficult interfaces.
+ - When you do find issues, this is an opportunity for you to practice writing issues in GitHub.
+
+Go ahead and complete the scenarios and when you're finished return here to leave an update 
+
+    ```
+    ### 13 - SELF-GUIDED UX SCENARIOS
+    > Did you create any issues? Link them here
+    - #
+
+    >Anything else you'd like to share from your experience?
+    - [ ] no
+    - [ ] yes (if yes, describe it here)
+
+    Comments: 
+    
+    [return to section 13](#section-13)
+    ```
+
+<a name="section-14"></a>
+#### 14 - PROCEED TO RESOLVE OTHER ISSUES
+
+This is the end of the onboarding guide for now, but your next steps will proceed as follows:
  - Solve a medium issue
  - Review a medium issue
  - Solve a large issue
