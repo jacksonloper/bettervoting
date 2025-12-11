@@ -66,7 +66,7 @@ Your town is hosting an election, and your city clerk asks you to create an elec
 
 | Names |  Campaign Website |
 |-|-|
-| Carlie Conservative | https://www.gop.gov/ |
+| Rebecca Republican | https://www.gop.gov/ |
 | Danny Democrat | https://democrats.org/ |
 | Gary Green | https://katieporter.com/ | 
 
