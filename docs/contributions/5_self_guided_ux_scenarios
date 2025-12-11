@@ -75,7 +75,7 @@ Your town is hosting an election, and your city clerk asks you to create an elec
 | Email |
 |-|
 | your email |
-| arendpeter@equal.vote |
+| arendpeter+ux@equal.vote |
 
 ### Final steps
 
@@ -90,3 +90,9 @@ Your town is hosting an election, and your city clerk asks you to create an elec
 Now you're assuming the role of a voter.
 
 You've just received a ballot in your inbox. Vote in the election (and thank you for being civically engaged!!)
+
+## The End
+
+That's the end of the user scenarios! Be sure to report any feedback or comments from the process.
+
+If you'd like to learn more about what the tool has to offer checkout the docs at docs.bettervoting.com . We're always working on adding more docs, so let us know if we're missing anything.
