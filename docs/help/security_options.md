@@ -7,30 +7,30 @@ parent: BetterVoting Documentation
 
 # BetterVoting Security Options
 
-Every election design has a tradeoff between accessiblity and security, that's why BetterVoting offers a spectrum of options to fit your needs, whether it's a highly secure election, or a informal poll that's more accessible.
+BetterVoting offers a spectrum options to fit your needs, whether it's a highly secure election, or a highly accessible informal poll.
 
 This article reviews the security options on BetterVoting, and at the end we also answer some common compliance questions.
 
 ## Restricted Elections (those with a voter list)
 
-Restricting an voter list is ideal for high stakes elections where you want to guarantee each voter is validated before voting. BetterVoting supports two types of voter lists
+Restricting to a voter list is ideal for high stakes elections where you want to guarantee each voter is validated before voting. BetterVoting supports Email Lists or ID Lists.
 
-### Email List (recommended)
+### Email List (Recommended)
 
 Using an email list is recommended as the most secure method. The flow will proceed as follows:
 
 1. Add a list of emails to your voter roll.
 1. Finalize the election.
-1. Within BetterVoting.com you can draft a message to your voters announcing the start of the election.
-1. Voters will receive an email with your message, as well as a button with their unique voting link.
-1. After voting, voters receive a receipt in their email confirming that the ballot was counted, and giving them the option to view their ballot.
+1. Draft a message to your voters announcing the start of the election.
+1. BetterVoting will send voters an email with your message, as well as a button with their unique voting link.
+1. After voting voters receive a receipt in their email confirming that the ballot was counted, and giving them the option to view their ballot.
 1. As voters fill out their ballot, you can track which voters have cast their ballot and which ones still need to vote. 
-1. You can send any number of email blasts during the election, and these can be filter to only target voters who still need to vote.
+1. You can send any number of email blasts during the election, and these can be filtered to only target voters who still need to vote.
 1. Once the election is complete you also use the email blast tool to notify voters of the results.
 
-> **What if a voter doesn't receive an email?**: If a user is having trouble receiving their email for any reason, then the election admin also has the ability to obtain the unique voting url and share it with the voter directly. These actions get tracked in the audit log for full transparency in case any of anything need to be verified later.
+> *What if a voter doesn't receive an email?*: If a user is having trouble receiving their email for any reason, then the election admin also has the ability to obtain the unique voting url and share it with the voter directly. These actions get tracked in the audit log for full transparency in case any of anything need to be verified later.
 
-> **Most of my voters have emails, but there's some exceptions. Could I still use this option?**: Yes! As a workaround, you can give them dummy emails using a + in a staff email (so noreply+1@name.org , noreply+2@name.org, etc). Then during the election, you can reveal the voting urls for those emails and then manually distribute them.
+> *Most of my voters have emails, but there's some exceptions. Could I still use this option?*: Yes! As a workaround, you can give them dummy emails using a + in a staff email (so noreply+1@name.org , noreply+2@name.org, etc). That lets you create separate email entries without actually creating multiple emails. Then during the election, you can reveal the voting urls for those voters and then manually distribute them.
 
 ### ID List
 
