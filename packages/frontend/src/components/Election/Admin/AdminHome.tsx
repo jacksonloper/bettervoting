@@ -53,8 +53,8 @@ const AdminHome = () => {
 
     const isLoggedIn = authSession.isLoggedIn()
     if (!isLoggedIn) return <Box width='100%'>
-        <Typography align='center' variant="body1" sx={{ color: 'error.main', pl: 2 }}>
-            {t('admin_home.permissions_error')}
+        <Typography align='center' variant="h5" sx={{ color: 'error.main', pl: 2 }}>
+            {t('admin_home.not_signed_in_error')}
         </Typography>
     </Box>
 
