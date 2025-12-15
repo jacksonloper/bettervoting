@@ -10,9 +10,11 @@ export const ID_LENGTHS = {
 // Prefix for different ID types
 export const ID_PREFIXES = {
   BALLOT: 'b',
-  VOTER: 'v',
   CANDIDATE: 'c',
   RACE: 'r',
+  VOTER: 'v',
+  VOTER_DISCORD: 'vd',
+  VOTER_SLACK: 'vs',
 } as const;
 
 
