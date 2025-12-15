@@ -9,6 +9,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ElectionDetailsForm from './ElectionDetailsForm';
 import { useEditElectionDetails } from './useEditElectionDetails';
 import { FormattedDescription } from '../../FormattedDescription';
+import { Election } from '@equal-vote/star-vote-shared/domain_model/Election';
 
 export default function ElectionDetailsInlineForm() {
     const { editedElection, applyUpdate, onSave, errors, setErrors } = useEditElectionDetails()
@@ -88,7 +89,7 @@ export default function ElectionDetailsInlineForm() {
                 </Grid>}
             {open && <>
                 <ElectionDetailsForm
-                    editedElection={editedElection}
+                    editedElection={editedElection as Election}
                     applyUpdate={applyUpdate}
                     errors={errors}
                     setErrors={setErrors}

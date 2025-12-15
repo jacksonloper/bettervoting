@@ -9,6 +9,7 @@ import DraftWarning from '../DraftWarning';
 import ShareButton from '../ShareButton';
 import { BallotDataExport } from './BallotDataExport';
 import SupportBlurb from '../SupportBlurb';
+import { Election } from '@equal-vote/star-vote-shared/domain_model/Election';
 
 const ViewElectionResults = () => {
     const { election } = useElection();
@@ -91,9 +92,7 @@ const ViewElectionResults = () => {
                     }}
                   >
 
-                    <BallotDataExport election={election} />
-
-
+                    <BallotDataExport election={election as Election}/>
                   </Box>
                 )}
 
