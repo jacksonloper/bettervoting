@@ -6,6 +6,7 @@ import useElection from "../../ElectionContextProvider";
 import useFeatureFlags from "../../FeatureFlagContextProvider";
 import DraftWarning from "../DraftWarning";
 import { BallotDataExport } from "../Results/BallotDataExport";
+import { Election } from "@equal-vote/star-vote-shared/domain_model/Election";
 
 const ViewBallots = () => {
     // some ballots will have different subsets of the races, but we need the full list anyway
@@ -74,7 +75,7 @@ const ViewBallots = () => {
                         </Table>
                     </TableContainer>
 
-                    <BallotDataExport election={election}/>
+                    <BallotDataExport election={election as Election}/>
                 </>
             }
         </Container>
