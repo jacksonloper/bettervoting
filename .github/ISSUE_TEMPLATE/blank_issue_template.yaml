@@ -26,7 +26,7 @@ body:
   - type: checkboxes
     id: confirm-label
     attributes:
-      label: I have set labels for the following [https://github.com/hackforla/website/wiki/How-to-read-and-interpret-labels](more labels info)
+      label: I have set labels for the following [more labels info](https://docs.bettervoting.com/contributions/4_issue_lifecycle.html#issue-labels)
       options:
         - label: "Role" # These quotes are needed for some reason
           required: true
