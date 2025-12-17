@@ -25,7 +25,6 @@ type SectionProps = {
     includeDivider?: boolean
 }
 
-//TODO: Check for logged in here
 const AdminHome = () => {
     const authSession = useAuthSession()
     const { election, refreshElection: fetchElection, permissions } = useElection()
@@ -51,10 +50,9 @@ const AdminHome = () => {
         return (permissions && permissions.includes(requiredPermission))
     }
 
-    const isLoggedIn = authSession.isLoggedIn()
-    if (!isLoggedIn) return <Box width='100%'>
+    if (!hasPermission('canEditElectionState')) return <Box width='100%'>
         <Typography align='center' variant="h5" sx={{ color: 'error.main', pl: 2 }}>
-            {t('admin_home.not_signed_in_error')}
+            {t('admin_home.admin_access_denied')}
         </Typography>
     </Box>
 

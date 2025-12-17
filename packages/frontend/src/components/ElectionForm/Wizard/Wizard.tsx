@@ -3,12 +3,12 @@ import { useNavigate } from "react-router";
 import { PrimaryButton } from '../../styles.js';
 import { Box, Breakpoint, Paper, Typography, useMediaQuery } from '@mui/material';
 import { usePostElection } from '~/hooks/useAPI';
-import { useCookie } from '~/hooks/useCookie';
+import { setCookie, useCookie } from '~/hooks/useCookie';
 import { NewElection } from '@equal-vote/star-vote-shared/domain_model/Election';
 import useSnackbar from '../../SnackbarContext.js';
 import { makeUniqueIDSync, ID_PREFIXES, ID_LENGTHS } from '@equal-vote/star-vote-shared/utils/makeID';
 
-import { scrollToElement, StringObject, TransitionBox, useSubstitutedTranslation } from '../../util.js';
+import { hashString, scrollToElement, StringObject, TransitionBox, useSubstitutedTranslation } from '../../util.js';
 import useAuthSession from '../../AuthSessionContextProvider.js';
 import RaceForm from '../Races/RaceForm.js';
 import useConfirm from '../../ConfirmationDialogProvider.js';
@@ -76,14 +76,19 @@ const Wizard = () => {
     const onAddElection = async (election, subPage) => {
         election.owner_id = authSession.isLoggedIn() ? authSession.getIdField('sub') : tempID;
 
+        const claimKey = crypto.randomUUID();
+        election.claim_key_hash = hashString(claimKey);
+
         if(multiRace) election.races = [];
 
         const newElection = await postElection({Election: election})
         if (!newElection) throw Error("Error submitting election");
 
+        // The useCookie pattern won't work since I don't know election_id until now
+        setCookie(`${newElection.election.election_id}_claim_key`, claimKey, null)
+
         navigate(`/${newElection.election.election_id}${subPage}`)
     }
-
 
     const theme = useTheme(); 
 
