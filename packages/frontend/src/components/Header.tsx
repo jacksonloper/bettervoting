@@ -14,26 +14,11 @@ import { ReturnToClassicContext } from './ReturnToClassicDialog';
 import { useCookie } from '~/hooks/useCookie';
 import NavMenu from './NavMenu';
 import { PrimaryButton } from './styles';
-import { useLocation } from 'react-router-dom'
-
-export const createWizardNav = (heading: string, isLandingPage: boolean) => {
-    return isLandingPage ? 
-        {
-            text: heading,
-            onClick: () => scrollToElement(document.querySelector(`.wizard`)),
-        } : {
-            text: heading,
-            href: '/#wizard',
-            target: '_self',
-        }
-};
 
 const Header = () => {
     const flags = useFeatureFlags();
     const themeSelector = useThemeSelector()
     const authSession = useAuthSession()
-    const isLandingPage = useLocation().pathname === '/'
-
     // this is important for setting the default value
     useCookie('temp_id', makeID(ID_PREFIXES.VOTER, ID_LENGTHS.VOTER))
     const {t} = useSubstitutedTranslation();
@@ -82,7 +67,10 @@ const Header = () => {
         {
             text: 'Paper Ballots',
             items: [
-                createWizardNav('E-Voting w/ Paper Receipts', isLandingPage),
+                {
+                    text: 'E-Voting w/ Paper Receipts',
+                    onClick: () => scrollToElement(document.querySelector(`.wizard`)),
+                },
                 {
                     text: 'Print Ballots',
                     href: 'https://docs.google.com/presentation/d/1va-XEsUy0VI0jCTAHrQ_f9HNKex3VK9cm7WfF6jhUYM/edit',
@@ -105,7 +93,10 @@ const Header = () => {
             href: 'https://starvoting.org/case_studies',
             target: '_self',
         },
-        createWizardNav('Create Election', isLandingPage),
+        {
+            text: 'Create Election' ,
+            onClick: () => scrollToElement(document.querySelector(`.wizard`)),
+        },
     ];
 
     const returnToClassicContext = useContext(ReturnToClassicContext);
@@ -139,7 +130,7 @@ const Header = () => {
                                         </AccordionSummary>
                                         <AccordionDetails sx={{p: 0, m: 0, mt: '.5rem', background: '#eeeeee', width: '100%' }}>
                                             {item.items.map((subitem, i) => 
-                                                <MenuItem key={i} component={Link} href={subitem.href} target={subitem.target} onClick={subitem.onClick}>{subitem.text}</MenuItem>
+                                                <MenuItem key={i} component={Link} href={subitem.href} target={subitem.target}>{subitem.text}</MenuItem>
                                             )}
                                         </AccordionDetails>
                                     </Accordion>
@@ -181,7 +172,6 @@ const Header = () => {
                                     component={Link}
                                     href={subitem.href}
                                     target={subitem.target}
-                                    onClick={subitem.onClick}
                                 >
                                     {subitem.text}
                                 </MenuItem>
@@ -197,16 +187,9 @@ const Header = () => {
                             <MenuItem component={Link} href={authSession.accountUrl} target='_blank'>
                                 {t('nav.your_account')}
                             </MenuItem>
-                            {isLandingPage && 
                             <MenuItem component={Link} onClick={() => scrollToElement(document.querySelector(`.wizard`))}>
                                 {t('nav.new_election')}
                             </MenuItem>
-                            }
-                            {!isLandingPage && 
-                            <MenuItem component={Link} href="/#wizard">
-                                {t('nav.new_election')}
-                            </MenuItem>
-                            }
                             <MenuItem component={Link} href='/manage'>
                                 {t('nav.my_elections')}
                             </MenuItem>
