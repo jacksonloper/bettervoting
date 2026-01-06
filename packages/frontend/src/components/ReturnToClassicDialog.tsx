@@ -30,7 +30,7 @@ const ReturnToClassicDialog = () => {
     const returnToClassicContext = useContext(ReturnToClassicContext);
     const {t} = useSubstitutedTranslation('election');
     return <>
-        <Dialog open={returnToClassicContext.open}>
+        <Dialog open={returnToClassicContext.open} onClose={returnToClassicContext.closeDialog}>
             <DialogContent sx={{margin: 4}}>
                 <Stack className="classicPopupInner">
                     <Typography align='center' >{t('return_to_classic.description')}</Typography>
