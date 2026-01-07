@@ -4,7 +4,6 @@ about: Helps new develoeprs get started on the team
 title: 'Onboarding Issue: Developer: [replace brackets with your name]'
 labels: 'Complexity: Prework, Role: Missing'
 assignees: ''
-projects: 'Equal-Vote/3'
 ---
 
 > 💬Triage Note for Dev Leads: Onboarding issues should be triaged differently that other issues. Instead of updating labels and milestones, Dev Leads should follow the steps under GitHub Permissions.
