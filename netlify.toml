@@ -3,8 +3,10 @@
 
 [build]
   # Build from repository root to properly handle npm workspaces and the shared package
-  # Install all workspace dependencies and build the frontend
-  command = "npm install && cd packages/frontend && npm run build"
+  # 1. Install all workspace dependencies
+  # 2. Build the shared package first (compiles TypeScript to dist/)
+  # 3. Build the frontend
+  command = "npm install && cd packages/shared && npm run build && cd ../frontend && npm run build"
   # Directory containing the built files to publish (relative to repository root)
   publish = "packages/frontend/build"
 
