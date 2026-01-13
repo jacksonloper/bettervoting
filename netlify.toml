@@ -14,6 +14,10 @@
   # Point the frontend to the production backend
   REACT_APP_BACKEND_URL = "https://bettervoting.com"
   REACT_APP_KEYCLOAK_URL = "https://keycloak.prod.equal.vote/realms/Prod/protocol/openid-connect"
+  # Frontend feature settings
+  REACT_APP_FEATURED_ELECTIONS = ""
+  REACT_APP_MAX_BALLOT_RANKS = "10"
+  REACT_APP_DEFAULT_BALLOT_RANKS = "6"
 
 # Proxy API requests to the production backend
 [[redirects]]
