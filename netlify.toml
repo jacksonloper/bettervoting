@@ -2,12 +2,11 @@
 # This configuration deploys the frontend and points it to the production backend at https://bettervoting.com
 
 [build]
-  # Base directory for the build
-  base = "packages/frontend"
-  # Install dependencies and build the frontend
-  command = "npm install && npm run build"
-  # Directory containing the built files to publish
-  publish = "build"
+  # Build from repository root to properly handle npm workspaces and the shared package
+  # Install all workspace dependencies and build the frontend
+  command = "npm install && cd packages/frontend && npm run build"
+  # Directory containing the built files to publish (relative to repository root)
+  publish = "packages/frontend/build"
 
 [build.environment]
   # Point the frontend to the production backend
