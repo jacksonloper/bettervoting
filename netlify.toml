@@ -1,33 +1,96 @@
-# Netlify configuration for the BetterVoting frontend
-# This configuration deploys the frontend and points it to the production backend at https://bettervoting.com
+# Netlify deployment configuration for BetterVoting.
+#
+# This config replaces the previous "frontend-only, proxy API to prod" setup
+# with a full-stack Netlify deployment that runs the entire backend on Netlify:
+#   - Express app (packages/backend) runs as a single Netlify Function
+#     at netlify/functions/api.ts, wrapped with serverless-http.
+#   - Static frontend (packages/frontend/build) is served by Netlify's CDN.
+#   - /API/* (and /api/*) requests are proxied to the api function.
+#   - All other routes fall back to index.html (SPA routing).
+#   - Background jobs (email sending, etc.) run in a background function.
+#   - Auth uses Netlify Identity instead of Keycloak.
+#   - Postgres uses Netlify DB (NETLIFY_DATABASE_URL) instead of Azure/Heroku.
+#   - File uploads use Netlify Blobs instead of Azure Blob Storage.
+#
+# See NETLIFY_MIGRATION.md for the full breakdown of what's live vs stubbed.
 
 [build]
-  # Build from repository root to properly handle npm workspaces and the shared package
-  # 1. Install all workspace dependencies
-  # 2. Build the shared package first (compiles TypeScript to dist/)
-  # 3. Build the frontend
-  command = "npm install && cd packages/shared && npm run build && cd ../frontend && REACT_APP_COMMIT_SHA=$COMMIT_REF npm run build"
-  # Directory containing the built files to publish (relative to repository root)
+  base    = "."
+  command = "npm install && npm run build -w @equal-vote/star-vote-shared && npm run build -w @equal-vote/star-vote-frontend && npm run build -w @equal-vote/star-vote-backend && (test -z \"$NETLIFY_DATABASE_URL\" || npm run migrate:latest -w @equal-vote/star-vote-backend)"
   publish = "packages/frontend/build"
 
 [build.environment]
-  # Point the frontend to the production backend
-  REACT_APP_BACKEND_URL = "https://bettervoting.com"
-  REACT_APP_KEYCLOAK_URL = "https://keycloak.prod.equal.vote/realms/Prod/protocol/openid-connect"
-  # Frontend feature settings
-  REACT_APP_FEATURED_ELECTIONS = ""
-  REACT_APP_MAX_BALLOT_RANKS = "10"
+  NODE_VERSION = "20"
+  # Tells the backend to use the Netlify implementations (Identity, Blobs, queue)
+  # instead of the Keycloak / Azure / pg-boss defaults.
+  BACKEND_PLATFORM = "netlify"
+  # Point the frontend at its own origin (rather than the legacy prod backend).
+  REACT_APP_BACKEND_URL          = ""
+  REACT_APP_FEATURED_ELECTIONS   = ""
+  REACT_APP_MAX_BALLOT_RANKS     = "10"
   REACT_APP_DEFAULT_BALLOT_RANKS = "6"
 
-# Proxy API requests to the production backend
-[[redirects]]
-  from = "/API/*"
-  to = "https://bettervoting.com/API/:splat"
-  status = 200
-  force = true
+[functions]
+  directory             = "netlify/functions"
+  node_bundler          = "esbuild"
+  # Big or native-dependency packages are kept external (installed at runtime
+  # from node_modules) rather than esbuild-inlined.
+  external_node_modules = [
+    "express",
+    "pg",
+    "pg-native",
+    "kysely",
+    "@sendgrid/mail",
+    "@netlify/blobs",
+    "@netlify/functions",
+    "swagger-ui-express",
+    "jsonwebtoken",
+    "sanitize-html",
+    "axios",
+    "qs",
+    "luxon",
+    "fraction.js",
+    "seedrandom",
+    "multer",
+    "pg-format"
+  ]
 
-# SPA routing: redirect all other paths to index.html for client-side routing
+# Background queue worker — `-background` suffix gives it the 15-minute budget.
+[functions."queue-worker-background"]
+  timeout = 900
+
+[functions."api"]
+  timeout = 26
+
+# ----- Redirects (order matters — most specific first) -----
+
+# Legacy API path used by the existing frontend.
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from   = "/API/*"
+  to     = "/.netlify/functions/api/API/:splat"
   status = 200
+  force  = true
+
+# Convenience alias.
+[[redirects]]
+  from   = "/api/*"
+  to     = "/.netlify/functions/api/api/:splat"
+  status = 200
+  force  = true
+
+# Public blob fetch (Netlify Blobs has no native public URLs).
+[[redirects]]
+  from   = "/blob/*"
+  to     = "/.netlify/functions/serve-blob/:splat"
+  status = 200
+  force  = true
+
+# SPA fallback: any non-API GET returns index.html so React Router can
+# resolve the route on the client.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
+
+# Run the post-deploy migration script. (We invoke it from the build command
+# above too, but this hook gives us a place to run one-off jobs in the future.)
