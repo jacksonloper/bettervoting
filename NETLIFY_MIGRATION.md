@@ -103,6 +103,65 @@ this branch is non-destructive for contributors who haven't migrated.
   needs to mount the Netlify Identity widget instead. This is the next
   obvious follow-up; flagged as out-of-scope for this branch.
 
+## Database migrations: Kysely vs Netlify's native system
+
+Netlify DB ships with its own migration runner that auto-applies SQL files
+from `netlify/database/migrations/` at deploy time. BetterVoting already
+has six [Kysely-based migrations](packages/backend/src/Migrations) and a
+[migrator script](packages/backend/src/Migrators/migrate-to-latest.ts), so
+we keep Kysely as the source of truth and treat Netlify's native system as
+explicitly **opt-out**.
+
+### How they're kept out of each other's way
+
+- `netlify/database/migrations/` is **not present** in the repo, so
+  Netlify's auto-runner is a no-op. (See `netlify/database/README.md` for
+  a contributor-facing note enforcing this.)
+- Kysely runs from `scripts/netlify-migrate.sh`, invoked at the end of the
+  Netlify build command (`netlify.toml`).
+- Kysely tracks applied migrations in `kysely_migration` /
+  `kysely_migration_lock` tables, which live alongside the app tables but
+  in a separate namespace from anything Netlify's runner would create.
+
+### Ordering and failure modes
+
+- The build command runs migrations **before** function code is published.
+  Production deploys: failure exits the build → no publish → old code stays
+  live against the old schema.
+- Deploy previews: every PR / git branch automatically gets its own Netlify
+  DB branch (forked off prod). Kysely runs on each branch and only applies
+  the migrations that aren't already present from the fork point. Branches
+  are deleted when the PR closes.
+- Kysely's `kysely_migration_lock` table prevents two concurrent builds
+  from migrating the same database at the same time.
+
+### Bootstrap on a fresh Netlify DB
+
+```bash
+netlify database init        # provisions an empty Neon Postgres branch
+# (decline the sample-data prompt)
+git push                     # triggers a build → migrations run → all 6 apply
+```
+
+The first deploy creates the full schema from scratch. The script
+`scripts/netlify-migrate.sh` fails loudly with an actionable message if
+`NETLIFY_DATABASE_URL` is missing — so you can't accidentally ship a
+"successful" build that crashes at runtime.
+
+### Data migration
+
+This branch handles **schema** migration only. The actual production data
+on the existing Azure/Heroku Postgres has to be moved separately
+(`pg_dump | psql` against `NETLIFY_DATABASE_URL` is the simplest path) —
+that's a one-time cutover task outside the scope of this experiment.
+
+### When to revisit
+
+If we ever want to drop Kysely in favor of Netlify's native SQL migrations
+(simpler ops, tighter platform integration, no `migrate:latest` step), the
+one-way-door procedure is documented at the bottom of
+`netlify/database/README.md`. Until then, Kysely stays.
+
 ## Deploying
 
 1. In the Netlify UI, enable **Identity** for the site (Site settings →

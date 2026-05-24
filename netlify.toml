@@ -16,7 +16,7 @@
 
 [build]
   base    = "."
-  command = "npm install && npm run build -w @equal-vote/star-vote-shared && npm run build -w @equal-vote/star-vote-frontend && npm run build -w @equal-vote/star-vote-backend && (test -z \"$NETLIFY_DATABASE_URL\" || npm run migrate:latest -w @equal-vote/star-vote-backend)"
+  command = "npm install && npm run build -w @equal-vote/star-vote-shared && npm run build -w @equal-vote/star-vote-frontend && npm run build -w @equal-vote/star-vote-backend && bash scripts/netlify-migrate.sh"
   publish = "packages/frontend/build"
 
 [build.environment]
