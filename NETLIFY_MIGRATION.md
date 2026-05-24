@@ -69,6 +69,10 @@ this branch is non-destructive for contributors who haven't migrated.
   pg-boss flow.
 - **Anonymous voters** — `temp_id` cookie path in `extractUserFromRequest`
   still works.
+- **PII log hashing** — `logSafeHash` reads `LOG_HASH_SECRET` from env so
+  the salt is shared across function instances; previously every process
+  had its own `randomBytes(32)` salt, which made cross-instance correlation
+  impossible on serverless. The weekly bucketing is preserved on top.
 
 ## What's stubbed or different
 
@@ -109,6 +113,13 @@ this branch is non-destructive for contributors who haven't migrated.
    - `SENDGRID_API_KEY`
    - `FROM_EMAIL_ADDRESS`
    - `ALLOWED_URLS` (use your `https://<site>.netlify.app`)
+   - `LOG_HASH_SECRET` — high-entropy value (e.g. `openssl rand -hex 32`).
+     Stored as a Netlify secret so it isn't exposed in build logs. Used by
+     `logSafeHash` to produce stable PII hashes across function instances
+     (without it, every cold start gets a fresh in-memory salt and
+     cross-instance log correlation breaks). Rotate periodically — the
+     weekly bucket inside `logSafeHash` already rotates the effective key
+     on top of whatever cadence you choose.
    - (optional) `JWT_SECRET` to enable full signature verification on the
      `Authorization` header fallback path.
 4. Push this branch. Netlify will:
