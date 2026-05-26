@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@netlify/blobs": "^8.1.0",
+    "@netlify/database": "^1.0.0",
     "@netlify/functions": "^2.8.2",
     "serverless-http": "^3.2.0",
     "ts-node": "^10.9.2",
