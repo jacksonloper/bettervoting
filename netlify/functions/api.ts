@@ -9,6 +9,7 @@
 // valid JWT is on the request) is attached to the Express `req` object so the
 // NetlifyAccountService can read it without re-verifying the JWT.
 
+import './env-shim';
 import serverless from 'serverless-http';
 import type { Handler, HandlerContext, HandlerEvent } from '@netlify/functions';
 
