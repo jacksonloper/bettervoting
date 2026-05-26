@@ -10,10 +10,6 @@ const sharedDir = path.resolve(__dirname, '../../node_modules/@equal-vote/star-v
 
 
 export default defineConfig({
-  source: {
-  },
-});
-export default defineConfig({
   plugins: [pluginNodePolyfill(), pluginReact(), pluginYaml()],
   html: {
     template: './index.html',
