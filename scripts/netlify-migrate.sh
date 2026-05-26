@@ -21,40 +21,42 @@ if [ "${BACKEND_PLATFORM:-}" != "netlify" ]; then
   exit 0
 fi
 
-# Netlify DB exposes both a pooled and an unpooled connection string. Either
-# works for one-shot migrations, so accept whichever the build environment
-# happens to inject.
+# Netlify DB exposes the URL under several names depending on context
+# (NETLIFY_DATABASE_URL, NETLIFY_DATABASE_URL_UNPOOLED) and @netlify/database
+# in turn reads NETLIFY_DB_URL. Normalise here so the migration runner sees
+# the same value regardless of which name the platform injected today.
 if [ -z "${NETLIFY_DATABASE_URL:-}" ] && [ -n "${NETLIFY_DATABASE_URL_UNPOOLED:-}" ]; then
   export NETLIFY_DATABASE_URL="$NETLIFY_DATABASE_URL_UNPOOLED"
   echo "[netlify-migrate] Using NETLIFY_DATABASE_URL_UNPOOLED (pooled URL not set)."
 fi
+if [ -z "${NETLIFY_DB_URL:-}" ] && [ -n "${NETLIFY_DATABASE_URL:-}" ]; then
+  export NETLIFY_DB_URL="$NETLIFY_DATABASE_URL"
+fi
 
-if [ -z "${NETLIFY_DATABASE_URL:-}" ]; then
-  # Chicken-and-egg: Netlify only auto-provisions the DB on the first build
-  # that ships @netlify/database, so the very first build can't see the env
-  # var yet. We log loudly and exit 0 so the deploy succeeds; the next
-  # build will have the URL and will actually apply migrations.
-  echo "[netlify-migrate] WARNING: no Netlify DB URL visible to this build — skipping migrations." >&2
+if [ -z "${NETLIFY_DATABASE_URL:-}" ] && [ -z "${NETLIFY_DB_URL:-}" ]; then
+  # Fail loud rather than ship a deploy that 500s at runtime with
+  # `relation "electionDB" does not exist`. If the DB really hasn't been
+  # provisioned yet, fix it in the UI (Project configuration → Database)
+  # or `netlify db init` from a linked clone, then retry the deploy.
+  echo "[netlify-migrate] ERROR: no Netlify DB URL visible to this build." >&2
   echo "" >&2
-  echo "[netlify-migrate] Diagnostic — env vars visible to this build with names containing DATABASE / NETLIFY / NEON:" >&2
-  # Print names only (not values) so we don't leak secrets into build logs.
-  env | awk -F= '/DATABASE|NETLIFY|NEON/ { print "  - " $1 }' | sort -u >&2 || true
+  echo "[netlify-migrate] Diagnostic — env keys with DATABASE / NETLIFY / NEON / DB in their name:" >&2
+  env | awk -F= '/DATABASE|NETLIFY|NEON|^DB_/ { print "  - " $1 }' | sort -u >&2 || true
   echo "" >&2
   cat >&2 <<'EOF'
-If this is the first deploy with @netlify/database installed, that's
-expected — Netlify will provision the database during this deploy and
-the next build will see NETLIFY_DATABASE_URL.
+The Kysely migration runner needs a connection string at build time.
+Common causes:
 
-If you've already had a successful deploy and the URL is still missing:
-  1. `netlify database status` from a linked local clone — confirms whether
-     the database is enabled and what its connection string is.
-  2. Site dashboard → Project configuration → Database — links a database
-     manually if auto-provisioning hasn't fired.
-  3. Site dashboard → Project configuration → Environment variables —
-     check that NETLIFY_DATABASE_URL is enabled for this deploy context
-     (Production / Deploy Preview / Branch deploys).
+  1. Database not attached to this site yet — go to Project configuration
+     → Database in the Netlify UI, or run `netlify db init` from a linked
+     local clone.
+  2. The URL exists but is scoped only to some deploy contexts — check
+     Project configuration → Environment variables and make sure
+     NETLIFY_DATABASE_URL is enabled for Builds.
+  3. First build after install — re-run the deploy; the URL is only
+     present on builds *after* the package's first deploy.
 EOF
-  exit 0
+  exit 1
 fi
 
 echo "[netlify-migrate] Running Kysely migrations against Netlify DB..."
