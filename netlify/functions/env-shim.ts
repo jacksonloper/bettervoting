@@ -15,17 +15,29 @@ process.env.NETLIFY_DB_URL ??=
     process.env.NETLIFY_DATABASE_URL_UNPOOLED ??
     process.env.DATABASE_URL;
 
-// If we still don't have one, log which Netlify-ish env vars ARE set so we
-// can diagnose without another deploy. (Names only — never values.)
-if (!process.env.NETLIFY_DB_URL) {
-    const netlifyKeys = Object.keys(process.env)
-        .filter((k) => /^(NETLIFY|DB|DATABASE|NEON|PG)/i.test(k))
-        .sort();
-    // eslint-disable-next-line no-console
-    console.warn(
-        '[env-shim] No DB URL found. NETLIFY_DB_URL/NETLIFY_DATABASE_URL/' +
-            'NETLIFY_DATABASE_URL_UNPOOLED/DATABASE_URL are all unset. ' +
-            'Netlify-ish env keys present at function runtime: ' +
-            JSON.stringify(netlifyKeys)
-    );
-}
+// Diagnostics: print what we ended up with (redacted) plus any Netlify/DB-ish
+// env keys present, so we can see if Netlify is auto-injecting under some
+// other name. Names only for the env-key list — never values.
+const netlifyKeys = Object.keys(process.env)
+    .filter((k) => /^(NETLIFY|DB|DATABASE|NEON|PG)/i.test(k))
+    .sort();
+const redact = (url: string | undefined) => {
+    if (!url) return '(unset)';
+    try {
+        const u = new URL(url);
+        return `${u.protocol}//${u.username ? '***@' : ''}${u.hostname}${u.port ? ':' + u.port : ''}${u.pathname}`;
+    } catch {
+        // Couldn't parse — show length and first/last chars so we can see if
+        // it's a placeholder like "base" or a templating bug.
+        return `(unparseable len=${url.length} preview=${JSON.stringify(url.slice(0, 8))}…${JSON.stringify(url.slice(-8))})`;
+    }
+};
+// eslint-disable-next-line no-console
+console.warn(
+    '[env-shim] NETLIFY_DB_URL=' +
+        redact(process.env.NETLIFY_DB_URL) +
+        ' PGHOST=' +
+        (process.env.PGHOST ?? '(unset)') +
+        ' netlify/db-ish keys=' +
+        JSON.stringify(netlifyKeys)
+);
