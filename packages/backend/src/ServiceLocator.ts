@@ -43,10 +43,19 @@ var _globalData: GlobalData;
 
 function postgres(): any {
     if (_postgresClient == null) {
-        var connectionConfig = pgConnectionObject();
-        // We can't log this since it has sensitive information
-        // Logger.debug(_appInitContext, `Postgres Config:  ${JSON.stringify(connectionConfig)}}`);
-        _postgresClient = new Pool(connectionConfig);
+        if (IS_NETLIFY) {
+            // @netlify/database picks the right driver per runtime:
+            // pg.Pool during build/migrations, @neondatabase/serverless Pool
+            // inside Functions. Both expose the node-postgres Pool API that
+            // Kysely's PostgresDialect expects.
+            const { getDatabase } = require('@netlify/database');
+            _postgresClient = getDatabase().pool;
+        } else {
+            var connectionConfig = pgConnectionObject();
+            // We can't log this since it has sensitive information
+            // Logger.debug(_appInitContext, `Postgres Config:  ${JSON.stringify(connectionConfig)}}`);
+            _postgresClient = new Pool(connectionConfig);
+        }
 
         const dialect = new PostgresDialect({
             pool: _postgresClient
@@ -80,14 +89,6 @@ function database(): Kysely<Database> {
 function pgConnectionObject(): any {
     var connectionStr = pgConnectionString();
     var devDB = process.env.DEV_DATABASE;
-    // Netlify DB (Neon) requires SSL; Neon's proxy presents a valid cert so
-    // rejectUnauthorized stays the default (true).
-    if (IS_NETLIFY) {
-        return {
-            connectionString: connectionStr,
-            ssl: true
-        };
-    }
     if (devDB === 'TRUE') {
         return {
             connectionString: connectionStr,
@@ -103,12 +104,7 @@ function pgConnectionObject(): any {
 }
 
 function pgConnectionString(): string {
-    // Netlify DB exposes its connection string via NETLIFY_DATABASE_URL.
-    return (
-        process.env.NETLIFY_DATABASE_URL ||
-        process.env.DATABASE_URL ||
-        'postgresql://postgres:password@localhost:5432/postgres'
-    );
+    return process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/postgres';
 }
 
 async function eventQueue(): Promise<IEventQueue> {

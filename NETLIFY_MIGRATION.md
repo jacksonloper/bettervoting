@@ -53,9 +53,14 @@ this branch is non-destructive for contributors who haven't migrated.
 
 - **All HTTP routes** under `/API/*` — they're served by the same Express app,
   wrapped with `serverless-http`. No route logic changed.
-- **Postgres** — `ServiceLocator` reads `NETLIFY_DATABASE_URL` first, with SSL.
-  The existing Kysely migrations in `packages/backend/src/Migrations` run at
-  deploy time via the build command (only when `NETLIFY_DATABASE_URL` is set).
+- **Postgres** — under `BACKEND_PLATFORM=netlify`, `ServiceLocator.postgres()`
+  asks `@netlify/database`'s `getDatabase()` for a Pool. The package picks
+  the right driver per runtime (`pg.Pool` for the build / migration script,
+  `@neondatabase/serverless` Pool inside Functions) and handles
+  `NETLIFY_DATABASE_URL` discovery and SSL itself. The Pool gets handed to
+  Kysely's `PostgresDialect` unchanged, so every existing Model continues to
+  work. The Kysely migrations in `packages/backend/src/Migrations` still run
+  at deploy time via `scripts/netlify-migrate.sh`.
 - **Auth** — `NetlifyAccountService` reads `context.clientContext.user` (which
   Netlify populates from a validated `Authorization: Bearer <nf_jwt>`) and
   emits the same `{sub, email, roles, …}` shape the rest of the code expects.
