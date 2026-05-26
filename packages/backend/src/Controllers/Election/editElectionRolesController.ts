@@ -1,44 +1,31 @@
-import { electionValidation } from '@equal-vote/star-vote-shared/domain_model/Election';
 import ServiceLocator from '../../ServiceLocator';
 import Logger from '../../Services/Logging/Logger';
-import { responseErr } from '../../Util';
 import { expectPermission } from "../controllerUtils";
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { BadRequest } from "@curveball/http-errors";
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
+import { C, body, election, logCtx, userAuth } from "../../honoTypes";
 
-var ElectionsModel = ServiceLocator.electionsDb();
+const ElectionsModel = ServiceLocator.electionsDb();
 
+export const editElectionRoles = async (c: C) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    Logger.info(ctx, `editElectionRoles: ${e.election_id}`);
+    expectPermission(userAuth(c).roles, permissions.canEditElectionRoles);
 
-const editElectionRoles = async (req: IElectionRequest, res: Response, next: NextFunction) => {
+    const { admin_ids, audit_ids, credential_ids, expected_update_date } = await body(c);
+    e.admin_ids = admin_ids;
+    e.audit_ids = audit_ids;
+    e.credential_ids = credential_ids;
 
-    const inputElection = req.body.Election;
-    Logger.info(req, `editElectionRoles: ${req.election.election_id}`)
-    expectPermission(req.user_auth.roles, permissions.canEditElectionRoles)
-    // TODO: should this only be allowed in draft??
-    // if (inputElection.state !== 'draft') {
-    //     Logger.info(req, `Election is not editable, state=${inputElection.state}`);
-    //     throw new BadRequest("Election is not editable")
-    // }
-    
-    var failMsg = "Failed to update Election roles";
-    req.election.admin_ids = req.body.admin_ids
-    req.election.audit_ids = req.body.audit_ids
-    req.election.credential_ids = req.body.credential_ids
-    const expected_update_date = req.body.expected_update_date;
-    const updatedElection = await ElectionsModel.updateElection(req.election, req, `Update election roles`, expected_update_date);
+    const updatedElection = await ElectionsModel.updateElection(e, ctx, `Update election roles`, expected_update_date);
     if (!updatedElection) {
-        Logger.info(req, failMsg);
-        throw new BadRequest(failMsg)
+        const failMsg = "Failed to update Election roles";
+        Logger.info(ctx, failMsg);
+        throw new BadRequest(failMsg);
     }
 
-    req.election = updatedElection
-    Logger.debug(req, `editElectionRoles succeeds for ${updatedElection.election_id}`);
-
-    res.status(200).json({election: req.election})
-}
-
-export {
-    editElectionRoles
-}
+    c.set('election', updatedElection);
+    Logger.debug(ctx, `editElectionRoles succeeds for ${updatedElection.election_id}`);
+    return c.json({ election: updatedElection }, 200);
+};

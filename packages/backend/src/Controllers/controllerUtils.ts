@@ -1,54 +1,40 @@
-import { IRequest, reqIdSuffix } from "../IRequest"
 import { Election, electionValidation } from "@equal-vote/star-vote-shared/domain_model/Election";
-import Logger from "../Services/Logging/Logger"
+import Logger from "../Services/Logging/Logger";
+import type { ILoggingContext } from "../Services/Logging/ILogger";
 import { BadRequest, Unauthorized } from "@curveball/http-errors";
-import { Response } from 'express';
 import { roles } from "@equal-vote/star-vote-shared/domain_model/roles";
 import { permission } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { createHash, randomInt } from "crypto";
 import ServiceLocator from "../ServiceLocator";
-import { makeUniqueID , ID_LENGTHS } from "@equal-vote/star-vote-shared/utils/makeID";
-const ElectionsModel =  ServiceLocator.electionsDb();
+import { makeUniqueID, ID_LENGTHS } from "@equal-vote/star-vote-shared/utils/makeID";
 
-export async function expectValidElectionFromRequest(req:IRequest):Promise<Election> {
-    const inputElection = req.body.Election;
+const ElectionsModel = ServiceLocator.electionsDb();
+
+export async function expectValidElection(ctx: ILoggingContext, inputElection: any): Promise<Election> {
     inputElection.election_id = await makeUniqueID(
         null,
         ID_LENGTHS.ELECTION,
-        async (id: string) => Boolean(await ElectionsModel.electionExistsByID(id, req))
+        async (id: string) => Boolean(await ElectionsModel.electionExistsByID(id, ctx))
     );
-    inputElection.create_date = new Date().toISOString()
+    inputElection.create_date = new Date().toISOString();
     const validationErr = electionValidation(inputElection);
     if (validationErr) {
-        Logger.info(req, "Invalid Election: " + validationErr, inputElection);
+        Logger.info(ctx, "Invalid Election: " + validationErr, inputElection);
         throw new BadRequest("Invalid Election " + validationErr);
     }
     return inputElection;
 }
 
-export function catchAndRespondError(req:IRequest, res:Response, err:any):Response<any, Record<string, any>> {
-    var status = 500;
-    if (err.httpStatus) {
-        status = err.httpStatus;
+export function expectPermission(roles: roles[], permission: permission): void {
+    if (!roles.some((role) => permission.includes(role))) {
+        throw new Unauthorized("Does not have permission");
     }
-    var msg = "Error";
-    if (err.detail) {
-        msg = err.detail;
-    }
-    msg += reqIdSuffix(req);
-    return res.status(status).json({error:msg});
 }
 
-export function expectPermission(roles:roles[],permission:permission):any {
-        if (!roles.some( (role) => permission.includes(role))){
-            throw new Unauthorized("Does not have permission")
-      }
-}
-
-// Note: it feels weird to have the same util function on both frontend and backend instead of using shared, but they need to use different libraries
+// Same util as frontend, but separate because of differing crypto libraries.
 export function hashString(inputString: string) {
-    if(inputString === undefined) return undefined;
-    return createHash('sha256').update(inputString).digest('hex')
+    if (inputString === undefined) return undefined;
+    return createHash('sha256').update(inputString).digest('hex');
 }
 
 // Fisher–Yates shuffle using crypto.randomInt so admins can't infer the

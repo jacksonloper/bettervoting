@@ -1,33 +1,17 @@
-// Netlify Function wrapper around the existing Express app.
+// Netlify Functions 2.0 entrypoint. Exports `default` (a Web Request handler)
+// instead of the legacy Lambda-shaped `handler` export. The 2.0 shape lets
+// Netlify auto-inject things like NETLIFY_DATABASE_URL into the runtime
+// environment that Lambda-compat-mode functions don't get.
 //
-// We import the Express app factory from packages/backend and wrap it with
-// serverless-http. The redirect rules in netlify.toml send all /API/* and
-// /api/* traffic here. The function runs synchronously (Netlify's 26-second
-// budget is enforced via netlify.toml).
+// hono/netlify provides the `handle(app)` adapter that turns a Hono app into
+// exactly the (req, context) => Response shape Netlify Functions 2.0 expects.
 //
-// The Netlify `context.clientContext` (which holds the Identity user when a
-// valid JWT is on the request) is attached to the Express `req` object so the
-// NetlifyAccountService can read it without re-verifying the JWT.
+// env-shim must be imported first so BACKEND_PLATFORM=netlify (and any
+// NETLIFY_DB_URL bridging) is set before the backend's ServiceLocator
+// captures its runtime config at module load.
 
 import './env-shim';
-import serverless from 'serverless-http';
-import type { Handler, HandlerContext, HandlerEvent } from '@netlify/functions';
+import { handle } from 'hono/netlify';
+import makeApp from '../../packages/backend/src/honoApp';
 
-import makeApp from '../../packages/backend/src/app';
-
-const app = makeApp();
-
-const wrapped = serverless(app, {
-  request: (req: any, event: HandlerEvent, context: HandlerContext) => {
-    // Make the Netlify Identity user available to AccountService middleware.
-    req.clientContext = (context as any).clientContext ?? null;
-    req.netlifyEvent = event;
-    req.netlifyContext = context;
-  },
-});
-
-export const handler: Handler = async (event, context) => {
-  // serverless-http types are slightly off from @netlify/functions, but the
-  // call shape is compatible at runtime.
-  return wrapped(event, context) as any;
-};
+export default handle(makeApp());

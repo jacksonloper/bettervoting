@@ -3,71 +3,48 @@ import Logger from "../../Services/Logging/Logger";
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { expectPermission } from "../controllerUtils";
 import { BadRequest, Unauthorized } from "@curveball/http-errors";
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
-import { Election } from '@equal-vote/star-vote-shared/domain_model/Election';
 import { ElectionRoll, ElectionRollAction, ElectionRollResponse } from '@equal-vote/star-vote-shared/domain_model/ElectionRoll';
 import { logSafeHash } from '../../Services/Logging/logSafeHash';
+import { C, election, logCtx, userAuth } from "../../honoTypes";
 
 const ElectionRollModel = ServiceLocator.electionRollDb();
 const EmailEventsModel = ServiceLocator.emailEventsDb();
-
 const className = "VoterRolls.Controllers";
 
 const redactString = (value: string, voterId: string | undefined, shouldRedact: boolean): string => {
     if (!shouldRedact || !voterId) return value;
-    if (value.includes(voterId)) {
-        return value.replaceAll(voterId, 'Voter');
-    }
+    if (value.includes(voterId)) return value.replaceAll(voterId, 'Voter');
     return value;
-}
+};
 
-// Note: ElectionRoll history entries can have nested structures and the email_data field is typed as 'any'.
-// This function uses a defensive approach to handle multiple data types (arrays, objects, strings),
-// strips out email_data entirely, and redacts voter IDs from action_type and actor fields.
 const sanitizeHistory = (
     history: ElectionRoll['history'],
     voterId: string | undefined,
-    redact: boolean
+    redact: boolean,
 ): ElectionRoll['history'] => {
     if (!history) return history;
     return history.map((entry: any) => {
-        if (Array.isArray(entry)) {
-            return sanitizeHistory(entry as ElectionRollAction[], voterId, redact);
-        }
+        if (Array.isArray(entry)) return sanitizeHistory(entry as ElectionRollAction[], voterId, redact);
         if (entry && typeof entry === 'object') {
-            const { email_data: _omitEmailData, ...rest } = entry;
-            if (typeof rest.action_type === 'string') {
-                rest.action_type = redactString(rest.action_type, voterId, redact);
-            }
-            if (typeof rest.actor === 'string') {
-                rest.actor = redactString(rest.actor, voterId, redact);
-            }
+            const { email_data: _omit, ...rest } = entry;
+            if (typeof rest.action_type === 'string') rest.action_type = redactString(rest.action_type, voterId, redact);
+            if (typeof rest.actor === 'string') rest.actor = redactString(rest.actor, voterId, redact);
             return rest;
         }
-        if (typeof entry === 'string') {
-            return redactString(entry, voterId, redact);
-        }
+        if (typeof entry === 'string') return redactString(entry, voterId, redact);
         return entry;
     });
-}
+};
 
-// Note: email_data fields (inviteResponse, reminderResponse) are typed as 'any' in ElectionRoll.ts
-// since email providers could return a variety of response formats.
-// This function uses a defensive whitelist approach to only return known-safe fields and redact
-// any voter IDs that might be embedded in error messages or response bodies.
-// This is almost certainly not the right way to do this :).  But it could be fine for now.
 const sanitizeEmailMetadata = (
     emailData: ElectionRoll['email_data'],
     voterId: string | undefined,
-    redact: boolean
+    redact: boolean,
 ) => {
     if (!emailData) return emailData;
     const filterResponse = (response: any): any => {
         if (Array.isArray(response)) {
-            const filtered = response
-                .map(filterResponse)
-                .filter((item) => item !== undefined);
+            const filtered = response.map(filterResponse).filter((item) => item !== undefined);
             return filtered.length > 0 ? filtered : undefined;
         }
         if (response && typeof response === 'object') {
@@ -82,51 +59,45 @@ const sanitizeEmailMetadata = (
             return Object.keys(sanitized).length > 0 ? sanitized : undefined;
         }
         if (typeof response === 'string') {
-            const redactedValue = redactString(response, voterId, redact);
-            return redactedValue.length > 0 ? redactedValue : undefined;
+            const redacted = redactString(response, voterId, redact);
+            return redacted.length > 0 ? redacted : undefined;
         }
         return undefined;
     };
     const sanitized: Record<string, any> = {};
     if (emailData.inviteResponse !== undefined) {
-        const sanitizedInvite = filterResponse(emailData.inviteResponse);
-        if (sanitizedInvite !== undefined) {
-            sanitized.inviteResponse = sanitizedInvite;
-        }
+        const filtered = filterResponse(emailData.inviteResponse);
+        if (filtered !== undefined) sanitized.inviteResponse = filtered;
     }
     if (emailData.reminderResponse !== undefined) {
-        const sanitizedReminder = filterResponse(emailData.reminderResponse);
-        if (sanitizedReminder !== undefined) {
-            sanitized.reminderResponse = sanitizedReminder;
-        }
+        const filtered = filterResponse(emailData.reminderResponse);
+        if (filtered !== undefined) sanitized.reminderResponse = filtered;
     }
     return Object.keys(sanitized).length > 0 ? sanitized : undefined;
-}
+};
 
-const getRollsByElectionID = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    expectPermission(req.user_auth.roles, permissions.canViewElectionRoll)
-    if(req.election.settings.voter_access === 'open'){
-        throw new Unauthorized("Can't view voter roll for open elections")
+export const getRollsByElectionID = async (c: C) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    expectPermission(userAuth(c).roles, permissions.canViewElectionRoll);
+    if (e.settings.voter_access === 'open') {
+        throw new Unauthorized("Can't view voter roll for open elections");
     }
-    const electionId = req.election.election_id;
-    Logger.info(req, `${className}.getRollsByElectionID ${electionId}`);
-    //requires election data in req, adds entire election roll
+    const electionId = e.election_id;
+    Logger.info(ctx, `${className}.getRollsByElectionID ${electionId}`);
 
-    const electionRoll = await ElectionRollModel.getRollsByElectionID(electionId, req);
+    const electionRoll = await ElectionRollModel.getRollsByElectionID(electionId, ctx);
     if (!electionRoll) {
         const msg = `Election roll for ${electionId} not found`;
-        Logger.info(req, msg);
-        throw new BadRequest(msg)
+        Logger.info(ctx, msg);
+        throw new BadRequest(msg);
     }
 
-    // Fetch email events for this election (best-effort, don't fail if table doesn't exist)
-    let emailEventsByVoter: Record<string, { event_type: string; event_timestamp: string; details?: Record<string, unknown> }[]> = {};
+    const emailEventsByVoter: Record<string, { event_type: string; event_timestamp: string; details?: Record<string, unknown> }[]> = {};
     try {
-        const allEvents = await EmailEventsModel.getByElectionId(electionId, req);
+        const allEvents = await EmailEventsModel.getByElectionId(electionId, ctx);
         for (const event of allEvents) {
-            if (!emailEventsByVoter[event.voter_id]) {
-                emailEventsByVoter[event.voter_id] = [];
-            }
+            if (!emailEventsByVoter[event.voter_id]) emailEventsByVoter[event.voter_id] = [];
             emailEventsByVoter[event.voter_id].push({
                 event_type: event.event_type,
                 event_timestamp: event.event_timestamp,
@@ -134,11 +105,10 @@ const getRollsByElectionID = async (req: IElectionRequest, res: Response, next: 
             });
         }
     } catch (err: any) {
-        Logger.warn(req, `Could not fetch email events: ${err.message}`);
+        Logger.warn(ctx, `Could not fetch email events: ${err.message}`);
     }
 
-    // Scrub ballot_id to prevent linking voters to ballots
-    const redactVoterIds = req.election.settings.invitation === 'email';
+    const redactVoterIds = e.settings.invitation === 'email';
     const scrubbedRoll = electionRoll.map((roll) => {
         const sanitizedHistory = sanitizeHistory(roll.history, roll.voter_id, redactVoterIds);
         const sanitizedEmailData = redactVoterIds ? sanitizeEmailMetadata(roll.email_data, roll.voter_id, redactVoterIds) : roll.email_data;
@@ -151,43 +121,33 @@ const getRollsByElectionID = async (req: IElectionRequest, res: Response, next: 
             email_data: sanitizedEmailData,
             email_events: voterEvents,
         };
-        if (redactVoterIds) {
-            delete base.voter_id;
-        }
+        if (redactVoterIds) delete base.voter_id;
         return base;
     });
 
-    Logger.debug(req, `Got Election: ${req.params.id}`);
-    Logger.info(req, `${className}.returnRolls ${req.params.id}`);
-    res.json({ election: req.election, electionRoll: scrubbedRoll });
-}
+    Logger.info(ctx, `${className}.returnRolls ${c.req.param('id')}`);
+    return c.json({ election: e, electionRoll: scrubbedRoll });
+};
 
-const getByVoterID = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    Logger.info(req, `${className}.getByVoterID ${req.election.election_id} ${logSafeHash(req.params.voter_id)}`)
-    const electionRollEntry = await ElectionRollModel.getByVoterID(req.election.election_id, req.params.voter_id, req)
-    if (!electionRollEntry) {
+export const getByVoterID = async (c: C) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    const voter_id = c.req.param('voter_id')!;
+    Logger.info(ctx, `${className}.getByVoterID ${e.election_id} ${logSafeHash(voter_id)}`);
+    const entry = await ElectionRollModel.getByVoterID(e.election_id, voter_id, ctx);
+    if (!entry) {
         const msg = "Voter Roll not found";
-        Logger.info(req, msg);
-        throw new BadRequest(msg)
+        Logger.info(ctx, msg);
+        throw new BadRequest(msg);
     }
-
-    // Scrub ballot_id to prevent linking voters to ballots
-    const redactVoterIds = req.election.settings.invitation === 'email';
-    const scrubbedEntry: ElectionRoll = {
-        ...electionRollEntry,
+    const redactVoterIds = e.settings.invitation === 'email';
+    const scrubbed: ElectionRoll = {
+        ...entry,
         ballot_id: undefined,
         ip_hash: undefined,
-        history: sanitizeHistory(electionRollEntry.history, electionRollEntry.voter_id, redactVoterIds),
-        email_data: redactVoterIds ? sanitizeEmailMetadata(electionRollEntry.email_data, electionRollEntry.voter_id, redactVoterIds) : electionRollEntry.email_data
+        history: sanitizeHistory(entry.history, entry.voter_id, redactVoterIds),
+        email_data: redactVoterIds ? sanitizeEmailMetadata(entry.email_data, entry.voter_id, redactVoterIds) : entry.email_data,
     };
-    if (redactVoterIds) {
-        delete (scrubbedEntry as any).voter_id;
-    }
-
-    res.json({ electionRollEntry: scrubbedEntry })
-}
-
-export {
-    getRollsByElectionID,
-    getByVoterID
-}
+    if (redactVoterIds) delete (scrubbed as any).voter_id;
+    return c.json({ electionRollEntry: scrubbed });
+};

@@ -10,10 +10,17 @@ process.env.BACKEND_PLATFORM ??= 'netlify';
 // Bridge for @netlify/database@1.x: it reads NETLIFY_DB_URL, but Netlify
 // itself (and our migration scripts) use NETLIFY_DATABASE_URL. Map any
 // available name into NETLIFY_DB_URL so getDatabase() succeeds.
-process.env.NETLIFY_DB_URL ??=
+// (Don't use `??=` here: assigning `undefined` to process.env coerces to
+// the literal string "undefined", which downstream Pool parsers will
+// happily try to use as a connection string.)
+const _bridgedDbUrl =
+    process.env.NETLIFY_DB_URL ??
     process.env.NETLIFY_DATABASE_URL ??
     process.env.NETLIFY_DATABASE_URL_UNPOOLED ??
     process.env.DATABASE_URL;
+if (_bridgedDbUrl) {
+    process.env.NETLIFY_DB_URL = _bridgedDbUrl;
+}
 
 // Diagnostics: print what we ended up with (redacted) plus any Netlify/DB-ish
 // env keys present, so we can see if Netlify is auto-injecting under some

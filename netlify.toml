@@ -41,7 +41,6 @@
   # @azure/storage-blob). Listing them here keeps esbuild from trying to walk
   # their dep trees during the function bundle.
   external_node_modules = [
-    "express",
     "pg",
     "pg-native",
     "pg-boss",
@@ -53,7 +52,6 @@
     "@netlify/functions",
     "@neondatabase/serverless",
     "waddler",
-    "swagger-ui-express",
     "swagger-jsdoc",
     "jsonwebtoken",
     "sanitize-html",
@@ -62,15 +60,12 @@
     "luxon",
     "fraction.js",
     "seedrandom",
-    "multer",
-    "socket.io",
     "@azure/storage-blob",
-    "cors",
-    "cookie-parser",
     "dotenv",
-    "express-async-handler",
     "node-fetch",
-    "@curveball/http-errors"
+    "@curveball/http-errors",
+    "hono",
+    "@hono/node-server"
   ]
 
 # Background queue worker — `-background` suffix gives it the 15-minute budget.

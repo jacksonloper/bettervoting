@@ -1,31 +1,30 @@
 import ServiceLocator from "../../ServiceLocator";
 import Logger from "../../Services/Logging/Logger";
 import { BadRequest } from "@curveball/http-errors";
-import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
+import { C, election, logCtx } from "../../honoTypes";
 
 const BallotModel = ServiceLocator.ballotsDb();
 
-const getBallotByBallotID = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    var electionId = req.election.election_id;
-    var ballot_id = req.params.ballot_id
+export const getBallotByBallotID = async (c: C) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    const electionId = e.election_id;
+    const ballot_id = c.req.param('ballot_id');
     if (!ballot_id) {
-        throw new BadRequest('No Ballot ID provided')
+        throw new BadRequest('No Ballot ID provided');
     }
-    Logger.debug(req, "getBallotByBallotID: " + ballot_id);
+    Logger.debug(ctx, "getBallotByBallotID: " + ballot_id);
 
-    const ballot = await BallotModel.getBallotByID(ballot_id, req);
+    const ballot = await BallotModel.getBallotByID(ballot_id, ctx);
     if (!ballot) {
         const msg = `Ballots not found for Election ${electionId}`;
-        Logger.info(req, msg);
-        throw new BadRequest(msg)
+        Logger.info(ctx, msg);
+        throw new BadRequest(msg);
     }
-    if (electionId !== ballot.election_id){
-        throw new BadRequest('Incorrect Election ID')
+    if (electionId !== ballot.election_id) {
+        throw new BadRequest('Incorrect Election ID');
     }
 
-    // Scrub identifying information from ballot to preserve voter anonymity
     const scrubbedBallot = {
         ...ballot,
         history: undefined,
@@ -33,13 +32,8 @@ const getBallotByBallotID = async (req: IElectionRequest, res: Response, next: N
         create_date: undefined,
         update_date: undefined,
         user_id: undefined,
-        ip_hash: undefined
+        ip_hash: undefined,
     };
-
-    Logger.debug(req, "ballot = ", scrubbedBallot);
-    res.json({ ballot: scrubbedBallot })
-}
-
-export {
-    getBallotByBallotID
-}
+    Logger.debug(ctx, "ballot = ", scrubbedBallot);
+    return c.json({ ballot: scrubbedBallot });
+};

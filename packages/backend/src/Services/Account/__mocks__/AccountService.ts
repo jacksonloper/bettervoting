@@ -1,34 +1,27 @@
-import { IRequest } from '../../../IRequest';
 import Logger from "../../Logging/Logger";
 import AccountServiceUtils from "../AccountServiceUtils";
+import type { ReqLike } from '../AccountService';
 
-var jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 export default class AccountService {
-
     privateKey = "privateKey";
-    publicKey = "publicKey"
+    publicKey = "publicKey";
     verify = false;
 
-    constructor() {
-    }
+    constructor() {}
 
-    getToken = async (req: any) => {
-        return {}
-    }
+    getToken = async (_req: any) => ({});
 
-    extractUserFromRequest  = (req:IRequest, customKey?:string) => {
-        const token = customKey ? req.cookies.custom_id_token : req.cookies.id_token;
-        if (!this.verify){
-            return jwt.decode(token);
-        }
-        if (token){
-            if (customKey) {
-                Logger.debug(req, "using custom authKey");
-            }
+    extractUserFromRequest = (req: ReqLike, customKey?: string) => {
+        const cookies = req.cookies ?? {};
+        const token = customKey ? cookies.custom_id_token : cookies.id_token;
+        if (!this.verify) return jwt.decode(token);
+        if (token) {
+            if (customKey) Logger.debug(undefined, "using custom authKey");
             const key = customKey ? customKey : this.privateKey;
             return AccountServiceUtils.extractUserFromRequest(req, token, key);
         }
-        return null
-    }
+        return null;
+    };
 }

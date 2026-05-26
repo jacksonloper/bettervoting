@@ -12,7 +12,7 @@
 // the codebase expects (the Keycloak-shaped { sub, email, ... }).
 
 import Logger from '../Logging/Logger';
-import { IRequest } from '../../IRequest';
+import type { ReqLike } from './AccountService';
 import { InternalServerError } from '@curveball/http-errors';
 const jwt = require('jsonwebtoken');
 
@@ -52,7 +52,7 @@ export default class NetlifyAccountService {
     );
   };
 
-  extractUserFromRequest = (req: IRequest, _customKey?: string) => {
+  extractUserFromRequest = (req: ReqLike & { clientContext?: any }, _customKey?: string) => {
     // Path 1 (preferred): Netlify already validated the JWT and attached the
     // user to clientContext. No verification needed on our side.
     const clientContext = (req as any).clientContext;
@@ -84,13 +84,13 @@ export default class NetlifyAccountService {
     return null;
   };
 
-  private verifyOrDecode(token: string, req: any): NetlifyIdentityUser | null {
+  private verifyOrDecode(token: string, _req: any): NetlifyIdentityUser | null {
     const secret = process.env.JWT_SECRET || process.env.GOTRUE_JWT_SECRET;
     try {
       if (secret) return jwt.verify(token, secret);
       return jwt.decode(token);
     } catch (e: any) {
-      Logger.warn(req, 'Netlify Identity JWT verify failed: ', e.message);
+      Logger.warn(undefined, 'Netlify Identity JWT verify failed: ', e.message);
       return null;
     }
   }

@@ -2,40 +2,32 @@ import ServiceLocator from '../../ServiceLocator';
 import Logger from '../../Services/Logging/Logger';
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { expectPermission, hashString } from "../controllerUtils";
-import { BadRequest, Unauthorized } from "@curveball/http-errors";
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
+import { Unauthorized } from "@curveball/http-errors";
+import { C, body, election, logCtx, user, userAuth } from "../../honoTypes";
 
-var ElectionsModel = ServiceLocator.electionsDb();
-
+const ElectionsModel = ServiceLocator.electionsDb();
 const className = "election.Controllers";
 
-const claimElection = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    Logger.info(req, `${className}.claimElection ${req.election.election_id}`);
-    // temp_id will be verified against the election owner id to grant the owner role (even if we're logged in)
-    expectPermission(req.user_auth.roles, permissions.canClaimElection)
+export const claimElection = async (c: C) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    const u = user(c);
+    Logger.info(ctx, `${className}.claimElection ${e.election_id}`);
+    // temp_id will be verified against the election owner id to grant the owner role
+    expectPermission(userAuth(c).roles, permissions.canClaimElection);
 
-    // check for no-op
-    if(req.election.owner_id == req.user.sub){
-        res.send()
-        return;
-    }
+    if (e.owner_id === u.sub) return c.body(null);
 
-    // must be logged in
-    if(req.user.typ != 'ID'){
+    if (u.typ !== 'ID') {
         throw new Unauthorized("User does not have permissions: must be logged in");
     }
 
-    // verify claim key
-    if(hashString(req.body.claim_key) != req.election.claim_key_hash){
+    const { claim_key, expected_update_date } = await body(c);
+    if (hashString(claim_key) !== e.claim_key_hash) {
         throw new Unauthorized("User does not have permissions: claim_key mismatch");
     }
 
-    req.election.owner_id = req.user.sub;
-    const expected_update_date = req.body.expected_update_date;
-    await ElectionsModel.updateElection(req.election, req, `Transferring Ownership`, expected_update_date);
-
-    res.send()
-}
-
-export {claimElection}
+    e.owner_id = u.sub;
+    await ElectionsModel.updateElection(e, ctx, `Transferring Ownership`, expected_update_date);
+    return c.body(null);
+};

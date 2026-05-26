@@ -1,38 +1,29 @@
-import { ElectionRoll, ElectionRollState } from "@equal-vote/star-vote-shared/domain_model/ElectionRoll";
 import ServiceLocator from "../../ServiceLocator";
 import Logger from "../../Services/Logging/Logger";
-import { responseErr } from "../../Util";
-import { hasPermission, permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
+import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { expectPermission } from "../controllerUtils";
 import { BadRequest } from "@curveball/http-errors";
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
+import { C, body, election, logCtx, user, userAuth } from "../../honoTypes";
 
 const ElectionRollModel = ServiceLocator.electionRollDb();
-
 const className = "VoterRolls.Controllers";
 
-const editElectionRoll = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    expectPermission(req.user_auth.roles, permissions.canEditElectionRoll)
-    const electinoRollInput = req.body.electionRollEntry;
-    Logger.info(req, `${className}.editElectionRoll election:${req.election.election_id}`);
-    if (electinoRollInput.history == null) {
-        electinoRollInput.history = [];
-    }
-    electinoRollInput.history.push([{
+export const editElectionRoll = async (c: C) => {
+    const ctx = logCtx(c);
+    expectPermission(userAuth(c).roles, permissions.canEditElectionRoll);
+    const { electionRollEntry: electionRollInput } = await body(c);
+    Logger.info(ctx, `${className}.editElectionRoll election:${election(c).election_id}`);
+    if (electionRollInput.history == null) electionRollInput.history = [];
+    electionRollInput.history.push([{
         action_type: 'edited',
-        actor: req.user.email,
+        actor: user(c).email,
         timestamp: Date.now(),
-    }])
-    const electionRollEntry = await ElectionRollModel.update(electinoRollInput, req, `User Editing Election Roll`);
-    if (!electionRollEntry) {
+    }]);
+    const updated = await ElectionRollModel.update(electionRollInput, ctx, `User Editing Election Roll`);
+    if (!updated) {
         const msg = "Election Roll not found";
-        Logger.info(req, msg);
-        throw new BadRequest(msg)
+        Logger.info(ctx, msg);
+        throw new BadRequest(msg);
     }
-    res.status(200).json(electionRollEntry)
-}
-
-export {
-    editElectionRoll,
-}
+    return c.json(updated, 200);
+};

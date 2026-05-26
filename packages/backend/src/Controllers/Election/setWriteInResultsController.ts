@@ -3,12 +3,11 @@ import Logger from '../../Services/Logging/Logger';
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { expectPermission } from "../controllerUtils";
 import { BadRequest, InternalServerError } from "@curveball/http-errors";
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
 import { WriteInCandidate } from '@equal-vote/star-vote-shared/domain_model/WriteIn';
 import { trimLower } from '@equal-vote/star-vote-shared/domain_model/Util';
+import { C, body, election, logCtx, userAuth } from "../../honoTypes";
 
-var ElectionsModel = ServiceLocator.electionsDb();
+const ElectionsModel = ServiceLocator.electionsDb();
 
 const MAX_WRITE_IN_CANDIDATES = 100;
 const MAX_CANDIDATE_NAME_LENGTH = 100;
@@ -52,62 +51,58 @@ function validateWriteInCandidates(candidates: unknown[]): WriteInCandidate[] {
     return result;
 }
 
-const setWriteInResults = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    Logger.info(req, `setWriteInResults ${req.election.election_id}`);
-    expectPermission(req.user_auth.roles, permissions.canProcessWriteIns)
+export const setWriteInResults = async (c: C) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    Logger.info(ctx, `setWriteInResults ${e.election_id}`);
+    expectPermission(userAuth(c).roles, permissions.canProcessWriteIns);
 
-    const write_in_results = req.body.write_in_results;
+    const { write_in_results } = await body(c);
     if (typeof write_in_results !== 'object') {
-        throw new BadRequest('write_in_results not provided or incorrect type')
+        throw new BadRequest('write_in_results not provided or incorrect type');
     }
     if (!write_in_results.race_id || typeof write_in_results.race_id !== 'string') {
-        throw new BadRequest('write_in_results.race_id is required')
+        throw new BadRequest('write_in_results.race_id is required');
     }
     if (!Array.isArray(write_in_results.write_in_candidates)) {
-        throw new BadRequest('write_in_results.write_in_candidates must be an array')
+        throw new BadRequest('write_in_results.write_in_candidates must be an array');
     }
 
     const validatedCandidates = validateWriteInCandidates(write_in_results.write_in_candidates);
 
     // Server-side dedup check: reject if two incoming candidates trim-lowercase to same key
     const incomingKeys = new Set<string>();
-    for (const c of validatedCandidates) {
-        const key = trimLower(c.candidate_name);
+    for (const cand of validatedCandidates) {
+        const key = trimLower(cand.candidate_name);
         if (incomingKeys.has(key)) {
-            throw new BadRequest(`Duplicate candidate name: "${c.candidate_name}"`)
+            throw new BadRequest(`Duplicate candidate name: "${cand.candidate_name}"`);
         }
         incomingKeys.add(key);
     }
 
-    const election_id = req.election.election_id;
+    const election_id = e.election_id;
 
     // Read the current election and note its update_date
-    const election = await ElectionsModel.getElectionByID(election_id, req);
-    if (!election) {
+    const current = await ElectionsModel.getElectionByID(election_id, ctx);
+    if (!current) {
         throw new InternalServerError(`Election ${election_id} not found`);
     }
-    const expected_update_date = election.update_date as string;
+    const expected_update_date = current.update_date as string;
 
-    // Modify in memory
-    const race_index = election.races.findIndex(r => r.race_id === write_in_results.race_id);
+    const race_index = current.races.findIndex(r => r.race_id === write_in_results.race_id);
     if (race_index === -1) {
-        throw new BadRequest('Invalid Race ID')
+        throw new BadRequest('Invalid Race ID');
     }
-    if (!election.races[race_index].enable_write_in) {
-        throw new BadRequest('Write-In not enabled for this race')
+    if (!current.races[race_index].enable_write_in) {
+        throw new BadRequest('Write-In not enabled for this race');
     }
-    election.races[race_index].write_in_candidates = validatedCandidates;
+    current.races[race_index].write_in_candidates = validatedCandidates;
 
-    // Update with optimistic concurrency check
     const updatedElection = await ElectionsModel.updateElection(
-        election,
-        req,
+        current,
+        ctx,
         'Update Write-In Candidates',
         expected_update_date
     );
-    res.json({ election: updatedElection });
-}
-
-export {
-    setWriteInResults,
-}
+    return c.json({ election: updatedElection });
+};

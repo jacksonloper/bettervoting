@@ -1,57 +1,78 @@
-import Logger from "../../Services/Logging/Logger"
-import { responseErr } from "../../Util"
-import { permission } from "@equal-vote/star-vote-shared/domain_model/permissions"
-import { roles } from "@equal-vote/star-vote-shared/domain_model/roles"
-import ServiceLocator from "../../ServiceLocator"
+// Hono-native auth middleware.
+//
+// Previously these were Express middleware exported as `(req, res, next)`
+// functions. The Hono equivalents take `(c, next)` and read/write through
+// c.var.* instead of mutating req. getUser is registered globally in
+// honoApp.ts; isLoggedIn / hasPermission / assertOwnership are used to gate
+// individual routes that need stronger checks.
+
+import Logger from "../../Services/Logging/Logger";
+import { Unauthorized } from "@curveball/http-errors";
+import { permission } from "@equal-vote/star-vote-shared/domain_model/permissions";
+import { roles } from "@equal-vote/star-vote-shared/domain_model/roles";
+import ServiceLocator from "../../ServiceLocator";
+import { C, election, logCtx, user, userAuth } from "../../honoTypes";
 
 const className = 'Auth.Controllers';
 const accountService = ServiceLocator.accountService();
 
-const getUser = (req: any, res: any, next: any) => {
-  Logger.info(req, `${className}.getUser`);
-  const user = accountService.extractUserFromRequest(req);
-  if (user){
-    req.user = user;
-  }
-  next()
-}
+// Reads JWT / clientContext / temp_id cookie and sets c.var.user. Mounted
+// globally on /API/* in honoApp.ts; the legacy file kept the export here so
+// any external callers (event handlers) still resolve.
+export const getUser = async (c: C, next: () => Promise<void>) => {
+    const ctx = logCtx(c);
+    Logger.info(ctx, `${className}.getUser`);
 
-const hasPermission = (permission: permission) => {
-  return (req: any, res: any, next: any) => {
-    Logger.debug(req, "\n= = = = =\n!!! hasPermission with: " + JSON.stringify(req.user_auth));
-    if (!req.user_auth.roles.some( (role:roles) => permission.includes(role))) {
-      var msg = "Does not have permission";
-      Logger.info(req, msg);
-      return responseErr(res, req, 401, msg);
+    const cookieHeader = c.req.header('cookie') ?? '';
+    const cookies = Object.fromEntries(
+        cookieHeader.split(';').map(p => {
+            const [k, ...v] = p.trim().split('=');
+            return [k, decodeURIComponent(v.join('='))];
+        }).filter(([k]) => k),
+    );
+    const reqLike = {
+        headers: (() => { const o: Record<string, string> = {}; c.req.raw.headers.forEach((v, k) => { o[k] = v; }); return o; })(),
+        cookies,
+        clientContext: (c.env as any)?.context?.clientContext ?? null,
+    };
+    const u = accountService.extractUserFromRequest(reqLike as any);
+    if (u) c.set('user', u);
+    await next();
+};
+
+export const isLoggedIn = async (c: C, next: () => Promise<void>) => {
+    const ctx = logCtx(c);
+    const u = user(c);
+    Logger.info(ctx, `${className}.isLoggedIn user=${!!u}`);
+    if (!u) {
+        Logger.info(ctx, "Not Logged In");
+        throw new Unauthorized("Not Logged In");
     }
-    next()
-  }
-}
+    await next();
+};
 
-const isLoggedIn = (req: any, res: any, next: any) => {
-  Logger.info(req, `${className}.isLoggedIn user=${!!req.user}`);
-  if (!req.user) {
-    var msg = "Not Logged In";
-    Logger.info(req, msg);
-    return responseErr(res, req, 401, msg);
-  }
-  next()
-}
+export const hasPermission = (perm: permission) => async (c: C, next: () => Promise<void>) => {
+    const ctx = logCtx(c);
+    const ua = userAuth(c);
+    Logger.debug(ctx, "\n= = = = =\n!!! hasPermission with: " + JSON.stringify(ua));
+    if (!ua.roles.some((role: roles) => perm.includes(role))) {
+        const msg = "Does not have permission";
+        Logger.info(ctx, msg);
+        throw new Unauthorized(msg);
+    }
+    await next();
+};
 
-const assertOwnership = (req: any, res: any, next: any) => {
-  Logger.info(req, `${className}.assertOwnership`);
-  Logger.debug(req, `${req.election.owner_id} ==? ${req.user.sub}`);
-  if (req.election.owner_id != req.user.sub) {
-    var msg = "Unauthorized: User does not own electon";
-    Logger.info(req, msg);
-    return responseErr(res, req, 401, msg);
-  }
-  next()
-}
-
-export  {
-  getUser,
-  isLoggedIn,
-  assertOwnership,
-  hasPermission
-}
+export const assertOwnership = async (c: C, next: () => Promise<void>) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    const u = user(c);
+    Logger.info(ctx, `${className}.assertOwnership`);
+    Logger.debug(ctx, `${e.owner_id} ==? ${u.sub}`);
+    if (e.owner_id !== u.sub) {
+        const msg = "Unauthorized: User does not own electon";
+        Logger.info(ctx, msg);
+        throw new Unauthorized(msg);
+    }
+    await next();
+};
