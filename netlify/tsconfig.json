@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "target": "es2022",
+    "rootDir": "..",
+    "outDir": "./build",
+    "esModuleInterop": true,
+    "strictNullChecks": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "strict": true,
+    "noEmit": true,
+    "types": ["node"],
+    "lib": ["ES2022", "DOM"],
+    "resolveJsonModule": true
+  },
+  "include": ["./functions/**/*", "../packages/backend/src/**/*"],
+  "exclude": [
+    "../packages/backend/src/test/**/*",
+    "../packages/backend/src/__mocks__/**/*",
+    "../packages/backend/src/**/__mocks__/**/*",
+    "../packages/backend/src/**/*.test.ts"
+  ]
+}

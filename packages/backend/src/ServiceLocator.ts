@@ -6,11 +6,19 @@ import EmailEventsDB from "./Models/EmailEvents";
 import CastVoteStore from "./Models/CastVoteStore";
 import EmailService from "./Services/Email/EmailService";
 import BlobService from "./Services/Blob/BlobService";
+import NetlifyBlobService from "./Services/Blob/NetlifyBlobService";
 import { IBallotStore } from "./Models/IBallotStore";
 import { IEventQueue } from "./Services/EventQueue/IEventQueue";
 import PGBossEventQueue from "./Services/EventQueue/PGBossEventQueue";
+import NetlifyEventQueue from "./Services/EventQueue/NetlifyEventQueue";
 
 import AccountService from "./Services/Account/AccountService"
+import NetlifyAccountService from "./Services/Account/NetlifyAccountService"
+
+// When BACKEND_PLATFORM=netlify the service locator picks the Netlify-native
+// implementations (Identity instead of Keycloak, Netlify Blobs instead of
+// Azure, fire-and-forget background functions instead of pg-boss).
+const IS_NETLIFY = process.env.BACKEND_PLATFORM === 'netlify';
 import GlobalData from "./Services/GlobalData";
 import { Kysely, PostgresDialect } from 'kysely'
 import { Database } from "./Models/Database";
@@ -72,6 +80,14 @@ function database(): Kysely<Database> {
 function pgConnectionObject(): any {
     var connectionStr = pgConnectionString();
     var devDB = process.env.DEV_DATABASE;
+    // Netlify DB (Neon) requires SSL; Neon's proxy presents a valid cert so
+    // rejectUnauthorized stays the default (true).
+    if (IS_NETLIFY) {
+        return {
+            connectionString: connectionStr,
+            ssl: true
+        };
+    }
     if (devDB === 'TRUE') {
         return {
             connectionString: connectionStr,
@@ -87,19 +103,28 @@ function pgConnectionObject(): any {
 }
 
 function pgConnectionString(): string {
-    return process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/postgres';
+    // Netlify DB exposes its connection string via NETLIFY_DATABASE_URL.
+    return (
+        process.env.NETLIFY_DATABASE_URL ||
+        process.env.DATABASE_URL ||
+        'postgresql://postgres:password@localhost:5432/postgres'
+    );
 }
 
 async function eventQueue(): Promise<IEventQueue> {
     if (_eventQueue == null) {
-        const eq = new PGBossEventQueue();
-        const conn = pgConnectionObject();
-        try{
-            await eq.init(conn, Logger.createContext("appInit"));
-        }catch(e){
-            throw `${e} \n\n----------------------\n\n Could not connect to postgres database at ${conn.connectionString.replace(/:.*@/,':*****@')}\n\n`
+        if (IS_NETLIFY) {
+            _eventQueue = new NetlifyEventQueue();
+        } else {
+            const eq = new PGBossEventQueue();
+            const conn = pgConnectionObject();
+            try{
+                await eq.init(conn, Logger.createContext("appInit"));
+            }catch(e){
+                throw `${e} \n\n----------------------\n\n Could not connect to postgres database at ${conn.connectionString.replace(/:.*@/,':*****@')}\n\n`
+            }
+            _eventQueue = eq;
         }
-        _eventQueue = eq;
     }
 
     return _eventQueue;
@@ -151,7 +176,9 @@ function emailService(): EmailService {
 
 function blobService(): BlobService {
     if (_blobService == null) {
-        if (process.env.AZURE_STORAGE_CONNECTION_STRING) {
+        if (IS_NETLIFY) {
+            _blobService = new NetlifyBlobService() as unknown as BlobService;
+        } else if (process.env.AZURE_STORAGE_CONNECTION_STRING) {
             _blobService = new BlobService();
         } else {
             Logger.info({}, 'AZURE_STORAGE_CONNECTION_STRING is not set. Using mock BlobService (image uploads will be no-ops).');
@@ -164,7 +191,11 @@ function blobService(): BlobService {
 
 function accountService(): AccountService {
     if (_accountService == null) {
-        _accountService = new AccountService();
+        if (IS_NETLIFY) {
+            _accountService = new NetlifyAccountService() as unknown as AccountService;
+        } else {
+            _accountService = new AccountService();
+        }
     }
     return _accountService;
 }

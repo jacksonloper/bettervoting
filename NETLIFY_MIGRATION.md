@@ -1,0 +1,221 @@
+# Netlify Backend Migration — Experiment
+
+This branch experiments with replacing the **entire** BetterVoting backend
+with Netlify-native services:
+
+| Old                                | New                                 |
+| ---------------------------------- | ----------------------------------- |
+| Express on Heroku/Azure            | **Netlify Functions** (`api`)       |
+| Keycloak (OIDC)                    | **Netlify Identity** (GoTrue)       |
+| Postgres on Azure/Heroku           | **Netlify DB** (Neon)               |
+| Azure Blob Storage                 | **Netlify Blobs**                   |
+| pg-boss (Postgres job queue)       | **Netlify Background Functions**    |
+| socket.io WebSocket server         | _stubbed_ (no persistent sockets)   |
+
+The implementation is gated by `BACKEND_PLATFORM=netlify` (set in
+`netlify.toml`). With the env var unset, the existing local dev stack
+(Keycloak + Azure + pg-boss + socket.io) continues to work unchanged, so
+this branch is non-destructive for contributors who haven't migrated.
+
+## How it's wired
+
+```
+                ┌──────────────────────────────────────────────────────┐
+                │ Netlify CDN                                          │
+   browser ──►  │ /             → packages/frontend/build/index.html   │
+                │ /assets/*     → CDN static files                     │
+                │ /API/*        → /.netlify/functions/api  (Express)   │
+                │ /blob/*       → /.netlify/functions/serve-blob       │
+                │ /.netlify/identity/* → GoTrue (managed)              │
+                └──────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+                     ┌────────────────────────────┐
+                     │ api function               │
+                     │ ─ wraps makeApp() Express  │
+                     │ ─ serverless-http          │
+                     │ ─ reads NETLIFY_DATABASE_URL│
+                     └────────────────────────────┘
+                                  │
+              publish(...)        │ inline writes (Kysely)
+                                  ▼
+       ┌──────────────────────┐  ┌──────────────────┐  ┌────────────┐
+       │ queue-worker-        │  │ Netlify DB       │  │ Netlify    │
+       │ background function  │  │ (Neon Postgres)  │  │ Blobs      │
+       │ (15-minute budget)   │  │                  │  │            │
+       │ dispatches to        │  │                  │  │            │
+       │ registerEvents()     │  │                  │  │            │
+       │ handlers             │  │                  │  │            │
+       └──────────────────────┘  └──────────────────┘  └────────────┘
+```
+
+## What's live
+
+- **All HTTP routes** under `/API/*` — they're served by the same Express app,
+  wrapped with `serverless-http`. No route logic changed.
+- **Postgres** — `ServiceLocator` reads `NETLIFY_DATABASE_URL` first, with SSL.
+  The existing Kysely migrations in `packages/backend/src/Migrations` run at
+  deploy time via the build command (only when `NETLIFY_DATABASE_URL` is set).
+- **Auth** — `NetlifyAccountService` reads `context.clientContext.user` (which
+  Netlify populates from a validated `Authorization: Bearer <nf_jwt>`) and
+  emits the same `{sub, email, roles, …}` shape the rest of the code expects.
+  The Keycloak code path is unchanged for local dev.
+- **Image uploads** — `NetlifyBlobService.uploadBufferToBlob()` stores in
+  Netlify Blobs and returns a `/blob/<container>/<key>` URL that resolves via
+  the `serve-blob` function. Buffers up to 5 GB are supported.
+- **Background jobs** (`castVoteEvent`, `sendInviteEvent`, `sendEmailEvent`) —
+  `NetlifyEventQueue.publish()` POSTs to the `queue-worker-background`
+  function, which calls the same handlers `registerEvents()` registers in the
+  pg-boss flow.
+- **Anonymous voters** — `temp_id` cookie path in `extractUserFromRequest`
+  still works.
+- **PII log hashing** — `logSafeHash` reads `LOG_HASH_SECRET` from env so
+  the salt is shared across function instances; previously every process
+  had its own `randomBytes(32)` salt, which made cross-instance correlation
+  impossible on serverless. The weekly bucketing is preserved on top.
+
+## What's stubbed or different
+
+- **Socket.io** — `setupSockets()` is never called under Netlify (only
+  `index.ts` calls it, and `index.ts` isn't loaded by the function). The
+  `io != null` guards in `castVoteController.ts` make the broadcasts no-ops.
+  Result: the live-updating election stats on the landing page won't update
+  until refresh.
+  _Possible follow-up:_ swap to a polling REST endpoint, or use Ably/Pusher.
+- **pg-boss retries / dedup** — `NetlifyEventQueue` doesn't retry on failure
+  and has no `singletonKey` support. If a job throws, it's gone. Acceptable
+  for email sends (SendGrid has its own retry) but worth revisiting if we
+  start enqueueing critical jobs.
+- **`POST /API/Token`** — returns 410 Gone. The Netlify Identity widget
+  (`gotrue-js`) exchanges credentials against `/.netlify/identity/token`
+  directly, so the backend doesn't proxy it.
+- **Per-election custom `auth_key`** — `extractUserFromRequest` ignores the
+  `customKey` argument under Netlify. All elections use the site's Identity
+  instance. Re-introducing per-election keys would mean storing a separate
+  signing secret per election and validating against it.
+- **Dynamic OG meta tag injection** — the Express catch-all that injects
+  OpenGraph tags into `index.html` per-election ID is bypassed; the SPA
+  fallback redirect serves a static `index.html`. Social previews for
+  election pages won't show the election title/image until we move the
+  injection into an Edge Function.
+- **Frontend login UI** — _not yet updated_. The frontend still calls
+  Keycloak. For the migration to be testable end-to-end, the login button
+  needs to mount the Netlify Identity widget instead. This is the next
+  obvious follow-up; flagged as out-of-scope for this branch.
+
+## Database migrations: Kysely vs Netlify's native system
+
+Netlify DB ships with its own migration runner that auto-applies SQL files
+from `netlify/database/migrations/` at deploy time. BetterVoting already
+has six [Kysely-based migrations](packages/backend/src/Migrations) and a
+[migrator script](packages/backend/src/Migrators/migrate-to-latest.ts), so
+we keep Kysely as the source of truth and treat Netlify's native system as
+explicitly **opt-out**.
+
+### How they're kept out of each other's way
+
+- `netlify/database/migrations/` is **not present** in the repo, so
+  Netlify's auto-runner is a no-op. (See `netlify/database/README.md` for
+  a contributor-facing note enforcing this.)
+- Kysely runs from `scripts/netlify-migrate.sh`, invoked at the end of the
+  Netlify build command (`netlify.toml`).
+- Kysely tracks applied migrations in `kysely_migration` /
+  `kysely_migration_lock` tables, which live alongside the app tables but
+  in a separate namespace from anything Netlify's runner would create.
+
+### Ordering and failure modes
+
+- The build command runs migrations **before** function code is published.
+  Production deploys: failure exits the build → no publish → old code stays
+  live against the old schema.
+- Deploy previews: every PR / git branch automatically gets its own Netlify
+  DB branch (forked off prod). Kysely runs on each branch and only applies
+  the migrations that aren't already present from the fork point. Branches
+  are deleted when the PR closes.
+- Kysely's `kysely_migration_lock` table prevents two concurrent builds
+  from migrating the same database at the same time.
+
+### Bootstrap on a fresh Netlify DB
+
+```bash
+netlify database init        # provisions an empty Neon Postgres branch
+# (decline the sample-data prompt)
+git push                     # triggers a build → migrations run → all 6 apply
+```
+
+The first deploy creates the full schema from scratch. The script
+`scripts/netlify-migrate.sh` fails loudly with an actionable message if
+`NETLIFY_DATABASE_URL` is missing — so you can't accidentally ship a
+"successful" build that crashes at runtime.
+
+### Data migration
+
+This branch handles **schema** migration only. The actual production data
+on the existing Azure/Heroku Postgres has to be moved separately
+(`pg_dump | psql` against `NETLIFY_DATABASE_URL` is the simplest path) —
+that's a one-time cutover task outside the scope of this experiment.
+
+### When to revisit
+
+If we ever want to drop Kysely in favor of Netlify's native SQL migrations
+(simpler ops, tighter platform integration, no `migrate:latest` step), the
+one-way-door procedure is documented at the bottom of
+`netlify/database/README.md`. Until then, Kysely stays.
+
+## Deploying
+
+1. In the Netlify UI, enable **Identity** for the site (Site settings →
+   Identity → Enable Identity).
+2. Run `netlify database init` from the repo root to provision Netlify DB.
+   This sets `NETLIFY_DATABASE_URL` automatically in the build environment.
+3. Set the standard env vars in Netlify UI:
+   - `SENDGRID_API_KEY`
+   - `FROM_EMAIL_ADDRESS`
+   - `ALLOWED_URLS` (use your `https://<site>.netlify.app`)
+   - `LOG_HASH_SECRET` — high-entropy value (e.g. `openssl rand -hex 32`).
+     Stored as a Netlify secret so it isn't exposed in build logs. Used by
+     `logSafeHash` to produce stable PII hashes across function instances
+     (without it, every cold start gets a fresh in-memory salt and
+     cross-instance log correlation breaks). Rotate periodically — the
+     weekly bucket inside `logSafeHash` already rotates the effective key
+     on top of whatever cadence you choose.
+   - (optional) `JWT_SECRET` to enable full signature verification on the
+     `Authorization` header fallback path.
+4. Push this branch. Netlify will:
+   - Build the frontend (`packages/frontend/build`).
+   - Build the backend (`packages/backend/build`, used by migrations).
+   - Run Kysely migrations against `NETLIFY_DATABASE_URL`.
+   - Deploy `api`, `serve-blob`, and `queue-worker-background` functions.
+
+## Local-dev parity
+
+`netlify dev` runs everything against Netlify's emulator:
+
+```bash
+npx netlify dev
+```
+
+This emulates Functions, Identity, Blobs, and serves the frontend dev
+server. With `BACKEND_PLATFORM=netlify` set in `.env` you can hit the same
+code paths locally.
+
+To keep using the **old** docker-compose stack (Keycloak + local Postgres
++ pg-boss + socket.io), leave `BACKEND_PLATFORM` unset — `ServiceLocator`
+will pick the original implementations.
+
+## Files added / changed
+
+```
+netlify.toml                                                       (rewritten)
+netlify/functions/api.ts                                           (new)
+netlify/functions/serve-blob.ts                                    (new)
+netlify/functions/queue-worker-background.ts                       (new)
+packages/backend/src/Services/Account/NetlifyAccountService.ts     (new)
+packages/backend/src/Services/Blob/NetlifyBlobService.ts           (new)
+packages/backend/src/Services/EventQueue/NetlifyEventQueue.ts      (new)
+packages/backend/src/ServiceLocator.ts                             (branch on env)
+packages/backend/src/Controllers/User/getUserTokenController.ts    (410 on netlify)
+packages/backend/package.json                                      (+ @netlify/*)
+package.json                                                       (+ serverless-http)
+NETLIFY_MIGRATION.md                                               (this file)
+```

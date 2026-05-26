@@ -21,6 +21,8 @@
   "dependencies": {
     "@azure/storage-blob": "^12.29.1",
     "@curveball/http-errors": "^0.4.1",
+    "@netlify/blobs": "^8.1.0",
+    "@netlify/functions": "^2.8.2",
     "@sendgrid/mail": "^8.1.1",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.12",
