@@ -35,15 +35,23 @@
   node_bundler          = "esbuild"
   # Big or native-dependency packages are kept external (installed at runtime
   # from node_modules) rather than esbuild-inlined.
+  # Keep anything with a native binding, anything large enough that bundling
+  # hurts cold-start, and anything that's statically imported by the backend
+  # but only actually used under the legacy platform (pg-boss, socket.io,
+  # @azure/storage-blob). Listing them here keeps esbuild from trying to walk
+  # their dep trees during the function bundle.
   external_node_modules = [
     "express",
     "pg",
     "pg-native",
+    "pg-boss",
+    "pg-format",
     "kysely",
     "@sendgrid/mail",
     "@netlify/blobs",
     "@netlify/functions",
     "swagger-ui-express",
+    "swagger-jsdoc",
     "jsonwebtoken",
     "sanitize-html",
     "axios",
@@ -52,7 +60,14 @@
     "fraction.js",
     "seedrandom",
     "multer",
-    "pg-format"
+    "socket.io",
+    "@azure/storage-blob",
+    "cors",
+    "cookie-parser",
+    "dotenv",
+    "express-async-handler",
+    "node-fetch",
+    "@curveball/http-errors"
   ]
 
 # Background queue worker — `-background` suffix gives it the 15-minute budget.
@@ -92,5 +107,24 @@
   to     = "/index.html"
   status = 200
 
-# Run the post-deploy migration script. (We invoke it from the build command
-# above too, but this hook gives us a place to run one-off jobs in the future.)
+# ----- Headers -----
+
+# RSBuild emits hashed filenames under /static/, so they're safe to cache
+# aggressively. The HTML shell is left at the Netlify default (revalidated).
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# ----- `netlify dev` local emulator -----
+#
+# Points netlify dev at the RSBuild dev server so /API/* and /blob/* get
+# routed through the local Functions emulator while the frontend hot-reloads
+# at http://localhost:3000.
+[dev]
+  command    = "npm run dev -w @equal-vote/star-vote-frontend"
+  targetPort = 3000
+  port       = 8888
+  publish    = "packages/frontend/build"
+  framework  = "#custom"
+  autoLaunch = false
