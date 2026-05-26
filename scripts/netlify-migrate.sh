@@ -30,33 +30,31 @@ if [ -z "${NETLIFY_DATABASE_URL:-}" ] && [ -n "${NETLIFY_DATABASE_URL_UNPOOLED:-
 fi
 
 if [ -z "${NETLIFY_DATABASE_URL:-}" ]; then
-  echo "[netlify-migrate] ERROR: BACKEND_PLATFORM=netlify but no Netlify DB URL is visible to the build." >&2
+  # Chicken-and-egg: Netlify only auto-provisions the DB on the first build
+  # that ships @netlify/database, so the very first build can't see the env
+  # var yet. We log loudly and exit 0 so the deploy succeeds; the next
+  # build will have the URL and will actually apply migrations.
+  echo "[netlify-migrate] WARNING: no Netlify DB URL visible to this build — skipping migrations." >&2
   echo "" >&2
   echo "[netlify-migrate] Diagnostic — env vars visible to this build with names containing DATABASE / NETLIFY / NEON:" >&2
   # Print names only (not values) so we don't leak secrets into build logs.
   env | awk -F= '/DATABASE|NETLIFY|NEON/ { print "  - " $1 }' | sort -u >&2 || true
   echo "" >&2
   cat >&2 <<'EOF'
-If you see NETLIFY_DATABASE_URL in the list above but it's still treated as
-empty here, it's probably scoped to a different deploy context than this
-build (e.g. set for Production only while this is a Deploy Preview).
+If this is the first deploy with @netlify/database installed, that's
+expected — Netlify will provision the database during this deploy and
+the next build will see NETLIFY_DATABASE_URL.
 
-If you don't see it at all, the Neon/Netlify-DB integration hasn't injected
-it into the site yet. Common fixes:
-
-  1. Site settings → Integrations → Neon (or "Netlify DB") → make sure the
-     database is linked to this site and that "Expose connection string as
-     environment variable" is enabled.
-  2. Site settings → Environment variables → confirm NETLIFY_DATABASE_URL
-     is listed and that the deploy context for this build is checked.
-  3. Locally: `netlify link` to this site, then `netlify env:list` to see
-     what's actually exposed. `netlify database status` confirms the DB is
-     attached.
-  4. As a fallback you can set DATABASE_URL manually under Environment
-     variables (ServiceLocator falls through to DATABASE_URL if
-     NETLIFY_DATABASE_URL isn't set).
+If you've already had a successful deploy and the URL is still missing:
+  1. `netlify database status` from a linked local clone — confirms whether
+     the database is enabled and what its connection string is.
+  2. Site dashboard → Project configuration → Database — links a database
+     manually if auto-provisioning hasn't fired.
+  3. Site dashboard → Project configuration → Environment variables —
+     check that NETLIFY_DATABASE_URL is enabled for this deploy context
+     (Production / Deploy Preview / Branch deploys).
 EOF
-  exit 1
+  exit 0
 fi
 
 echo "[netlify-migrate] Running Kysely migrations against Netlify DB..."
