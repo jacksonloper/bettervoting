@@ -21,17 +21,40 @@ if [ "${BACKEND_PLATFORM:-}" != "netlify" ]; then
   exit 0
 fi
 
+# Netlify DB exposes both a pooled and an unpooled connection string. Either
+# works for one-shot migrations, so accept whichever the build environment
+# happens to inject.
+if [ -z "${NETLIFY_DATABASE_URL:-}" ] && [ -n "${NETLIFY_DATABASE_URL_UNPOOLED:-}" ]; then
+  export NETLIFY_DATABASE_URL="$NETLIFY_DATABASE_URL_UNPOOLED"
+  echo "[netlify-migrate] Using NETLIFY_DATABASE_URL_UNPOOLED (pooled URL not set)."
+fi
+
 if [ -z "${NETLIFY_DATABASE_URL:-}" ]; then
+  echo "[netlify-migrate] ERROR: BACKEND_PLATFORM=netlify but no Netlify DB URL is visible to the build." >&2
+  echo "" >&2
+  echo "[netlify-migrate] Diagnostic — env vars visible to this build with names containing DATABASE / NETLIFY / NEON:" >&2
+  # Print names only (not values) so we don't leak secrets into build logs.
+  env | awk -F= '/DATABASE|NETLIFY|NEON/ { print "  - " $1 }' | sort -u >&2 || true
+  echo "" >&2
   cat >&2 <<'EOF'
-[netlify-migrate] ERROR: BACKEND_PLATFORM=netlify but NETLIFY_DATABASE_URL is empty.
+If you see NETLIFY_DATABASE_URL in the list above but it's still treated as
+empty here, it's probably scoped to a different deploy context than this
+build (e.g. set for Production only while this is a Deploy Preview).
 
-This usually means Netlify DB has not been provisioned yet. From a local
-clone of the repo, run:
+If you don't see it at all, the Neon/Netlify-DB integration hasn't injected
+it into the site yet. Common fixes:
 
-    netlify database init
-
-then push again. The connection string is injected into the build
-environment automatically once the database exists.
+  1. Site settings → Integrations → Neon (or "Netlify DB") → make sure the
+     database is linked to this site and that "Expose connection string as
+     environment variable" is enabled.
+  2. Site settings → Environment variables → confirm NETLIFY_DATABASE_URL
+     is listed and that the deploy context for this build is checked.
+  3. Locally: `netlify link` to this site, then `netlify env:list` to see
+     what's actually exposed. `netlify database status` confirms the DB is
+     attached.
+  4. As a fallback you can set DATABASE_URL manually under Environment
+     variables (ServiceLocator falls through to DATABASE_URL if
+     NETLIFY_DATABASE_URL isn't set).
 EOF
   exit 1
 fi
