@@ -98,6 +98,10 @@ export default function makeApp() {
     // applied, and user_auth computed before the handler runs.
     app.use('/API/Election/:id', loadElection, electionSpecificAuth, computeUserAuth);
     app.use('/API/Election/:id/*', loadElection, electionSpecificAuth, computeUserAuth);
+    // /API/ElectionResult/:id has a stupid name — it should be /API/Election/:id/results
+    // so it'd inherit the chain above. Until it's renamed, it needs its own line, or
+    // getElectionResults blows up reading election_id off an undefined election.
+    app.use('/API/ElectionResult/:id', loadElection, electionSpecificAuth, computeUserAuth);
 
     // ---- error handler ----
     app.onError((err: any, c) => {
