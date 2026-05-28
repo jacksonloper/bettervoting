@@ -75,6 +75,11 @@
 [functions."api"]
   timeout = 26
 
+# Dev-data seeder — creates Identity users + seeds elections. Give it room
+# for a DB cold start plus a handful of admin-API + insert round-trips.
+[functions."seed"]
+  timeout = 26
+
 # ----- Redirects (order matters — most specific first) -----
 
 # Legacy API path used by the existing frontend.
