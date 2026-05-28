@@ -28,6 +28,7 @@ import StyleGuide from './components/StyleGuide'
 import { PrimaryButton } from './components/styles'
 import ScrollToTop from './hooks/scrollToTop'
 import QueryTool from './components/Elections/QueryTool'
+import { LoginPage, RequestResetPage, ResetPasswordPage, AccountPage } from './components/Auth/AuthPages'
 
 const App = () => {
   const {t} = useSubstitutedTranslation();
@@ -67,6 +68,11 @@ const App = () => {
             }}>
             <Routes>
               <Route path='/' element={<LandingPage />} />
+              {/* Auth (headless Netlify Identity) */}
+              <Route path='/login' element={<LoginPage />} />
+              <Route path='/forgot-password' element={<RequestResetPage />} />
+              <Route path='/reset-password' element={<ResetPasswordPage />} />
+              <Route path='/account' element={<AccountPage />} />
               {/*creating a new route for feedback page while still loading the landing page*/}
               <Route path='/new_election' element={<LandingPage />} /> 
                 <Route path='/new-election' element={<Redirect href='/new_election'/>} /> 
