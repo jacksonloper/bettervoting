@@ -4,9 +4,11 @@
 //
 // Does two things:
 //   1. Ensures the dev Identity users exist (idempotent — looks them up,
-//      creates only the missing ones). Uses the short-lived admin token
-//      Netlify injects at context.clientContext.identity.token, so no
-//      admin credentials live in the repo.
+//      creates only the missing ones). Uses the `admin` export from
+//      @netlify/identity, which obtains the short-lived operator token from
+//      the Netlify Functions runtime automatically — no admin credentials in
+//      the repo and no reliance on the legacy clientContext injection (which
+//      is not populated for Functions 2.0 / `export default` handlers).
 //   2. Seeds the dev elections (makeDevElections) owned by the primary dev
 //      user, looked up by email so the owner_id is a real Identity UUID.
 //
@@ -22,6 +24,7 @@
 
 import './env-shim';
 import type { Context } from '@netlify/functions';
+import { admin, MissingIdentityError } from '@netlify/identity';
 import { seedDevElections } from '../../packages/backend/src/DevElections/makeDevElections';
 
 type DevUserSpec = {
@@ -44,34 +47,7 @@ const DEV_USERS: DevUserSpec[] = [
     },
 ];
 
-type GoTrueUser = { id: string; email: string };
-
-async function listUsers(adminUrl: string, token: string): Promise<GoTrueUser[]> {
-    const res = await fetch(`${adminUrl}/admin/users`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) throw new Error(`admin list users failed: ${res.status} ${await res.text()}`);
-    const body = await res.json();
-    return body.users ?? [];
-}
-
-async function createUser(adminUrl: string, token: string, spec: DevUserSpec, password: string): Promise<GoTrueUser> {
-    const res = await fetch(`${adminUrl}/admin/users`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            email: spec.email,
-            password,
-            confirm: true, // mark email as verified without the confirmation email
-            user_metadata: spec.user_metadata,
-            app_metadata: spec.app_metadata ?? {},
-        }),
-    });
-    if (!res.ok) throw new Error(`admin create user failed for ${spec.email}: ${res.status} ${await res.text()}`);
-    return res.json();
-}
-
-export default async (req: Request, context: Context) => {
+export default async (req: Request, _context: Context) => {
     if (process.env.DISALLOW_SEED === 'true') {
         return Response.json({ error: 'Seeding is disabled on this site (DISALLOW_SEED=true).' }, { status: 403 });
     }
@@ -80,21 +56,17 @@ export default async (req: Request, context: Context) => {
         return Response.json({ error: 'Append ?confirm=seed to run.' }, { status: 400 });
     }
 
-    const identity = (context as any).clientContext?.identity as { url: string; token: string } | undefined;
-    if (!identity?.token || !identity?.url) {
-        return Response.json({
-            error: 'No Identity admin token in clientContext. Is Netlify Identity enabled on this site?',
-        }, { status: 500 });
-    }
-
     const password = process.env.DEV_USER_PASSWORD;
     if (!password) {
         return Response.json({ error: 'DEV_USER_PASSWORD env var not set (scope=functions).' }, { status: 500 });
     }
 
     try {
-        const existing = await listUsers(identity.url, identity.token);
-        const byEmail = new Map(existing.map(u => [u.email.toLowerCase(), u]));
+        // admin.listUsers() returns a normalized User[] and pulls the operator
+        // token from the Netlify runtime itself. Bump perPage so a single page
+        // covers the handful of dev users without paginating.
+        const existing = await admin.listUsers({ perPage: 200 });
+        const byEmail = new Map(existing.map(u => [(u.email ?? '').toLowerCase(), u]));
 
         const users: { email: string; id: string; created: boolean }[] = [];
         let ownerId: string | undefined;
@@ -103,7 +75,16 @@ export default async (req: Request, context: Context) => {
             let user = byEmail.get(spec.email.toLowerCase());
             let created = false;
             if (!user) {
-                user = await createUser(identity.url, identity.token, spec, password);
+                // createUser auto-confirms (no confirmation email). Identity
+                // user fields go under `data`: app_metadata / user_metadata.
+                user = await admin.createUser({
+                    email: spec.email,
+                    password,
+                    data: {
+                        user_metadata: spec.user_metadata,
+                        app_metadata: spec.app_metadata ?? {},
+                    },
+                });
                 created = true;
             }
             users.push({ email: spec.email, id: user.id, created });
@@ -119,6 +100,12 @@ export default async (req: Request, context: Context) => {
 
         return Response.json({ ok: true, users, elections, ownerId });
     } catch (err: any) {
+        if (err instanceof MissingIdentityError) {
+            return Response.json({
+                error: 'Netlify Identity is not configured for this runtime. ' +
+                    'Confirm Identity is enabled on the site and that this runs on Netlify (or `netlify dev`).',
+            }, { status: 500 });
+        }
         console.error('seed failed:', err?.message ?? err);
         return Response.json({ error: err?.message ?? String(err) }, { status: 500 });
     }

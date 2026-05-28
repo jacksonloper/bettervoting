@@ -50,6 +50,7 @@
     "@netlify/blobs",
     "@netlify/database",
     "@netlify/functions",
+    "@netlify/identity",
     "@neondatabase/serverless",
     "waddler",
     "swagger-jsdoc",
