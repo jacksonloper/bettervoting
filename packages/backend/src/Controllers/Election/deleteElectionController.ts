@@ -1,31 +1,24 @@
 import ServiceLocator from '../../ServiceLocator';
 import Logger from '../../Services/Logging/Logger';
-import { responseErr } from '../../Util';
-import { IRequest } from '../../IRequest';
-import { hasPermission, permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
+import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { expectPermission } from "../controllerUtils";
 import { BadRequest } from "@curveball/http-errors";
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
+import { C, election, logCtx, userAuth } from "../../honoTypes";
 
-var ElectionsModel = ServiceLocator.electionsDb();
+const ElectionsModel = ServiceLocator.electionsDb();
 const className = "Elections.Controllers";
 
-const deleteElection = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    expectPermission(req.user_auth.roles, permissions.canDeleteElection)
-    const electionId = req.election.election_id;
-    Logger.info(req, `${className}.deleteElection ${electionId}`)
-    var failMsg = "Election not deleted";
-    const success = await ElectionsModel.delete(electionId, req, `User manually deleting election`);
+export const deleteElection = async (c: C) => {
+    const ctx = logCtx(c);
+    expectPermission(userAuth(c).roles, permissions.canDeleteElection);
+    const electionId = election(c).election_id;
+    Logger.info(ctx, `${className}.deleteElection ${electionId}`);
+    const success = await ElectionsModel.delete(electionId, ctx, `User manually deleting election`);
     if (!success) {
-        var msg = "Nothing to delete";
-        Logger.error(req, msg);
-        throw new BadRequest(msg)
+        const msg = "Nothing to delete";
+        Logger.error(ctx, msg);
+        throw new BadRequest(msg);
     }
-    Logger.info(req, `Deleted election ${electionId}`);
-    res.status(200).send('Election Deleted');
-
-}
-export  {
-    deleteElection
-}
+    Logger.info(ctx, `Deleted election ${electionId}`);
+    return c.text('Election Deleted', 200);
+};

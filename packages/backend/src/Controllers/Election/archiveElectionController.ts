@@ -2,39 +2,32 @@ import ServiceLocator from '../../ServiceLocator';
 import Logger from '../../Services/Logging/Logger';
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { expectPermission } from "../controllerUtils";
-import { BadRequest, InternalServerError } from "@curveball/http-errors";
+import { BadRequest } from "@curveball/http-errors";
 import { Election } from '@equal-vote/star-vote-shared/domain_model/Election';
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
+import { C, body, election, logCtx, userAuth } from "../../honoTypes";
 
-var ElectionsModel = ServiceLocator.electionsDb();
-
+const ElectionsModel = ServiceLocator.electionsDb();
 const className = "election.Controllers";
 
-const archiveElection = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    Logger.info(req, `${className}.archive ${req.election.election_id}`);
-    expectPermission(req.user_auth.roles, permissions.canEditElectionState)
+export const archiveElection = async (c: C) => {
+    const ctx = logCtx(c);
+    const e: Election = election(c);
+    Logger.info(ctx, `${className}.archive ${e.election_id}`);
+    expectPermission(userAuth(c).roles, permissions.canEditElectionState);
 
-    const election: Election = req.election
-
-    if (election.state === 'archived') {
-        var msg = "Election already archived";
-        Logger.info(req, msg);
-        throw new BadRequest(msg)
+    if (e.state === 'archived') {
+        const msg = "Election already archived";
+        Logger.info(ctx, msg);
+        throw new BadRequest(msg);
     }
 
-    var failMsg = "Failed to update Election";
-    election.state = 'archived'
-    const expected_update_date = req.body.expected_update_date;
-    const updatedElection = await ElectionsModel.updateElection(req.election, req, `Archive election`, expected_update_date);
+    e.state = 'archived';
+    const { expected_update_date } = await body(c);
+    const updatedElection = await ElectionsModel.updateElection(e, ctx, `Archive election`, expected_update_date);
     if (!updatedElection) {
-        Logger.info(req, failMsg);
-        throw new BadRequest(failMsg)
+        const failMsg = "Failed to update Election";
+        Logger.info(ctx, failMsg);
+        throw new BadRequest(failMsg);
     }
-
-    res.json({ election: updatedElection })
-}
-
-export {
-    archiveElection,
-}
+    return c.json({ election: updatedElection });
+};

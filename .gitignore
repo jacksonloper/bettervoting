@@ -12,3 +12,6 @@
 .idea
 .gitattributes
 .claude/**
+
+# Local Netlify folder
+.netlify

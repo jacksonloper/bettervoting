@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useSnackbar from "../components/SnackbarContext";
+import useAuthSession from "../components/AuthSessionContextProvider";
 
 // Example usage 
 // Requst type: MyRequest
@@ -18,14 +19,18 @@ const useFetch = <Message, Response>(url: string, method: 'get' | 'post' | 'put'
     const [error, setError] = useState<string>(null)
     const [data, setData] = useState<Response | null>(null)
     const { setSnack } = useSnackbar()
+    const authSession = useAuthSession()
 
     const makeRequest = async (data?: Message) => {
+        const headers: Record<string, string> = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        };
+        const token = await authSession?.getToken();
+        if (token) headers['Authorization'] = `Bearer ${token}`;
         const options: RequestInit = {
             method: method,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
+            headers,
             body: JSON.stringify(data),
         };
         setIsPending(true);

@@ -19,24 +19,43 @@ const allDefinitions: DevElectionDefinition[] = [
     starprordering,
 ];
 
-async function main() {
-    const args = process.argv.slice(2);
-    const forceRecreate = args.includes('--force');
+export interface SeedOptions {
+    // Override every dev election's owner_id. On Netlify this is the seeded
+    // dev user's Identity UUID; the definitions ship with a placeholder
+    // Keycloak UUID for local Keycloak dev.
+    ownerId?: string;
+    // Delete and recreate elections that already exist.
+    force?: boolean;
+    // Where to log progress (defaults to console).
+    log?: (msg: string) => void;
+}
 
+export interface SeedResult {
+    processed: string[];
+    skipped: string[];
+    created: string[];
+}
+
+// Callable seeder — usable from a script (main below) or a Netlify function.
+// The caller owns the DB lifecycle decision: pass closeDb=false from a
+// function (the pooled connection is reused across invocations) and true
+// from the one-shot CLI.
+export async function seedDevElections(opts: SeedOptions = {}, closeDb = false): Promise<SeedResult> {
+    const log = opts.log ?? ((m: string) => console.info(m));
+    const force = opts.force ?? false;
     const db = servicelocator.database();
 
-    // Validate all definitions before touching the database
     for (const def of allDefinitions) {
         validateDefinition(def);
     }
 
-    console.info(`makedevelections: ${allDefinitions.length} election(s) to process`);
-    console.info(`  --force flag: ${forceRecreate ? 'ON (will delete and recreate existing)' : 'OFF (will leave existing alone)'}`);
+    const result: SeedResult = { processed: [], skipped: [], created: [] };
+    log(`makedevelections: ${allDefinitions.length} election(s) to process (force=${force}, ownerId=${opts.ownerId ?? '<definition default>'})`);
 
     for (const def of allDefinitions) {
-        console.info(`\nProcessing: ${def.electionId}`);
+        log(`\nProcessing: ${def.electionId}`);
+        result.processed.push(def.electionId);
 
-        // Check if election already exists
         const existing = await db
             .selectFrom('electionDB')
             .selectAll()
@@ -45,72 +64,68 @@ async function main() {
             .executeTakeFirst();
 
         if (existing) {
-            if (!forceRecreate) {
-                console.info(`  Election already exists, skipping (use --force to recreate)`);
+            if (!force) {
+                log(`  Election already exists, skipping (use force to recreate)`);
+                result.skipped.push(def.electionId);
                 continue;
             }
-            // Delete existing election data (all versions), ballots, and election roll entries
-            console.info(`  Deleting existing election data...`);
+            log(`  Deleting existing election data...`);
             await db.deleteFrom('ballotDB').where('election_id', '=', def.electionId).execute();
             await db.deleteFrom('electionRollDB').where('election_id', '=', def.electionId).execute();
             await db.deleteFrom('emailEventsDB').where('election_id', '=', def.electionId).execute();
             await db.deleteFrom('electionDB').where('election_id', '=', def.electionId).execute();
         }
 
-        // Insert election
-        console.info(`  Inserting election...`);
+        log(`  Inserting election...`);
         const election = { ...def.election };
+        // Owner override: this is the one field that has to be a real user for
+        // the election to show up in "My Elections" for the seeded dev user.
+        if (opts.ownerId) election.owner_id = opts.ownerId;
         election.create_date = new Date().toISOString();
         election.update_date = Date.now().toString();
         election.head = true;
         await db.insertInto('electionDB').values(election).execute();
 
-        // Check for existing ballots (in case election was deleted but ballots somehow remain, or --force path)
-        const existingBallots = await db
-            .selectFrom('ballotDB')
-            .selectAll()
-            .where('election_id', '=', def.electionId)
-            .where('head', '=', true)
-            .execute();
-
-        if (existingBallots.length > 0) {
-            if (!forceRecreate) {
-                console.info(`  ${existingBallots.length} ballot(s) already exist, skipping ballot insertion (use --force to recreate)`);
-                continue;
-            }
-            console.info(`  Deleting ${existingBallots.length} existing ballot(s)...`);
-            await db.deleteFrom('ballotDB').where('election_id', '=', def.electionId).execute();
-        }
-
-        // Insert ballots
         const ballots = def.makeBallots();
-        console.info(`  Inserting ${ballots.length} ballot(s)...`);
+        log(`  Inserting ${ballots.length} ballot(s)...`);
         await db.insertInto('ballotDB').values(ballots).execute();
 
-        // Insert election rolls (if defined)
         if (def.makeElectionRolls) {
             const rolls = def.makeElectionRolls();
-            console.info(`  Inserting ${rolls.length} election roll(s)...`);
+            log(`  Inserting ${rolls.length} election roll(s)...`);
             await db.insertInto('electionRollDB').values(rolls).execute();
         }
 
-        // Insert email events (if defined)
         if (def.makeEmailEvents) {
             const events = def.makeEmailEvents();
-            console.info(`  Inserting ${events.length} email event(s)...`);
+            log(`  Inserting ${events.length} email event(s)...`);
             for (const event of events) {
                 await db.insertInto('emailEventsDB').values(event).execute();
             }
         }
 
-        console.info(`  Done.`);
+        log(`  Done.`);
+        result.created.push(def.electionId);
     }
 
-    console.info('\nAll dev elections processed.');
-    await db.destroy();
+    log('\nAll dev elections processed.');
+    if (closeDb) await db.destroy();
+    return result;
 }
 
-main().catch((err) => {
-    console.error('makedevelections failed:', err);
-    process.exit(1);
-});
+// CLI entrypoint: `npm run makedevelections [-- --force]`
+async function main() {
+    const args = process.argv.slice(2);
+    await seedDevElections({
+        force: args.includes('--force'),
+        ownerId: process.env.DEV_USER_ID,
+    }, true);
+}
+
+// Only run main() when invoked directly (not when imported by a function).
+if (require.main === module) {
+    main().catch((err) => {
+        console.error('makedevelections failed:', err);
+        process.exit(1);
+    });
+}

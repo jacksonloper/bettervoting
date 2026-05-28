@@ -34,6 +34,16 @@ const UploadElections = () => {
     const submitElections = () => {
         setElectionsSubmitted(true)
 
+        const buildHeaders = async () => {
+            const headers: Record<string, string> = {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            };
+            const token = await authSession?.getToken();
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            return headers;
+        };
+
         cvrs.forEach(cvr => {
             // #1: Parse CSV
             const post_process = async (parsed_csv) => {
@@ -121,10 +131,7 @@ const UploadElections = () => {
 
                 const postElectionRes = await fetch(endpoint, {
                     method: 'post',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                    },
+                    headers: await buildHeaders(),
                     body: JSON.stringify({
                         Election: updateExistingElection? updatedElection : newElection
                     })
@@ -147,10 +154,7 @@ const UploadElections = () => {
                 if(updateExistingElection){
                     await fetch(`/API/Election/${election.election_id}/ballots`, {
                         method: 'delete',
-                        headers: {
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                        },
+                        headers: await buildHeaders(),
                     })
                 }
 
@@ -189,10 +193,7 @@ const UploadElections = () => {
                     do{
                         uploadRes = await fetch(`/API/Election/${election.election_id}/uploadBallots`, {
                             method: 'post',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json',
-                            },
+                            headers: await buildHeaders(),
                             body: JSON.stringify({
                                 race_order: raceOrder,
                                 ballots: orderedBallots.slice(nextIndex, nextIndex+batchSize).map((b, i) => ({

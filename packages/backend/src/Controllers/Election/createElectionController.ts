@@ -1,25 +1,23 @@
 import { Election, electionValidation } from "@equal-vote/star-vote-shared/domain_model/Election";
-import { ElectionRoll, ElectionRollState } from "@equal-vote/star-vote-shared/domain_model/ElectionRoll";
-import { IRequest } from "../../IRequest";
 import ServiceLocator from "../../ServiceLocator";
 import Logger from "../../Services/Logging/Logger";
 import { InternalServerError, BadRequest } from "@curveball/http-errors";
-import { ILoggingContext } from "../../Services/Logging/ILogger";
-import { expectValidElectionFromRequest, catchAndRespondError, expectPermission } from "../controllerUtils";
-import { Response, NextFunction } from "express";
+import type { ILoggingContext } from "../../Services/Logging/ILogger";
+import { expectValidElection } from "../controllerUtils";
+import { C, body, logCtx } from "../../honoTypes";
 
-var ElectionsModel = ServiceLocator.electionsDb();
+const ElectionsModel = ServiceLocator.electionsDb();
 
-const className = "createElectionController";
 const failMsgPrfx = "CATCH:  create error election err: ";
-async function createElectionController(req: IRequest, res: Response, next: NextFunction) {
-    Logger.info(req, "Create Election Controller");
-    const inputElection = await expectValidElectionFromRequest(req);
 
-    const resElection = await createAndCheckElection(inputElection, req);
-
-    res.status(200).json({ election: resElection });
-};
+export async function createElectionController(c: C) {
+    const ctx = logCtx(c);
+    Logger.info(ctx, "Create Election Controller");
+    const { Election: inputBody } = await body(c);
+    const inputElection = await expectValidElection(ctx, inputBody);
+    const resElection = await createAndCheckElection(inputElection, ctx);
+    return c.json({ election: resElection }, 200);
+}
 
 const createAndCheckElection = async (
     inputElection: Election,
@@ -42,7 +40,3 @@ const createAndCheckElection = async (
     }
     return newElection;
 };
-
-export {
-    createElectionController
-}

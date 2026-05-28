@@ -4,52 +4,48 @@ import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissio
 import { expectPermission } from "../controllerUtils";
 import { BadRequest } from "@curveball/http-errors";
 import { ElectionRoll } from '@equal-vote/star-vote-shared/domain_model/ElectionRoll';
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
+import { C, body, election, logCtx, userAuth } from "../../honoTypes";
 import { innerDeleteAllBallotsForElectionID } from '../Ballot';
 
-var ElectionsModel = ServiceLocator.electionsDb();
-var ElectionRollModel = ServiceLocator.electionRollDb();
-
+const ElectionsModel = ServiceLocator.electionsDb();
+const ElectionRollModel = ServiceLocator.electionRollDb();
 const className = "election.Controllers";
 
-const finalizeElection = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    Logger.info(req, `${className}.finalize ${req.election.election_id}`);
-    expectPermission(req.user_auth.roles, permissions.canEditElectionState)
+export const finalizeElection = async (c: C) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    Logger.info(ctx, `${className}.finalize ${e.election_id}`);
+    expectPermission(userAuth(c).roles, permissions.canEditElectionState);
 
-    if (req.election.state !== 'draft') {
-        var msg = "Election already finalized";
-        Logger.info(req, msg);
-        throw new BadRequest(msg)
+    if (e.state !== 'draft') {
+        const msg = "Election already finalized";
+        Logger.info(ctx, msg);
+        throw new BadRequest(msg);
     }
 
-    const electionId = req.election.election_id;
-    let electionRoll: ElectionRoll[] | null = null
-    if (req.election.settings.voter_access === 'closed' && req.election.settings.invitation === 'email') {
-        electionRoll = await ElectionRollModel.getRollsByElectionID(electionId, req);
+    const electionId = e.election_id;
+    let electionRoll: ElectionRoll[] | null = null;
+    if (e.settings.voter_access === 'closed' && e.settings.invitation === 'email') {
+        electionRoll = await ElectionRollModel.getRollsByElectionID(electionId, ctx);
         if (!electionRoll) {
             const msg = `Election roll for ${electionId} not found`;
-            Logger.info(req, msg);
-            throw new BadRequest(msg)
+            Logger.info(ctx, msg);
+            throw new BadRequest(msg);
         }
     }
 
-    var failMsg = "Failed to update Election";
-    // Use a finalized copy for the OC-protected update; leave req.election in draft state
+    const { expected_update_date } = await body(c);
+    // Use a finalized copy for the OC-protected update; leave c.var.election in draft state
     // so the subsequent ballot-deletion's draft-state guard still passes.
-    const finalizedElection = { ...req.election, state: 'finalized' as const }
-    const expected_update_date = req.body.expected_update_date;
-    const updatedElection = await ElectionsModel.updateElection(finalizedElection, req, `Finalizing election`, expected_update_date);
+    const finalizedElection = { ...e, state: 'finalized' as const };
+    const updatedElection = await ElectionsModel.updateElection(finalizedElection, ctx, `Finalizing election`, expected_update_date);
     if (!updatedElection) {
-        Logger.info(req, failMsg);
-        throw new BadRequest(failMsg)
+        const failMsg = "Failed to update Election";
+        Logger.info(ctx, failMsg);
+        throw new BadRequest(failMsg);
     }
 
-    await innerDeleteAllBallotsForElectionID(req);
+    await innerDeleteAllBallotsForElectionID(c);
 
-    res.json({ election: updatedElection })
-}
-
-export {
-    finalizeElection
-}
+    return c.json({ election: updatedElection });
+};

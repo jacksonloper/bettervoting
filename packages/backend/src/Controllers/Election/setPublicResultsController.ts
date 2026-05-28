@@ -2,36 +2,30 @@ import ServiceLocator from '../../ServiceLocator';
 import Logger from '../../Services/Logging/Logger';
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { expectPermission } from "../controllerUtils";
-import { BadRequest, InternalServerError } from "@curveball/http-errors";
+import { BadRequest } from "@curveball/http-errors";
 import { Election } from '@equal-vote/star-vote-shared/domain_model/Election';
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
+import { C, body, election, logCtx, userAuth } from "../../honoTypes";
 
-var ElectionsModel = ServiceLocator.electionsDb();
-
+const ElectionsModel = ServiceLocator.electionsDb();
 const className = "election.Controllers";
 
-const setPublicResults = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    Logger.info(req, `${className}.setPublicResults ${req.election.election_id}`);
-    expectPermission(req.user_auth.roles, permissions.canEditElectionState)
-    const election: Election = req.election
-    const public_results = req.body.public_results
+export const setPublicResults = async (c: C) => {
+    const ctx = logCtx(c);
+    const e: Election = election(c);
+    Logger.info(ctx, `${className}.setPublicResults ${e.election_id}`);
+    expectPermission(userAuth(c).roles, permissions.canEditElectionState);
+
+    const { public_results, expected_update_date } = await body(c);
     if (typeof public_results !== 'boolean') {
-        throw new BadRequest('public_results setting not provided or incorrect type')
+        throw new BadRequest('public_results setting not provided or incorrect type');
     }
-    election.settings.public_results = public_results
+    e.settings.public_results = public_results;
 
-    const expected_update_date = req.body.expected_update_date;
-    const updatedElection = await ElectionsModel.updateElection(election, req, `Publish Results`, expected_update_date);
+    const updatedElection = await ElectionsModel.updateElection(e, ctx, `Publish Results`, expected_update_date);
     if (!updatedElection) {
-        const failMsg = 'could not update public_results setting'
-        Logger.info(req, failMsg);
-        throw new BadRequest(failMsg)
+        const failMsg = 'could not update public_results setting';
+        Logger.info(ctx, failMsg);
+        throw new BadRequest(failMsg);
     }
-
-    res.json({ election: updatedElection })
-}
-
-export  {
-    setPublicResults,
-}
+    return c.json({ election: updatedElection });
+};

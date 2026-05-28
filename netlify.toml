@@ -41,7 +41,6 @@
   # @azure/storage-blob). Listing them here keeps esbuild from trying to walk
   # their dep trees during the function bundle.
   external_node_modules = [
-    "express",
     "pg",
     "pg-native",
     "pg-boss",
@@ -51,9 +50,9 @@
     "@netlify/blobs",
     "@netlify/database",
     "@netlify/functions",
+    "@netlify/identity",
     "@neondatabase/serverless",
     "waddler",
-    "swagger-ui-express",
     "swagger-jsdoc",
     "jsonwebtoken",
     "sanitize-html",
@@ -62,15 +61,12 @@
     "luxon",
     "fraction.js",
     "seedrandom",
-    "multer",
-    "socket.io",
     "@azure/storage-blob",
-    "cors",
-    "cookie-parser",
     "dotenv",
-    "express-async-handler",
     "node-fetch",
-    "@curveball/http-errors"
+    "@curveball/http-errors",
+    "hono",
+    "@hono/node-server"
   ]
 
 # Background queue worker — `-background` suffix gives it the 15-minute budget.
@@ -78,6 +74,11 @@
   timeout = 900
 
 [functions."api"]
+  timeout = 26
+
+# Dev-data seeder — creates Identity users + seeds elections. Give it room
+# for a DB cold start plus a handful of admin-API + insert round-trips.
+[functions."seed"]
   timeout = 26
 
 # ----- Redirects (order matters — most specific first) -----

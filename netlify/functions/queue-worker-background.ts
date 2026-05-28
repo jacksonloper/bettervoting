@@ -7,6 +7,7 @@
 // with `{ queue, data }`. We look up the handler that was registered at app
 // startup (registerEvents) and call it.
 
+import './env-shim';
 import type { Handler } from '@netlify/functions';
 
 import registerEvents from '../../packages/backend/src/Routes/registerEvents';

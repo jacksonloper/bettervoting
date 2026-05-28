@@ -46,10 +46,30 @@ function postgres(): any {
         if (IS_NETLIFY) {
             // @netlify/database picks the right driver per runtime:
             // pg.Pool during build/migrations, @neondatabase/serverless Pool
-            // inside Functions. Both expose the node-postgres Pool API that
-            // Kysely's PostgresDialect expects.
+            // inside Functions. We hand it the connection string explicitly
+            // because:
+            //   1. At build time Netlify injects NETLIFY_DATABASE_URL but
+            //      the package's auto-discovery reads NETLIFY_DB_URL.
+            //   2. At function runtime, env-shim already bridges any
+            //      available DB URL into NETLIFY_DB_URL; reading both names
+            //      here keeps this code path correct without the shim too.
             const { getDatabase } = require('@netlify/database');
-            _postgresClient = getDatabase().pool;
+            const connectionString =
+                process.env.NETLIFY_DB_URL ??
+                process.env.NETLIFY_DATABASE_URL ??
+                process.env.NETLIFY_DATABASE_URL_UNPOOLED;
+            if (!connectionString) {
+                throw new Error(
+                    'ServiceLocator: no Netlify DB URL in env (looked for ' +
+                    'NETLIFY_DB_URL, NETLIFY_DATABASE_URL, ' +
+                    'NETLIFY_DATABASE_URL_UNPOOLED). Migrations / runtime ' +
+                    'queries will fail. Confirm a database is attached to ' +
+                    'the site (UI: Project configuration → Database; CLI: ' +
+                    '`netlify db init`) and that the URL is exposed to this ' +
+                    'context (Builds / Functions).'
+                );
+            }
+            _postgresClient = getDatabase({ connectionString }).pool;
         } else {
             var connectionConfig = pgConnectionObject();
             // We can't log this since it has sensitive information

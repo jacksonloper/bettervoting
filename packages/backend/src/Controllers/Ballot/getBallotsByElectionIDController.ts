@@ -3,25 +3,25 @@ import Logger from "../../Services/Logging/Logger";
 import { Unauthorized } from "@curveball/http-errors";
 import { expectPermission, secureShuffle } from "../controllerUtils";
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
+import { C, election, logCtx, userAuth } from "../../honoTypes";
 
 const BallotModel = ServiceLocator.ballotsDb();
 
-const getBallotsByElectionID = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    var electionId = req.election.election_id;
-    Logger.debug(req, "getBallotsByElectionID: " + electionId);
+export const getBallotsByElectionID = async (c: C) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    const electionId = e.election_id;
+    Logger.debug(ctx, "getBallotsByElectionID: " + electionId);
 
-    expectPermission(req.user_auth.roles, permissions.canViewBallots)
-    if (!req.election.settings.public_results && req.election.state !== 'closed') {
+    expectPermission(userAuth(c).roles, permissions.canViewBallots);
+    if (!e.settings.public_results && e.state !== 'closed') {
         const msg = `Ballot access only permited when public results are enabled or election has closed`;
-        Logger.info(req, msg);
-        throw new Unauthorized(msg)
+        Logger.info(ctx, msg);
+        throw new Unauthorized(msg);
     }
 
-    const ballots = await BallotModel.getBallotsByElectionID(String(electionId), req);
+    const ballots = await BallotModel.getBallotsByElectionID(String(electionId), ctx);
 
-    // Scrub identifying information from ballots to preserve voter anonymity
     const scrubbedBallots = ballots.map(ballot => ({
         ...ballot,
         history: undefined,
@@ -29,18 +29,11 @@ const getBallotsByElectionID = async (req: IElectionRequest, res: Response, next
         create_date: undefined,
         update_date: undefined,
         user_id: undefined,
-        ip_hash: undefined
+        ip_hash: undefined,
     }));
 
-    // Shuffle so the response order doesn't reveal ballot submission order —
-    // an admin could otherwise zip it against the roll's per-voter timestamps
-    // to deanonymize every vote.
     const shuffledBallots = secureShuffle(scrubbedBallots);
 
-    Logger.debug(req, "ballots = ", shuffledBallots);
-    res.json({ election: req.election, ballots: shuffledBallots })
-}
-
-export {
-    getBallotsByElectionID
-}
+    Logger.debug(ctx, "ballots = ", shuffledBallots);
+    return c.json({ election: e, ballots: shuffledBallots });
+};

@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "target": "es6",
+    "target": "es2022",
     "rootDir": ".",
     "outDir": "./build",
     "esModuleInterop": true,
@@ -9,16 +9,20 @@
     "module": "nodenext",
     "moduleResolution": "nodenext",
     "strict": true,
+    "skipLibCheck": true,
     "types": [
       "jest",
       "node"
     ],
     "lib": [
-      "ES6",
-      "DOM",
-      "ES2021.String", // Added for replaceAll
+      "ES2022",
+      "DOM"
     ],
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
-  "include": ["./src/**/*", "verifyShared.js"]
+  "include": ["./src/**/*", "verifyShared.js"],
+  "exclude": [
+    "./src/test/**",
+    "**/*.test.ts"
+  ]
 }

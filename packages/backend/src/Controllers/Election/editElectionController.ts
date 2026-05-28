@@ -1,50 +1,50 @@
 import { electionValidation } from '@equal-vote/star-vote-shared/domain_model/Election';
 import ServiceLocator from '../../ServiceLocator';
 import Logger from '../../Services/Logging/Logger';
-import { responseErr } from '../../Util';
 import { expectPermission } from "../controllerUtils";
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { BadRequest } from "@curveball/http-errors";
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
+import { C, body, logCtx, userAuth } from "../../honoTypes";
 
-var ElectionsModel = ServiceLocator.electionsDb();
+const ElectionsModel = ServiceLocator.electionsDb();
 
+export const editElection = async (c: C) => {
+    const ctx = logCtx(c);
+    const { Election: inputElection, expected_update_date } = await body(c);
+    Logger.info(ctx, `editElection: ${inputElection?.election_id}`);
+    expectPermission(userAuth(c).roles, permissions.canEditElection);
 
-const editElection = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    const inputElection = req.body.Election;
-    Logger.info(req, `editElection: ${inputElection?.election_id}`) 
-    expectPermission(req.user_auth.roles, permissions.canEditElection)
     const validationErr = electionValidation(inputElection);
     if (validationErr) {
-        Logger.info(req, `Invalid Election: '${inputElection?.election_id}'` + validationErr);
+        Logger.info(ctx, `Invalid Election: '${inputElection?.election_id}'` + validationErr);
         throw new BadRequest("Invalid Election: " + validationErr);
     }
-
     if (inputElection.state !== 'draft' && inputElection.public_archive_id === null) {
-        Logger.info(req, `Election is not editable, state=${inputElection.state}`);
-        throw new BadRequest("Election is not editable")
+        Logger.info(ctx, `Election is not editable, state=${inputElection.state}`);
+        throw new BadRequest("Election is not editable");
     }
-    if (inputElection.election_id != req.params.id) {
-        Logger.info(req, `Body Election ${inputElection.election_id} != param ID ${req.params.id}`);
-        throw new BadRequest("Election ID must match the URL Param")
+    if (inputElection.election_id !== c.req.param('id')) {
+        Logger.info(ctx, `Body Election ${inputElection.election_id} != param ID ${c.req.param('id')}`);
+        throw new BadRequest("Election ID must match the URL Param");
     }
 
-    Logger.debug(req, `election ID = ${inputElection}`);
-    var failMsg = `Failed to update election`;
-
-    const expected_update_date = req.body.expected_update_date;
-    const updatedElection = await ElectionsModel.updateElection(inputElection, req, `User editing draft Election`, expected_update_date);
+    const updatedElection = await ElectionsModel.updateElection(inputElection, ctx, `User editing draft Election`, expected_update_date);
     if (!updatedElection) {
-        Logger.error(req, failMsg);
-        throw new BadRequest(failMsg)
+        const failMsg = `Failed to update election`;
+        Logger.error(ctx, failMsg);
+        throw new BadRequest(failMsg);
     }
-    req.election = updatedElection
-    Logger.debug(req, `editElection succeeds for ${updatedElection.election_id}`);
+    c.set('election', updatedElection);
+    Logger.debug(ctx, `editElection succeeds for ${updatedElection.election_id}`);
 
-    res.json({ election: req.election, voterAuth: { authorized_voter: req.authorized_voter, has_voted: req.has_voted, roles: req.user_auth.roles, permissions: req.user_auth.permissions  } })
-}
-
-export  {
-    editElection
-}
+    const ua = userAuth(c);
+    return c.json({
+        election: updatedElection,
+        voterAuth: {
+            authorized_voter: c.var.authorized_voter,
+            has_voted: c.var.has_voted,
+            roles: ua.roles,
+            permissions: ua.permissions,
+        },
+    });
+};

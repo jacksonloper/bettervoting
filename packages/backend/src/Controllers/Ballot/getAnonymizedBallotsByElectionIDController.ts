@@ -3,42 +3,36 @@ import Logger from "../../Services/Logging/Logger";
 import { Unauthorized } from "@curveball/http-errors";
 import { expectPermission, secureShuffle } from "../controllerUtils";
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
 import { AnonymizedBallot } from "@equal-vote/star-vote-shared/domain_model/Ballot";
-
+import { C, election, logCtx, userAuth } from "../../honoTypes";
 
 const BallotModel = ServiceLocator.ballotsDb();
 
-export const getAnonymizedBallotsByElectionID = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    var electionId = req.election.election_id;
-    Logger.debug(req, "getBallotsByElectionID: " + electionId);
-    const election = req.election;
-    if (!election.settings.public_results) {
-        if (election.state !== 'closed') {
+export const getAnonymizedBallotsByElectionID = async (c: C) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    const electionId = e.election_id;
+    Logger.debug(ctx, "getAnonymizedBallotsByElectionID: " + electionId);
+
+    if (!e.settings.public_results) {
+        if (e.state !== 'closed') {
             const msg = `Ballot access only permited when public results are enabled or election has closed`;
-            Logger.info(req, msg);
-            throw new Unauthorized(msg)
+            Logger.info(ctx, msg);
+            throw new Unauthorized(msg);
         }
-        expectPermission(req.user_auth.roles, permissions.canViewBallots)
+        expectPermission(userAuth(c).roles, permissions.canViewBallots);
     }
 
-    const ballots = await BallotModel.getBallotsByElectionID(String(electionId), req);
-    const anonymizedBallots: AnonymizedBallot[] = ballots.filter(ballot => {
-        return ballot.status === "submitted" && ballot.head;
-    }).map((ballot) => {
-            return {
-                ballot_id: ballot.ballot_id,
-                election_id: ballot.election_id,
-                precinct: ballot.precinct,
-                votes: ballot.votes
-            }
-
-    });
-    // Shuffle so the response order doesn't reveal ballot submission order —
-    // see getBallotsByElectionIDController for the threat model.
+    const ballots = await BallotModel.getBallotsByElectionID(String(electionId), ctx);
+    const anonymizedBallots: AnonymizedBallot[] = ballots
+        .filter(ballot => ballot.status === "submitted" && ballot.head)
+        .map((ballot) => ({
+            ballot_id: ballot.ballot_id,
+            election_id: ballot.election_id,
+            precinct: ballot.precinct,
+            votes: ballot.votes,
+        }));
     const shuffledBallots = secureShuffle(anonymizedBallots);
-    Logger.debug(req, "ballots = ", shuffledBallots);
-    res.json({ ballots: shuffledBallots })
-}
-
+    Logger.debug(ctx, "ballots = ", shuffledBallots);
+    return c.json({ ballots: shuffledBallots });
+};

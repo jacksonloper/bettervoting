@@ -199,7 +199,7 @@ const Header = () => {
                 <Box sx={{ flexGrow: 0, ml: {xs: 0, sm: 5}}}>
                     {authSession.isLoggedIn() && <>
                         <NavMenu name='user' mobileIcon={<AccountCircleIcon/>} desktopText={t('nav.greeting', {name: authSession.getIdField('given_name')})}>
-                            <MenuItem component={Link} href={authSession.accountUrl} target='_blank'>
+                            <MenuItem onClick={() => authSession.openAccount()}>
                                 {t('nav.your_account')}
                             </MenuItem>
                             {isLandingPage && 

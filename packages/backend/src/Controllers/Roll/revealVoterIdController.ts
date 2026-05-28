@@ -3,12 +3,10 @@ import Logger from "../../Services/Logging/Logger";
 import { permissions } from '@equal-vote/star-vote-shared/domain_model/permissions';
 import { expectPermission } from "../controllerUtils";
 import { BadRequest } from "@curveball/http-errors";
-import { IElectionRequest } from "../../IRequest";
-import { Response, NextFunction } from 'express';
 import { logSafeHash } from "../../Services/Logging/logSafeHash";
+import { C, body, election, logCtx, user, userAuth } from "../../honoTypes";
 
 const ElectionRollModel = ServiceLocator.electionRollDb();
-
 const className = "VoterRolls.Controllers";
 
 /**
@@ -22,61 +20,55 @@ const className = "VoterRolls.Controllers";
  * This should only be used in emergency situations where an admin needs
  * to send a unique voting URL to a voter.
  */
-const revealVoterIdByEmail = async (req: IElectionRequest, res: Response, next: NextFunction) => {
-    const electionId = req.election.election_id;
-    const email = req.body.email;
+export const revealVoterIdByEmail = async (c: C) => {
+    const ctx = logCtx(c);
+    const e = election(c);
+    const electionId = e.election_id;
+    const { email } = await body(c);
 
     if (!email || typeof email !== 'string') {
         throw new BadRequest('Email address is required');
     }
 
-    // Reveal endpoint is only available when voter IDs are redacted
-    const redactVoterIds = req.election.settings?.invitation === 'email';
+    const redactVoterIds = e.settings?.invitation === 'email';
     if (!redactVoterIds) {
         throw new BadRequest('Reveal voter ID is only available for email list elections');
     }
 
-    expectPermission(req.user_auth.roles, permissions.canViewElectionRoll);
+    expectPermission(userAuth(c).roles, permissions.canViewElectionRoll);
 
-    const actor = req.user?.email || 'unknown';
+    const actor = user(c)?.email || 'unknown';
 
-    // PROMINENT LOGGING - This action should be highly visible in logs
-    Logger.error(req, `BREAK GLASS ACTION - ${className}.revealVoterIdByEmail - Election: ${electionId}, Email: ${logSafeHash(email)}, Actor: ${logSafeHash(actor)}`);
+    Logger.error(ctx, `BREAK GLASS ACTION - ${className}.revealVoterIdByEmail - Election: ${electionId}, Email: ${logSafeHash(email)}, Actor: ${logSafeHash(actor)}`);
 
-    const electionRoll = await ElectionRollModel.getRollsByElectionID(electionId, req);
+    const electionRoll = await ElectionRollModel.getRollsByElectionID(electionId, ctx);
     if (!electionRoll) {
         const msg = `Election roll for ${electionId} not found`;
-        Logger.info(req, msg);
+        Logger.info(ctx, msg);
         throw new BadRequest(msg);
     }
 
-    // Find the roll entry by email
     const rollEntry = electionRoll.find(roll => roll.email?.toLowerCase() === email.toLowerCase());
     if (!rollEntry) {
         const msg = `No voter found with email ${logSafeHash(email)}`;
-        Logger.info(req, msg);
+        Logger.info(ctx, msg);
         throw new BadRequest(msg);
     }
 
-    // Log the action in the roll entry history
     rollEntry.history = rollEntry.history || [];
     rollEntry.history.push({
         action_type: '🚨 VOTER_ID_REVEALED',
-        actor: actor,
+        actor,
         timestamp: Date.now(),
     });
 
-    await ElectionRollModel.update(rollEntry, req, '🚨 VOTER_ID_REVEALED');
+    await ElectionRollModel.update(rollEntry, ctx, '🚨 VOTER_ID_REVEALED');
 
-    Logger.error(req, `BREAK GLASS COMPLETED - ${className}.revealVoterIdByEmail - Election: ${electionId}, VoterID: ${logSafeHash(rollEntry.voter_id)}, Email: ${logSafeHash(email)}`);
+    Logger.error(ctx, `BREAK GLASS COMPLETED - ${className}.revealVoterIdByEmail - Election: ${electionId}, VoterID: ${logSafeHash(rollEntry.voter_id)}, Email: ${logSafeHash(email)}`);
 
-    res.json({
+    return c.json({
         voter_id: rollEntry.voter_id,
         email: rollEntry.email,
-        warning: 'This action has been logged in the audit trail'
+        warning: 'This action has been logged in the audit trail',
     });
-}
-
-export {
-    revealVoterIdByEmail
-}
+};
