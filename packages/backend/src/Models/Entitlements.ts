@@ -14,7 +14,7 @@ export default class EntitlementsDB {
         this._postgresClient = postgresClient;
     }
 
-    // Requires a DB transaction: purchased entitlements must commit together with TransactionsDB.markComplete.
+    // Requires a DB transaction: purchased entitlements must commit together with TransactionsDB.completeIfPending.
     async insert(entitlements: Omit<Entitlement, 'id'>[], ctx: ILoggingContext, trx: Transaction<Database>): Promise<void> {
         Logger.debug(ctx, `${tableName}.insert count=${entitlements.length}`);
         if (entitlements.length === 0) return;
