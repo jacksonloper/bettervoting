@@ -38,3 +38,14 @@ In the event a random tiebreaker is needed, BetterVoting will shuffle the candid
 
 Tiebreakers can also be determined outside of BetterVoting using protocols established by the body. Common random approaches include doing a coin toss or drawing a name out of a hat. The full list of anonymized ballots can also be utilized if it's required for the preferred tiebreaker method.
 
+# Ranked Robin Ties
+
+Ranked Robin elects the candidate who wins the most head-to-head matchups. A candidate wins a matchup against another candidate if more voters ranked them higher. If both candidates are ranked higher by the same number of voters, the matchup is a tie, and each candidate gets half a win.
+
+## Ranked Robin Tie-breaker Protocol
+
+This is the protocol BetterVoting uses when two or more candidates have the most wins.
+* *Step 1*: If exactly two candidates are tied, break the tie in favor of the candidate who won their head-to-head matchup.
+* *Step 2*: If more than two candidates are tied, or the two tied candidates also tied their head-to-head matchup, break the tie randomly, using the same [random tie-breaker](#random-tie-breakers) as STAR Voting.
+
+When electing more than one winner, BetterVoting fills one seat at a time. It elects the remaining candidate with the most wins, using the protocol above to break any tie, and repeats until every seat is filled. Each candidate's wins are counted once, across all candidates, before the first seat is filled.
