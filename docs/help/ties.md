@@ -12,7 +12,7 @@ grand_parent: Running an Election
 
 Ties can happen with any voting method, especially in small polls and demos with only a few voters. This page describes, in plain language, how BetterVoting breaks ties for each voting method it offers.
 
-BetterVoting's [source code](https://github.com/Equal-Vote/bettervoting/tree/main/packages/backend/src/Tabulators/) is the final authority on exactly how ties are broken. The descriptions below cover the common cases. When a race is decided by a random tie-breaker, its results page says so, and STAR Voting results also walk through the count step by step, including any tie-breaker.
+For elections run on BetterVoting, our [source code](https://github.com/Equal-Vote/bettervoting/tree/main/packages/backend/src/Tabulators/) is the final authority on exactly how ties are broken. The descriptions below cover the common cases. When a race is decided by a random tie-breaker, its results page says so, and STAR Voting results also walk through the count step by step, including any tie-breaker.
 
 ## Establish tie-breaking protocols in advance
 
