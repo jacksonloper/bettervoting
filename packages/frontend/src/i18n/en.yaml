@@ -52,14 +52,14 @@ ballot:
   drop_here: Drop candidates here to rank them
   no_available: No available candidates
   instructions: Drag candidates from the left to the right list. Candidates on the right are your ranked order; left means unranked.
-  instructions_rcv_draggable: Drag candidates left → right. Rank 1 is your top choice. Unranked candidates get equal support, below everyone you rank.
+  instructions_rcv_draggable: Drag candidates left → right. Rank 1 is your top choice. Your vote never counts for a candidate you leave unranked.
 
   dialog_submit_title: Submit {{capital_ballot}}?
   dialog_send_receipt: Send Ballot Receipt Email?
   dialog_email_placeholder: Receipt Email (Optional)
   dialog_cancel: Cancel
   dialog_submit: Submit
-  dialog_abstention: Abstained - Equal support for every candidate
+  dialog_abstention: Abstained - All candidates were left blank or marked the same
   warnings:
     skipped_rank: Do not skip rankings. Rank candidates in order to clearly show preferences. Candidates left blank are ranked last.
     duplicate_rank: Do not rank multiple candidates equally. (Ranking candidates equally can void your ballot.)

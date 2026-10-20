@@ -133,7 +133,7 @@ export default function DraggableIRVBallotView() {
                 })}
               </Typography>
               <Typography align="center" sx={{ mt: 1, typography: { sm: 'body1', xs: 'body2' } }}>
-                {t('ballot.instructions_rcv_draggable', 'Drag candidates left → right. Rank 1 is your top choice. Unranked candidates get equal support, below everyone you rank.')}
+                {t('ballot.instructions_rcv_draggable', 'Drag candidates left → right. Rank 1 is your top choice. Your vote never counts for a candidate you leave unranked.')}
               </Typography>
               {election?.settings?.require_instruction_confirmation && (
                 <FormGroup>
